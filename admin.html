@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Império do Streaming</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; background: #ccc; }
+        .tab-btn.active { background: #e50914; color: white; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; font-size: 0.85rem; }
+        th { background: #222; color: white; }
+        
+        input[type="text"] { width: 95%; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-save { background: #007bff; }
+        .btn-convert { background: #28a745; }
+        .btn-wa { background: #25D366; padding: 10px 18px; font-size: 0.9rem; margin-bottom: 15px; }
+
+        .broadcast-box { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 25px; }
+        textarea { width: 100%; height: 90px; margin-top: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+    <h1>Painel de Controle - Império do Streaming</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="btnTeste">Lista de Testes Gerados</button>
+        <button class="tab-btn" id="btnConvertido">Clientes Convertidos</button>
+    </div>
+
+    <button class="btn btn-wa" id="btnBroadcast">Criar Lista de Transmissão (Contatos Selecionados)</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>Cliente / Cidade</th>
+                <th>Contato</th>
+                <th>Dispositivo</th>
+                <th>Cliente Ativo</th>
+                <th>Opção Extra</th>
+                <th>Campo 1</th>
+                <th>Campo 2</th>
+                <th>Campo 3</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaCorpo"></tbody>
+    </table>
+
+    <div class="broadcast-box">
+        <h3>Lista de Transmissão WhatsApp (Números Gerados)</h3>
+        <textarea id="listaResultado" readonly placeholder="Selecione contatos na tabela acima e clique em 'Criar Lista de Transmissão'"></textarea>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKLwFytALZKu6GwewG3DVVkX2xzPVRTcM",
+            authDomain: "imperio-25340.firebaseapp.com",
+            projectId: "imperio-25340",
+            storageBucket: "imperio-25340.firebasestorage.app",
+            messagingSenderId: "714283489050",
+            appId: "1:714283489050:web:d7954058f75c91991ebea3",
+            measurementId: "G-RNBSFDJR34"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let statusAtual = 'teste';
+
+        function escutarClientes(status) {
+            statusAtual = status;
+            const q = query(collection(db, "clientes"), where("status", "==", status));
+
+            onSnapshot(q, (snapshot) => {
+                const tbody = document.getElementById('tabelaCorpo');
+                tbody.innerHTML = '';
+
+                snapshot.forEach((docSnap) => {
+                    const c = docSnap.data();
+                    const id = docSnap.id;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><input type="checkbox" class="user-select" value="${c.whatsapp}"></td>
+                            <td><strong>${c.nome}</strong><br><small>${c.cidade}</small></td>
+                            <td>${c.whatsapp}<br><small>${c.email}</small></td>
+                            <td>${c.dispositivo}</td>
+                            <td><input type="checkbox" id="ativo_${id}" ${c.ativo ? 'checked' : ''}></td>
+                            <td><input type="checkbox" id="opt_${id}" ${c.opcaoExtra ? 'checked' : ''}></td>
+                            <td><input type="text" id="c1_${id}" value="${c.campoExtra1 || ''}"></td>
+                            <td><input type="text" id="c2_${id}" value="${c.campoExtra2 || ''}"></td>
+                            <td><input type="text" id="c3_${id}" value="${c.campoExtra3 || ''}"></td>
+                            <td>
+                                <button class="btn btn-save" onclick="window.salvar('${id}')">Salvar</button>
+                                ${status === 'teste' ? `<button class="btn btn-convert" onclick="window.converter('${id}')">Converter</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        window.salvar = async (id) => {
+            const refDoc = doc(db, "clientes", id);
+            await updateDoc(refDoc, {
+                ativo: document.getElementById(`ativo_${id}`).checked,
+                opcaoExtra: document.getElementById(`opt_${id}`).checked,
+                campoExtra1: document.getElementById(`c1_${id}`).value,
+                campoExtra2: document.getElementById(`c2_${id}`).value,
+                campoExtra3: document.getElementById(`c3_${id}`).value
+            });
+            alert('Dados atualizados com sucesso!');
+        };
+
+        window.converter = async (id) => {
+            if(confirm('Deseja converter este teste em Cliente Assinante? Ele sairá da lista de testes.')) {
+                const refDoc = doc(db, "clientes", id);
+                await updateDoc(refDoc, { status: 'convertido' });
+            }
+        };
+
+        document.getElementById('btnTeste').addEventListener('click', (e) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            escutarClientes('teste');
+        });
+
+        document.getElementById('btnConvertido').addEventListener('click', (e) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            escutarClientes('convertido');
+        });
+
+        document.getElementById('selectAll').addEventListener('change', (e) => {
+            document.querySelectorAll('.user-select').forEach(cb => cb.checked = e.target.checked);
+        });
+
+        document.getElementById('btnBroadcast').addEventListener('click', () => {
+            const selecionados = Array.from(document.querySelectorAll('.user-select:checked'))
+                                      .map(cb => cb.value.replace(/\D/g, ''));
+            
+            if(selecionados.length === 0) {
+                alert('Selecione pelo menos um contato na tabela.');
+                return;
+            }
+
+            document.getElementById('listaResultado').value = selecionados.join(', ');
+        });
+
+        escutarClientes('teste');
+    </script>
+</body>
+</html>

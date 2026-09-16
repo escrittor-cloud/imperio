@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Império do Streaming - Teste Grátis 4H</title>
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-hover: #b8070e;
+            --bg-dark: #141414;
+            --card-bg: #1f1f1f;
+            --text-light: #ffffff;
+            --text-gray: #aaaaaa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); line-height: 1.6; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(0,0,0,0.8);
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: radial-gradient(circle, rgba(229,9,20,0.2) 0%, rgba(20,20,20,1) 80%);
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
+        .hero p { font-size: 1.2rem; color: var(--text-gray); max-width: 700px; margin: 0 auto 30px; }
+        
+        .btn-cta {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--text-light);
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-cta:hover { background-color: var(--primary-hover); transform: scale(1.03); }
+
+        .plans { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 50px 20px; }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            width: 280px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .card.featured { border-color: var(--primary); transform: scale(1.05); }
+        .card h3 { font-size: 1.4rem; margin-bottom: 10px; }
+        .card .price { font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; }
+
+        .devices { text-align: center; padding: 40px 20px; background-color: #0b0b0b; }
+        .device-list { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; font-size: 1.1rem; }
+        .device-item { background: var(--card-bg); padding: 12px 20px; border-radius: 8px; border: 1px solid #333; }
+
+        .form-section { max-width: 500px; margin: 50px auto; padding: 30px; background-color: var(--card-bg); border-radius: 10px; }
+        .form-section h2 { text-align: center; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--text-gray); }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #444; background: #2b2b2b; color: #fff;
+        }
+
+        .installation { max-width: 800px; margin: 40px auto; padding: 25px; background: #181818; border-radius: 8px; }
+        .installation h3 { color: var(--primary); margin-bottom: 15px; }
+        .installation ol { padding-left: 20px; color: var(--text-gray); }
+        .installation li { margin-bottom: 10px; }
+
+        .social-buttons { display: flex; justify-content: center; gap: 15px; padding: 30px; }
+        .btn-social { padding: 12px 25px; border-radius: 5px; text-decoration: none; color: #fff; font-weight: bold; }
+        .btn-wa { background-color: #25D366; }
+        .btn-fb { background-color: #1877F2; }
+
+        footer { text-align: center; padding: 20px; color: var(--text-gray); border-top: 1px solid #222; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Império do Streaming</div>
+        <a href="#cadastro" class="btn-cta" style="padding: 8px 18px; font-size: 0.9rem;">Testar Agora</a>
+    </header>
+
+    <section class="hero">
+        <h1>Mais de 30.000 Conteúdos ao Seu Alcance</h1>
+        <p>Filmes, séries, canais ao vivo, jogos e esportes na sua TV, celular ou computador.</p>
+        <a href="#cadastro" class="btn-cta">Quero meu teste grátis</a>
+    </section>
+
+    <section class="plans">
+        <div class="card">
+            <h3>Degustação</h3>
+            <div class="price">R$ 0</div>
+            <p>Teste Grátis por 4 Horas</p>
+        </div>
+        <div class="card featured">
+            <h3>Plano Mensal</h3>
+            <div class="price">R$ 25,00</div>
+            <p>Acesso total por 30 dias</p>
+        </div>
+        <div class="card">
+            <h3>Plano Trimestral</h3>
+            <div class="price">R$ 70,00</div>
+            <p>Acesso total por 90 dias</p>
+        </div>
+    </section>
+
+    <section class="devices">
+        <h2>Assista Onde Quiser</h2>
+        <div class="device-list">
+            <div class="device-item">📱 Celular</div>
+            <div class="device-item">📺 Smart TV</div>
+            <div class="device-item">📦 TV Box</div>
+            <div class="device-item">💻 Computador</div>
+            <div class="device-item">📱 Tablet</div>
+        </div>
+    </section>
+
+    <section id="cadastro" class="form-section">
+        <h2>Cadastre-se para o Teste Grátis (4H)</h2>
+        <form id="testForm">
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" id="nome" required placeholder="Digite seu nome">
+            </div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="email" required placeholder="Digite seu e-mail">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp</label>
+                <input type="tel" id="whatsapp" required placeholder="(DDD) 00000-0000">
+            </div>
+            <div class="form-group">
+                <label>Cidade</label>
+                <input type="text" id="cidade" required placeholder="Sua cidade">
+            </div>
+            <div class="form-group">
+                <label>Dispositivo Principal</label>
+                <select id="dispositivo" required>
+                    <option value="">Selecione...</option>
+                    <option value="Smart TV">Smart TV</option>
+                    <option value="TV Box">TV Box</option>
+                    <option value="Celular">Celular</option>
+                    <option value="Computador">Computador</option>
+                    <option value="Tablet">Tablet</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-cta" style="width: 100%;">SOLICITAR TESTE GRÁTIS</button>
+        </form>
+    </section>
+
+    <section class="installation">
+        <h3>Orientação de Instalação do Aplicativo:</h3>
+        <ol>
+            <li>Ao clicar em solicitar o teste, seus dados serão registrados e você será direcionado ao nosso WhatsApp oficial.</li>
+            <li>No WhatsApp, enviaremos seus dados de login temporários e o link/nome do aplicativo adequado para seu dispositivo.</li>
+            <li>Baixe e instale o aplicativo indicado na sua Smart TV, TV Box, celular ou PC.</li>
+            <li>Insira seu usuário/senha e aproveite todos os conteúdos liberados por 4 horas!</li>
+        </ol>
+    </section>
+
+    <div class="social-buttons">
+        <a href="https://wa.me/55988307184" target="_blank" class="btn-social btn-wa">Suporte WhatsApp</a>
+        <a href="https://facebook.com" target="_blank" class="btn-social btn-fb">Página do Facebook</a>
+    </div>
+
+    <footer>
+        <p>&copy; Império do Streaming. Todos os direitos reservados.</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKLwFytALZKu6GwewG3DVVkX2xzPVRTcM",
+            authDomain: "imperio-25340.firebaseapp.com",
+            projectId: "imperio-25340",
+            storageBucket: "imperio-25340.firebasestorage.app",
+            messagingSenderId: "714283489050",
+            appId: "1:714283489050:web:d7954058f75c91991ebea3",
+            measurementId: "G-RNBSFDJR34"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const dados = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                cidade: document.getElementById('cidade').value,
+                dispositivo: document.getElementById('dispositivo').value,
+                status: 'teste',
+                ativo: true,
+                opcaoExtra: false,
+                campoExtra1: '',
+                campoExtra2: '',
+                campoExtra3: '',
+                criadoEm: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "clientes"), dados);
+
+                const mensagem = `*SOLICITAÇÃO DE TESTE - IMPÉRIO DO STREAMING*%0A%0A` +
+                    `*Nome:* ${dados.nome}%0A` +
+                    `*E-mail:* ${dados.email}%0A` +
+                    `*WhatsApp:* ${dados.whatsapp}%0A` +
+                    `*Cidade:* ${dados.cidade}%0A` +
+                    `*Dispositivo:* ${dados.dispositivo}%0A` +
+                    `*Duração:* 4 Horas`;
+
+                window.location.href = `https://wa.me/55988307184?text=${mensagem}`;
+
+            } catch (err) {
+                console.error("Erro Firebase:", err);
+                alert("Ocorreu um erro ao registrar a solicitação. Tente novamente.");
+            }
+        });
+    </script>
+</body>
+</html>
