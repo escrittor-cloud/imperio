@@ -1,164 +1,255 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Império do Streaming</title>
-    <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
-        h1 { color: #333; margin-bottom: 20px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; background: #ccc; }
-        .tab-btn.active { background: #e50914; color: white; }
-        
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; font-size: 0.85rem; }
-        th { background: #222; color: white; }
-        
-        input[type="text"] { width: 95%; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
-        .btn-save { background: #007bff; }
-        .btn-convert { background: #28a745; }
-        .btn-wa { background: #25D366; padding: 10px 18px; font-size: 0.9rem; margin-bottom: 15px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin - Império do Streaming</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #121212; color: #fff; padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 900px; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
+    h2 { color: #e50914; margin-bottom: 20px; text-align: center; }
 
-        .broadcast-box { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 25px; }
-        textarea { width: 100%; height: 90px; margin-top: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-    </style>
+    /* Login Form */
+    .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
+    
+    /* System Interface */
+    .hidden { display: none; }
+    
+    /* Navigation Tabs */
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+    .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .tab-btn.active { background: #e50914; color: #fff; }
+
+    /* Form Styles */
+    .form-group { margin-bottom: 15px; text-align: left; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #ccc; }
+    input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 1rem; }
+    textarea { height: 90px; resize: vertical; }
+
+    .btn { background: #e50914; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .btn:hover { background: #ff0f1a; }
+    .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+
+    /* Table Styles for Leads */
+    .table-responsive { overflow-x: auto; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.9rem; }
+    th { background-color: #2a2a2a; color: #e50914; }
+    tr:hover { background-color: #252525; }
+
+    .status { margin-top: 15px; text-align: center; font-weight: bold; color: #4caf50; }
+  </style>
 </head>
 <body>
 
-    <h1>Painel de Controle - Império do Streaming</h1>
+  <div class="container">
+    <h2>Painel Administrativo - Império do Streaming</h2>
 
-    <div class="tabs">
-        <button class="tab-btn active" id="btnTeste">Lista de Testes Gerados</button>
-        <button class="tab-btn" id="btnConvertido">Clientes Convertidos</button>
+    <!-- Tela de Login -->
+    <div id="login-section" class="login-box">
+      <div class="form-group">
+        <label>Usuário</label>
+        <input type="text" id="username" placeholder="Digite o usuário">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="password" placeholder="Digite a senha">
+      </div>
+      <button class="btn" onclick="login()">Entrar</button>
+      <p id="login-err" style="color: red; text-align: center; margin-top: 10px;"></p>
     </div>
 
-    <button class="btn btn-wa" id="btnBroadcast">Criar Lista de Transmissão (Contatos Selecionados)</button>
+    <!-- Conteúdo Principal do Painel -->
+    <div id="admin-section" class="hidden">
+      <!-- Abas de Navegação -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-leads-btn" onclick="switchTab('leads')">📋 Lista de Clientes</button>
+        <button class="tab-btn" id="tab-config-btn" onclick="switchTab('config')">⚙️ Editar Landing Page</button>
+      </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th><input type="checkbox" id="selectAll"></th>
-                <th>Cliente / Cidade</th>
-                <th>Contato</th>
+      <!-- ABA 1: Gerenciamento de Clientes / Leads -->
+      <div id="tab-leads">
+        <h3>Solicitações de Teste Grátis</h3>
+        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 15px;">Leads cadastrados através da Landing Page:</p>
+        
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Data / Hora</th>
+                <th>Nome</th>
+                <th>WhatsApp</th>
                 <th>Dispositivo</th>
-                <th>Cliente Ativo</th>
-                <th>Opção Extra</th>
-                <th>Campo 1</th>
-                <th>Campo 2</th>
-                <th>Campo 3</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="tabelaCorpo"></tbody>
-    </table>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="leads-table-body">
+              <tr>
+                <td colspan="5" style="text-align: center; color: #888;">Carregando clientes...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-    <div class="broadcast-box">
-        <h3>Lista de Transmissão WhatsApp (Números Gerados)</h3>
-        <textarea id="listaResultado" readonly placeholder="Selecione contatos na tabela acima e clique em 'Criar Lista de Transmissão'"></textarea>
+      <!-- ABA 2: Editar Conteúdo do Site -->
+      <div id="tab-config" class="hidden">
+        <h3>Editar Banners e Textos da Landing Page</h3>
+        <br>
+        <div class="form-group">
+          <label>Título Principal</label>
+          <input type="text" id="title-input">
+        </div>
+        <div class="form-group">
+          <label>Subtexto / Descrição</label>
+          <textarea id="subtext-input"></textarea>
+        </div>
+
+        <hr style="border-color: #333; margin: 20px 0;">
+        <h4>Imagens em Destaque (Até 3 imagens - Links / URLs)</h4>
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Exibidas logo acima do título principal (300x300px).</p>
+
+        <div class="form-group">
+          <label>Imagem 1 (URL)</label>
+          <input type="text" id="img1-input" placeholder="https://exemplo.com/imagem1.png">
+        </div>
+        <div class="form-group">
+          <label>Imagem 2 (URL)</label>
+          <input type="text" id="img2-input" placeholder="https://exemplo.com/imagem2.png">
+        </div>
+        <div class="form-group">
+          <label>Imagem 3 (URL)</label>
+          <input type="text" id="img3-input" placeholder="https://exemplo.com/imagem3.png">
+        </div>
+
+        <button class="btn" onclick="saveChanges()">Salvar Alterações</button>
+        <div id="status-msg" class="status"></div>
+      </div>
+
     </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <!-- Firebase SDK v10 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCKLwFytALZKu6GwewG3DVVkX2xzPVRTcM",
-            authDomain: "imperio-25340.firebaseapp.com",
-            projectId: "imperio-25340",
-            storageBucket: "imperio-25340.firebasestorage.app",
-            messagingSenderId: "714283489050",
-            appId: "1:714283489050:web:d7954058f75c91991ebea3",
-            measurementId: "G-RNBSFDJR34"
-        };
+    const firebaseConfig = {
+      projectId: "imperio-25340"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        let statusAtual = 'teste';
+    // Login
+    window.login = function() {
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
 
-        function escutarClientes(status) {
-            statusAtual = status;
-            const q = query(collection(db, "clientes"), where("status", "==", status));
+      if (u === "edan3" && p === "32739532") {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('admin-section').classList.remove('hidden');
+        loadLeads();
+        loadAdminData();
+      } else {
+        document.getElementById('login-err').innerText = "Usuário ou senha incorretos!";
+      }
+    }
 
-            onSnapshot(q, (snapshot) => {
-                const tbody = document.getElementById('tabelaCorpo');
-                tbody.innerHTML = '';
+    // Alternar Abas
+    window.switchTab = function(tabName) {
+      if (tabName === 'leads') {
+        document.getElementById('tab-leads').classList.remove('hidden');
+        document.getElementById('tab-config').classList.add('hidden');
+        document.getElementById('tab-leads-btn').classList.add('active');
+        document.getElementById('tab-config-btn').classList.remove('active');
+      } else {
+        document.getElementById('tab-config').classList.remove('hidden');
+        document.getElementById('tab-leads').classList.add('hidden');
+        document.getElementById('tab-config-btn').classList.add('active');
+        document.getElementById('tab-leads-btn').classList.remove('active');
+      }
+    }
 
-                snapshot.forEach((docSnap) => {
-                    const c = docSnap.data();
-                    const id = docSnap.id;
+    // Carregar Lista de Clientes (Leads)
+    async function loadLeads() {
+      const tableBody = document.getElementById('leads-table-body');
+      try {
+        const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><input type="checkbox" class="user-select" value="${c.whatsapp}"></td>
-                            <td><strong>${c.nome}</strong><br><small>${c.cidade}</small></td>
-                            <td>${c.whatsapp}<br><small>${c.email}</small></td>
-                            <td>${c.dispositivo}</td>
-                            <td><input type="checkbox" id="ativo_${id}" ${c.ativo ? 'checked' : ''}></td>
-                            <td><input type="checkbox" id="opt_${id}" ${c.opcaoExtra ? 'checked' : ''}></td>
-                            <td><input type="text" id="c1_${id}" value="${c.campoExtra1 || ''}"></td>
-                            <td><input type="text" id="c2_${id}" value="${c.campoExtra2 || ''}"></td>
-                            <td><input type="text" id="c3_${id}" value="${c.campoExtra3 || ''}"></td>
-                            <td>
-                                <button class="btn btn-save" onclick="window.salvar('${id}')">Salvar</button>
-                                ${status === 'teste' ? `<button class="btn btn-convert" onclick="window.converter('${id}')">Converter</button>` : ''}
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
+        if (querySnapshot.empty) {
+          tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Nenhuma solicitação encontrada ainda.</td></tr>`;
+          return;
         }
 
-        window.salvar = async (id) => {
-            const refDoc = doc(db, "clientes", id);
-            await updateDoc(refDoc, {
-                ativo: document.getElementById(`ativo_${id}`).checked,
-                opcaoExtra: document.getElementById(`opt_${id}`).checked,
-                campoExtra1: document.getElementById(`c1_${id}`).value,
-                campoExtra2: document.getElementById(`c2_${id}`).value,
-                campoExtra3: document.getElementById(`c3_${id}`).value
-            });
-            alert('Dados atualizados com sucesso!');
-        };
+        tableBody.innerHTML = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString('pt-BR') : 'N/A';
+          const cleanPhone = (data.whatsapp || '').replace(/\D/g, '');
 
-        window.converter = async (id) => {
-            if(confirm('Deseja converter este teste em Cliente Assinante? Ele sairá da lista de testes.')) {
-                const refDoc = doc(db, "clientes", id);
-                await updateDoc(refDoc, { status: 'convertido' });
-            }
-        };
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${date}</td>
+            <td><strong>${data.nome || 'Não informado'}</strong></td>
+            <td>${data.whatsapp || 'N/A'}</td>
+            <td>${data.dispositivo || 'N/A'}</td>
+            <td>
+              ${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}?text=Olá%20${encodeURIComponent(data.nome || '')},%20vi%20seu%20pedido%20de%20teste%20grátis%20no%20Império%20do%20Streaming!" target="_blank" class="btn-whatsapp">WhatsApp</a>` : '-'}
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Erro ao carregar leads:", e);
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Erro ao carregar solicitações. Verifique o console.</td></tr>`;
+      }
+    }
 
-        document.getElementById('btnTeste').addEventListener('click', (e) => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            escutarClientes('teste');
+    // Carregar Configurações do Site
+    async function loadAdminData() {
+      try {
+        const docRef = doc(db, "config", "home");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById('title-input').value = data.title || '';
+          document.getElementById('subtext-input').value = data.subtext || '';
+          document.getElementById('img1-input').value = data.img1 || '';
+          document.getElementById('img2-input').value = data.img2 || '';
+          document.getElementById('img3-input').value = data.img3 || '';
+        }
+      } catch (e) {
+        console.error("Erro ao carregar dados de configuração:", e);
+      }
+    }
+
+    // Salvar Configurações
+    window.saveChanges = async function() {
+      const statusMsg = document.getElementById('status-msg');
+      statusMsg.innerText = "Salvando...";
+
+      try {
+        await setDoc(doc(db, "config", "home"), {
+          title: document.getElementById('title-input').value,
+          subtext: document.getElementById('subtext-input').value,
+          img1: document.getElementById('img1-input').value,
+          img2: document.getElementById('img2-input').value,
+          img3: document.getElementById('img3-input').value,
+          updatedAt: new Date()
         });
 
-        document.getElementById('btnConvertido').addEventListener('click', (e) => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            escutarClientes('convertido');
-        });
-
-        document.getElementById('selectAll').addEventListener('change', (e) => {
-            document.querySelectorAll('.user-select').forEach(cb => cb.checked = e.target.checked);
-        });
-
-        document.getElementById('btnBroadcast').addEventListener('click', () => {
-            const selecionados = Array.from(document.querySelectorAll('.user-select:checked'))
-                                      .map(cb => cb.value.replace(/\D/g, ''));
-            
-            if(selecionados.length === 0) {
-                alert('Selecione pelo menos um contato na tabela.');
-                return;
-            }
-
-            document.getElementById('listaResultado').value = selecionados.join(', ');
-        });
-
-        escutarClientes('teste');
-    </script>
+        statusMsg.innerText = "✅ Alterações salvas com sucesso!";
+        setTimeout(() => statusMsg.innerText = '', 4000);
+      } catch (e) {
+        console.error("Erro ao salvar:", e);
+        statusMsg.style.color = "red";
+        statusMsg.innerText = "❌ Erro ao salvar alterações.";
+      }
+    }
+  </script>
 </body>
 </html>
