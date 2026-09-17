@@ -3,69 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - Império</title>
+  <title>Painel Administrativo - Império do Streaming</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f4f6f9; color: #333; padding: 20px; }
-    .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    h1 { margin-bottom: 20px; color: #1a252f; font-size: 24px; }
+    body { background-color: #121212; color: #e0e0e0; padding: 30px 10px; display: flex; justify-content: center; }
     
-    /* Tabs */
-    .tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px; gap: 10px; }
-    .tab-btn { padding: 10px 20px; border: none; background: none; font-size: 16px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
-    .tab-btn.active { color: #2196F3; border-bottom-color: #2196F3; }
+    .container { width: 100%; max-width: 1100px; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #2d2d2d; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    
+    h1 { text-align: center; color: #ff2a2a; margin-bottom: 25px; font-size: 26px; font-weight: bold; text-shadow: 0 0 10px rgba(255, 42, 42, 0.2); }
 
-    /* Table */
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-    th { background-color: #f8f9fa; color: #555; font-size: 14px; }
-    tr:hover { background-color: #f1f1f1; }
+    /* Navegação / Abas */
+    .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+    .tab-btn { background: #2a2a2a; color: #aaa; border: 1px solid #3a3a3a; padding: 10px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.2s; }
+    .tab-btn:hover { background: #333; color: #fff; }
+    .tab-btn.active { background: #e50914; color: #fff; border-color: #e50914; }
 
-    /* Buttons & Badges */
-    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: #fff; font-size: 13px; }
-    .btn-gerar { background-color: #2196F3; }
-    .btn-gerar:hover { background-color: #1e88e5; }
-    .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-    .badge-solicitado { background: #fff3cd; color: #856404; }
-    .badge-teste { background: #d4edda; color: #155724; }
+    /* Topo da Tabela */
+    .table-header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .table-title { font-size: 18px; font-weight: bold; color: #fff; }
+    .btn-whatsapp-list { background: #00c853; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .btn-whatsapp-list:hover { background: #00e676; }
+
+    /* Tabela */
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+    th { background: #252525; color: #ff2a2a; padding: 12px; text-align: left; font-size: 13px; font-weight: bold; border-bottom: 2px solid #333; }
+    td { padding: 14px 12px; border-bottom: 1px solid #2a2a2a; font-size: 13px; color: #ccc; }
+    tr:hover { background: #242424; }
+
+    /* Elementos das Células */
+    .user-pass { line-height: 1.5; }
+    .u-text { color: #2196F3; font-weight: 500; }
+    .s-text { color: #ff9800; font-weight: 500; }
+    .btn-wa-chat { background: #25D366; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 4px; }
+    
+    /* Botões de Ação */
+    .btn-action { padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; margin-right: 5px; color: #fff; }
+    .btn-ativar { background: #2e7d32; }
+    .btn-ativar:hover { background: #388e3c; }
+    .btn-excluir { background: #c62828; }
+    .btn-excluir:hover { background: #d32f2f; }
+    .btn-gerar { background: #0288d1; }
+    .btn-gerar:hover { background: #039be5; }
 
     /* Modal */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-    .modal h3 { margin-bottom: 15px; color: #333; }
-    .modal select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: #1e1e1e; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; border: 1px solid #333; }
+    .modal h3 { margin-bottom: 15px; color: #fff; font-size: 16px; }
+    .modal select { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; margin-bottom: 20px; outline: none; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
-    .btn-cancelar { background-color: #6c757d; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Painel de Gestão de Leads</h1>
+    <h1>Painel Administrativo - Império do Streaming</h1>
 
+    <!-- Abas Principais -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="alterarAba('solicitacoes')">Solicitações</button>
-      <button class="tab-btn" onclick="alterarAba('testes')">Testes Gerados</button>
+      <button class="tab-btn active" onclick="alterarAba('solicitacoes')">📄 Solicitações</button>
+      <button class="tab-btn" onclick="alterarAba('testes')">🧪 Testes Gerados</button>
+      <button class="tab-btn" onclick="alterarAba('ativos')">✅ Clientes Ativos</button>
+      <button class="tab-btn" onclick="alterarAba('inativos')">❌ Inativos</button>
+      <button class="tab-btn" onclick="alterarAba('config')">⚙️ Configurar Site</button>
     </div>
 
-    <table id="tabela-leads">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>WhatsApp</th>
-          <th>Servidor</th>
-          <th>Data</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="lista-leads">
-        <tr><td colspan="6">Carregando dados...</td></tr>
-      </tbody>
-    </table>
+    <!-- Cabeçalho da Tabela -->
+    <div class="table-header-action">
+      <div class="table-title" id="titulo-secao">Testes Ativos no Momento</div>
+      <button class="btn-whatsapp-list">📲 Criar Lista de Transmissão WhatsApp</button>
+    </div>
+
+    <!-- Tabela de Dados -->
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th width="40"><input type="checkbox" id="check-all"></th>
+            <th>Data</th>
+            <th>Cliente / E-mail</th>
+            <th>Acesso (User/Pass)</th>
+            <th>Contato</th>
+            <th>Dispositivo</th>
+            <th>Vencimento</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="lista-leads">
+          <tr><td colspan="8" style="text-align:center;">Carregando dados...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- Modal Seleção de Servidor -->
+  <!-- Modal Escolha do Servidor -->
   <div class="modal-overlay" id="modal-server">
     <div class="modal">
       <h3>Selecionar Servidor para Teste</h3>
@@ -75,18 +106,17 @@
         <option value="https://paineltitan.top/api/chatbot/gerar/318243391">Painel Titan</option>
       </select>
       <div class="modal-actions">
-        <button class="btn btn-cancelar" onclick="fecharModalServer()">Cancelar</button>
-        <button class="btn btn-gerar" onclick="executarGerarTesteAPI()">Confirmar e Gerar</button>
+        <button class="btn-action btn-excluir" onclick="fecharModalServer()">Cancelar</button>
+        <button class="btn-action btn-gerar" onclick="executarGerarTesteAPI()">Confirmar e Gerar</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase JavaScript -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Suas configurações do Firebase
     const firebaseConfig = {
       apiKey: "Sua-ApiKey-Aqui",
       authDomain: "imperio-25340.firebaseapp.com",
@@ -102,57 +132,85 @@
     let currentTab = 'solicitacoes';
     let currentSelectedIdForTest = null;
 
-    // Função para carregar os Leads do Firestore
+    // Carrega dados da aba selecionada
     window.loadLeads = async function() {
       const tbody = document.getElementById('lista-leads');
-      tbody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
 
       try {
-        const statusBusca = currentTab === 'solicitacoes' ? 'solicitado' : 'teste';
+        let statusBusca = 'solicitado';
+        if (currentTab === 'testes') statusBusca = 'teste';
+        if (currentTab === 'ativos') statusBusca = 'ativo';
+        if (currentTab === 'inativos') statusBusca = 'inativo';
+
         const q = query(collection(db, "leads"), where("status", "==", statusBusca));
         const querySnapshot = await getDocs(q);
 
         tbody.innerHTML = '';
 
         if (querySnapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="6">Nenhum registro encontrado em ${currentTab}.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Nenhum registro nesta aba.</td></tr>`;
           return;
         }
 
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const id = docSnap.id;
-
           const tr = document.createElement('tr');
+
           tr.innerHTML = `
-            <td>${data.nome || 'Não informado'}</td>
-            <td>${data.whatsapp || 'Não informado'}</td>
-            <td>${data.servidor || '-'}</td>
-            <td>${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString('pt-BR') : '-'}</td>
-            <td><span class="badge ${data.status === 'solicitado' ? 'badge-solicitado' : 'badge-teste'}">${data.status}</span></td>
+            <td><input type="checkbox" value="${id}"></td>
+            <td>${data.dataGeracaoTeste || (data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-')}</td>
             <td>
-              ${data.status === 'solicitado' 
-                ? `<button class="btn btn-gerar" onclick="abrirModalServer('${id}')">Gerar Teste</button>` 
-                : `<span style="color:#28a745; font-size:12px; font-weight:bold;">Gerado</span>`}
+              <strong>${data.nome || 'Não Informado'}</strong><br>
+              <small style="color:#777;">${data.email || 'escritti@gmail.com'}</small>
+            </td>
+            <td>
+              <div class="user-pass">
+                <span class="u-text">U: ${data.usuario || 'Gerado'}</span><br>
+                <span class="s-text">S: ${data.senha || 'Gerado'}</span>
+              </div>
+            </td>
+            <td>
+              ${data.whatsapp || '47988027066'}<br>
+              <a href="https://wa.me/55${(data.whatsapp || '').replace(/\D/g,'')}" target="_blank" class="btn-wa-chat">WhatsApp</a>
+            </td>
+            <td>${data.dispositivo || 'Smart TV'}</td>
+            <td style="color:#00c853;">${data.vencimento || '4 Horas'}</td>
+            <td>
+              ${currentTab === 'solicitacoes' 
+                ? `<button class="btn-action btn-gerar" onclick="abrirModalServer('${id}')">Gerar Teste</button>` 
+                : `<button class="btn-action btn-ativar" onclick="mudarStatus('${id}', 'ativo')">Ativar</button>
+                   <button class="btn-action btn-excluir" onclick="deletarLead('${id}')">Excluir</button>`}
             </td>
           `;
           tbody.appendChild(tr);
         });
       } catch (err) {
-        console.error("Erro ao carregar leads:", err);
-        tbody.innerHTML = '<tr><td colspan="6">Erro ao carregar dados.</td></tr>';
+        console.error("Erro ao carregar dados:", err);
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ff2a2a;">Erro ao carregar.</td></tr>';
       }
     };
 
-    // Alternar entre Abas
+    // Controle de Abas
     window.alterarAba = function(aba) {
       currentTab = aba;
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      const titulos = {
+        'solicitacoes': 'Solicitações Pendentes',
+        'testes': 'Testes Ativos no Momento',
+        'ativos': 'Clientes Ativos',
+        'inativos': 'Clientes Inativos',
+        'config': 'Configuração do Site'
+      };
+      document.getElementById('titulo-secao').innerText = titulos[aba] || 'Gerenciamento';
+
       loadLeads();
     };
 
-    // Controle do Modal
+    // Modal
     window.abrirModalServer = function(id) {
       currentSelectedIdForTest = id;
       document.getElementById('modal-server').style.display = 'flex';
@@ -163,7 +221,7 @@
       document.getElementById('modal-server').style.display = 'none';
     };
 
-    // Função Principal de Gerar o Teste via API
+    // Gerar Teste API (Abre nova aba e move no Firebase)
     window.executarGerarTesteAPI = async function() {
       if (!currentSelectedIdForTest) return;
 
@@ -171,31 +229,45 @@
       const apiUrl = selectElem.value;
       const nomeServidor = selectElem.options[selectElem.selectedIndex].text;
 
-      // 1. Abre a URL da API do robô em uma nova aba
       window.open(apiUrl, '_blank');
 
       try {
-        // 2. Atualiza o status do cliente diretamente no Firebase para 'teste'
         await updateDoc(doc(db, "leads", currentSelectedIdForTest), {
           status: 'teste',
           servidor: nomeServidor,
-          usuario: 'Ver na aba aberta',
-          senha: 'Ver na aba aberta',
+          usuario: 'Gerado',
+          senha: 'Gerado',
           vencimento: '4 Horas',
-          dataGeracaoTeste: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR'),
+          dataGeracaoTeste: new Date().toLocaleDateString('pt-BR'),
           updatedAt: new Date()
         });
 
-        alert("✅ Solicitação processada!\nO teste foi gerado na aba ao lado e o cliente foi movido para 'Testes Gerados'.");
+        alert("✅ Teste gerado! O cliente foi movido para 'Testes Gerados'.");
         fecharModalServer();
         loadLeads();
       } catch (err) {
-        console.error("Erro ao atualizar o Firebase:", err);
-        alert("❌ Erro ao mover o cliente de aba.");
+        console.error("Erro ao atualizar Firebase:", err);
       }
     };
 
-    // Inicializa a listagem ao carregar a página
+    // Mudar Status (Ativar)
+    window.mudarStatus = async function(id, novoStatus) {
+      try {
+        await updateDoc(doc(db, "leads", id), { status: novoStatus });
+        loadLeads();
+      } catch (err) { console.error("Erro ao alterar status:", err); }
+    };
+
+    // Deletar
+    window.deletarLead = async function(id) {
+      if (confirm("Deseja realmente excluir este registro?")) {
+        try {
+          await deleteDoc(doc(db, "leads", id));
+          loadLeads();
+        } catch (err) { console.error("Erro ao excluir:", err); }
+      }
+    };
+
     loadLeads();
   </script>
 </body>
