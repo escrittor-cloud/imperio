@@ -7,15 +7,19 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #121212; color: #fff; padding: 15px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 1000px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
+    .container { width: 100%; max-width: 1100px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
     h2 { color: #e50914; margin-bottom: 20px; text-align: center; font-size: 1.4rem; }
     .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
     .hidden { display: none; }
     
-    .tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; overflow-x: auto; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; overflow-x: auto; }
     .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
     .tab-btn.active { background: #e50914; color: #fff; }
-    
+
+    .action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #252525; padding: 10px 15px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap; gap: 10px; }
+    .btn-broadcast { background: #25d366; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+    .btn-broadcast:hover { background: #20ba5a; }
+
     .form-group { margin-bottom: 15px; text-align: left; }
     label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.85rem; color: #ccc; }
     input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.95rem; }
@@ -28,12 +32,18 @@
     .btn:hover { background: #ff0f1a; }
     .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-top: 4px; }
     
-    .table-responsive { overflow-x: auto; margin-top: 15px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
+    .table-responsive { overflow-x: auto; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 700px; }
     th, td { padding: 10px; border-bottom: 1px solid #333; font-size: 0.85rem; vertical-align: middle; }
     th { background-color: #2a2a2a; color: #e50914; }
     tr:hover { background-color: #252525; }
     .status { margin-top: 15px; text-align: center; font-weight: bold; color: #4caf50; }
+
+    /* Modal do Seletor de Servidor */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: #222; padding: 20px; border-radius: 8px; max-width: 450px; width: 90%; border: 1px solid #444; }
+    .modal-content h3 { color: #e50914; margin-bottom: 15px; font-size: 1.1rem; }
+    .modal-content select { width: 100%; padding: 10px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -67,27 +77,37 @@
 
       <!-- ABA LEADS / CLIENTES -->
       <div id="tab-leads">
-        <h3 id="tab-title" style="color: #ccc; font-size: 1.1rem; margin-bottom: 10px;">Solicitações Recebidas</h3>
+        <div class="action-bar">
+          <h3 id="tab-title" style="color: #ccc; font-size: 1.1rem;">Solicitações Recebidas</h3>
+          <button class="btn-broadcast" onclick="criarListaTransmissao()">
+            <span>📲</span> Criar Lista de Transmissão WhatsApp
+          </button>
+        </div>
+
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
+                <th style="width: 40px; text-align: center;">
+                  <input type="checkbox" id="select-all" onclick="toggleSelectAll(this)" style="cursor: pointer; width: 16px; height: 16px;">
+                </th>
                 <th>Data</th>
-                <th>Cliente / ID Sigma</th>
+                <th>Cliente / E-mail</th>
+                <th>Acesso (User/Pass)</th>
                 <th>Contato</th>
                 <th>Dispositivo</th>
-                <th>Datas / Prazos</th>
+                <th>Vencimento</th>
                 <th>Ação</th>
               </tr>
             </thead>
             <tbody id="leads-table-body">
-              <tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>
+              <tr><td colspan="8" style="text-align: center;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- ABA PROMOÇÃO -->
+      <!-- ABA CONFIGURAÇÕES SITE -->
       <div id="tab-config" class="hidden">
         <h3>Editar Banners e Textos</h3>
         <br>
@@ -130,6 +150,49 @@
     </div>
   </div>
 
+  <!-- Modal Seletor de Servidor -->
+  <div id="modal-server" class="modal hidden">
+    <div class="modal-content">
+      <h3>Selecione o Servidor para Gerar o Teste</h3>
+      <select id="server-api-select">
+        <optgroup label="CYBER">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/we6WnQ8DK8">CYBER - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/x2YD0EkWQP">CYBER - S/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/rlKWOrRDzo">CYBER - Apps Parceiros C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/RYAWR4PLjl">CYBER - Apps Parceiros S/ Adulto</option>
+        </optgroup>
+        <optgroup label="HÓRUS">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/z2BDveGLrk">HÓRUS - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/VpKDap2LRA">HÓRUS - S/ Adulto</option>
+        </optgroup>
+        <optgroup label="SKYLINE">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/kRXDgMO1ex">SKYLINE - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/ryJDzVzDge">SKYLINE - S/ Adulto</option>
+        </optgroup>
+        <optgroup label="INFINITY+">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/BKADdQeWlr">INFINITY+ - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/kRXDgQo1ex">INFINITY+ - S/ Adulto</option>
+        </optgroup>
+        <optgroup label="LINEUP">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/B0VDVayLK3">LINEUP - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/Ar0WZp2La7">LINEUP - S/ Adulto</option>
+        </optgroup>
+        <optgroup label="TITAN">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/ayb1BOPLPR">TITAN - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/Kr6LJE51v9">TITAN - S/ Adulto</option>
+        </optgroup>
+        <optgroup label="P2P BINSTREAM">
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/z2BDverLrk">P2P BINSTREAM - C/ Adulto</option>
+          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/VpKDapkLRA">P2P BINSTREAM - S/ Adulto</option>
+        </optgroup>
+      </select>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn" onclick="executarGerarTesteAPI()" style="background:#2196F3;">Confirmar e Gerar</button>
+        <button class="btn" onclick="fecharModalServer()" style="background:#555;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -139,6 +202,8 @@
     const db = getFirestore(app);
 
     let activeTab = 'solicitacao';
+    let currentSelectedIdForTest = null;
+    let loadedLeadsCache = [];
 
     window.login = function() {
       const u = document.getElementById('username').value;
@@ -159,6 +224,10 @@
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById(`tab-${tabName}-btn`).classList.add('active');
       
+      // Reset checkbox principal
+      const selectAllBox = document.getElementById('select-all');
+      if (selectAllBox) selectAllBox.checked = false;
+
       if (tabName === 'config') {
         document.getElementById('tab-leads').classList.add('hidden');
         document.getElementById('tab-config').classList.remove('hidden');
@@ -179,34 +248,34 @@
 
     async function loadLeads() {
       const tableBody = document.getElementById('leads-table-body');
-      tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Carregando...</td></tr>`;
 
       try {
         const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
-        const filteredDocs = [];
+        loadedLeadsCache = [];
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const status = data.status || 'solicitacao';
           if (status === activeTab) {
-            filteredDocs.push({ id: docSnap.id, ...data });
+            loadedLeadsCache.push({ id: docSnap.id, ...data });
           }
         });
 
-        if (filteredDocs.length === 0) {
-          tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">Nenhum registro nesta categoria.</td></tr>`;
+        if (loadedLeadsCache.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #888;">Nenhum registro nesta categoria.</td></tr>`;
           return;
         }
 
         tableBody.innerHTML = '';
-        filteredDocs.forEach((data) => {
+        loadedLeadsCache.forEach((data) => {
           const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : 'N/A';
           const cleanPhone = (data.whatsapp || '').replace(/\D/g, '');
 
           let botaoAcao = '';
           if (activeTab === 'solicitacao') {
-            botaoAcao = `<button onclick="gerarTeste('${data.id}')" style="background:#2196F3; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Gerar Teste</button>`;
+            botaoAcao = `<button onclick="abrirModalGerarTeste('${data.id}')" style="background:#2196F3; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Gerar Teste</button>`;
           } else if (activeTab === 'teste') {
             botaoAcao = `<button onclick="ativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Ativar Cliente</button>`;
           } else if (activeTab === 'ativo') {
@@ -217,11 +286,15 @@
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
+            <td style="text-align: center;">
+              <input type="checkbox" class="lead-checkbox" data-id="${data.id}" data-phone="${cleanPhone}" data-nome="${data.nome || 'Cliente'}" style="cursor: pointer; width: 16px; height: 16px;">
+            </td>
             <td>${date}</td>
-            <td><strong>${data.nome || 'Não informado'}</strong><br><small style="color:#aaa;">ID Sigma: ${data.idSigma || '-'}</small></td>
+            <td><strong>${data.nome || 'Não informado'}</strong><br><small style="color:#aaa;">${data.email || 'Sem e-mail'}</small></td>
+            <td><small style="color:#2196F3;">U: ${data.usuario || '-'}</small><br><small style="color:#ff9800;">S: ${data.senha || '-'}</small></td>
             <td>${data.whatsapp || 'N/A'}<br>${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}" target="_blank" class="btn-whatsapp">WhatsApp</a>` : ''}</td>
             <td>${data.dispositivo || 'N/A'}</td>
-            <td><small>Venc: ${data.vencimento || '-'}</small><br><small style="color:#f44336;">Desat: ${data.dataDesativacao || '-'}</small></td>
+            <td><small style="color:#4CAF50;">${data.vencimento || '-'}</small></td>
             <td>${botaoAcao}</td>
           `;
           tableBody.appendChild(tr);
@@ -231,11 +304,94 @@
       }
     }
 
-    window.gerarTeste = async function(idDoc) {
-      const idSigma = prompt("Digite o ID do Cliente no Sigma:");
-      if (idSigma !== null) {
-        await updateDoc(doc(db, "leads", idDoc), { status: 'teste', idSigma: idSigma, updatedAt: new Date() });
+    // Selecionar Todos / Desmarcar Todos
+    window.toggleSelectAll = function(masterCheckbox) {
+      const checkboxes = document.querySelectorAll('.lead-checkbox');
+      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+    }
+
+    // Criar Lista de Transmissão para WhatsApp
+    window.criarListaTransmissao = function() {
+      const selected = document.querySelectorAll('.lead-checkbox:checked');
+      if (selected.length === 0) {
+        alert("Por favor, selecione pelo menos um cliente marcando a caixa de seleção!");
+        return;
+      }
+
+      let listaContatos = [];
+      let listaTelefones = [];
+
+      selected.forEach(cb => {
+        const nome = cb.getAttribute('data-nome');
+        const phone = cb.getAttribute('data-phone');
+        if (phone) {
+          listaContatos.push(`• ${nome}: https://wa.me/55${phone}`);
+          listaTelefones.push(`55${phone}`);
+        }
+      });
+
+      if (listaContatos.length === 0) {
+        alert("Nenhum número de WhatsApp válido nos selecionados!");
+        return;
+      }
+
+      const mensagem = `📋 *LISTA DE TRANSMISSÃO (${activeTab.toUpperCase()})*\nTotal Selecionados: ${listaContatos.length}\n\n` + listaContatos.join('\n');
+      
+      // Abre prompt com a lista formatada pronta para copiar e colar no WhatsApp
+      prompt("Copie os dados/links da lista de transmissão abaixo:", mensagem);
+    }
+
+    // Modal de Integração de Servidor
+    window.abrirModalGerarTeste = function(idDoc) {
+      currentSelectedIdForTest = idDoc;
+      document.getElementById('modal-server').classList.remove('hidden');
+    }
+
+    window.fecharModalServer = function() {
+      currentSelectedIdForTest = null;
+      document.getElementById('modal-server').classList.add('hidden');
+    }
+
+    window.executarGerarTesteAPI = async function() {
+      if (!currentSelectedIdForTest) return;
+      const apiUrl = document.getElementById('server-api-select').value;
+      const btnConfirm = event.target;
+      btnConfirm.innerText = "Gerando na API...";
+      btnConfirm.disabled = true;
+
+      try {
+        const response = await fetch(apiUrl);
+        const textoRetorno = await response.text();
+
+        // Extrai Usuário, Senha e Vencimento do texto de retorno
+        const userMatch = textoRetorno.match(/Usuário:\s*([^\n\r]+)/i);
+        const passMatch = textoRetorno.match(/Senha:\s*([^\n\r]+)/i);
+        const vencMatch = textoRetorno.match(/Vencimento:\s*([^\n\r]+)/i);
+
+        const usuario = userMatch ? userMatch[1].trim() : "Gerado";
+        const senha = passMatch ? passMatch[1].trim() : "Gerado";
+        const vencimento = vencMatch ? vencMatch[1].trim() : "4 Horas";
+
+        // Salva tudo unificado no Firestore e move para 'teste'
+        await updateDoc(doc(db, "leads", currentSelectedIdForTest), {
+          status: 'teste',
+          usuario: usuario,
+          senha: senha,
+          vencimento: vencimento,
+          respostaApiCompleta: textoRetorno,
+          dataGeracaoTeste: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR'),
+          updatedAt: new Date()
+        });
+
+        alert(`✅ Teste Gerado com Sucesso!\nUsuário: ${usuario}\nSenha: ${senha}`);
+        fecharModalServer();
         loadLeads();
+      } catch (err) {
+        console.error("Erro ao chamar API do Painel Master:", err);
+        alert("❌ Erro ao conectar com a API do servidor. Verifique o painel master.");
+      } finally {
+        btnConfirm.innerText = "Confirmar e Gerar";
+        btnConfirm.disabled = false;
       }
     }
 
