@@ -10,7 +10,9 @@
     .container { width: 100%; max-width: 1150px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
     h2 { color: #e50914; margin-bottom: 20px; text-align: center; font-size: 1.4rem; }
     .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
-    .hidden { display: none; }
+    
+    /* Regra estrita para ocultar elementos */
+    .hidden { display: none !important; }
     
     .tabs { display: flex; gap: 6px; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; overflow-x: auto; }
     .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
@@ -312,7 +314,6 @@
       }
     }
 
-    // Função de Excluir Registro do Banco de Dados
     window.excluirRegistro = async function(idDoc) {
       if (confirm("Tem certeza que deseja excluir este registro permanentemente?")) {
         try {
@@ -377,7 +378,6 @@
         const response = await fetch(apiUrl);
         const textoRetorno = await response.text();
 
-        // Extrai Usuário, Senha e Vencimento do texto de retorno
         const userMatch = textoRetorno.match(/Usuário:\s*([^\n\r]+)/i);
         const passMatch = textoRetorno.match(/Senha:\s*([^\n\r]+)/i);
         const vencMatch = textoRetorno.match(/Vencimento:\s*([^\n\r]+)/i);
