@@ -7,7 +7,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #121212; color: #fff; padding: 15px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 1100px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
+    .container { width: 100%; max-width: 1150px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
     h2 { color: #e50914; margin-bottom: 20px; text-align: center; font-size: 1.4rem; }
     .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
     .hidden { display: none; }
@@ -32,8 +32,12 @@
     .btn:hover { background: #ff0f1a; }
     .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-top: 4px; }
     
+    .action-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    .btn-delete { background: #f44336; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+    .btn-delete:hover { background: #d32f2f; }
+
     .table-responsive { overflow-x: auto; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 700px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 750px; }
     th, td { padding: 10px; border-bottom: 1px solid #333; font-size: 0.85rem; vertical-align: middle; }
     th { background-color: #2a2a2a; color: #e50914; }
     tr:hover { background-color: #252525; }
@@ -97,7 +101,7 @@
                 <th>Contato</th>
                 <th>Dispositivo</th>
                 <th>Vencimento</th>
-                <th>Ação</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody id="leads-table-body">
@@ -195,7 +199,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = { projectId: "imperio-25340" };
     const app = initializeApp(firebaseConfig);
@@ -224,7 +228,6 @@
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById(`tab-${tabName}-btn`).classList.add('active');
       
-      // Reset checkbox principal
       const selectAllBox = document.getElementById('select-all');
       if (selectAllBox) selectAllBox.checked = false;
 
@@ -273,15 +276,15 @@
           const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : 'N/A';
           const cleanPhone = (data.whatsapp || '').replace(/\D/g, '');
 
-          let botaoAcao = '';
+          let botaoAcaoPrincipal = '';
           if (activeTab === 'solicitacao') {
-            botaoAcao = `<button onclick="abrirModalGerarTeste('${data.id}')" style="background:#2196F3; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Gerar Teste</button>`;
+            botaoAcaoPrincipal = `<button onclick="abrirModalGerarTeste('${data.id}')" style="background:#2196F3; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Gerar Teste</button>`;
           } else if (activeTab === 'teste') {
-            botaoAcao = `<button onclick="ativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Ativar Cliente</button>`;
+            botaoAcaoPrincipal = `<button onclick="ativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Ativar</button>`;
           } else if (activeTab === 'ativo') {
-            botaoAcao = `<button onclick="desativarCliente('${data.id}')" style="background:#ff9800; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Desativar</button>`;
+            botaoAcaoPrincipal = `<button onclick="desativarCliente('${data.id}')" style="background:#ff9800; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Desativar</button>`;
           } else if (activeTab === 'inativo') {
-            botaoAcao = `<button onclick="reativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Reativar</button>`;
+            botaoAcaoPrincipal = `<button onclick="reativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Reativar</button>`;
           }
 
           const tr = document.createElement('tr');
@@ -295,7 +298,12 @@
             <td>${data.whatsapp || 'N/A'}<br>${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}" target="_blank" class="btn-whatsapp">WhatsApp</a>` : ''}</td>
             <td>${data.dispositivo || 'N/A'}</td>
             <td><small style="color:#4CAF50;">${data.vencimento || '-'}</small></td>
-            <td>${botaoAcao}</td>
+            <td>
+              <div class="action-group">
+                ${botaoAcaoPrincipal}
+                <button class="btn-delete" onclick="excluirRegistro('${data.id}')">Excluir</button>
+              </div>
+            </td>
           `;
           tableBody.appendChild(tr);
         });
@@ -304,13 +312,25 @@
       }
     }
 
-    // Selecionar Todos / Desmarcar Todos
+    // Função de Excluir Registro do Banco de Dados
+    window.excluirRegistro = async function(idDoc) {
+      if (confirm("Tem certeza que deseja excluir este registro permanentemente?")) {
+        try {
+          await deleteDoc(doc(db, "leads", idDoc));
+          alert("Registro excluído com sucesso!");
+          loadLeads();
+        } catch (e) {
+          console.error("Erro ao excluir:", e);
+          alert("Erro ao tentar excluir o registro.");
+        }
+      }
+    }
+
     window.toggleSelectAll = function(masterCheckbox) {
       const checkboxes = document.querySelectorAll('.lead-checkbox');
       checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
     }
 
-    // Criar Lista de Transmissão para WhatsApp
     window.criarListaTransmissao = function() {
       const selected = document.querySelectorAll('.lead-checkbox:checked');
       if (selected.length === 0) {
@@ -319,14 +339,11 @@
       }
 
       let listaContatos = [];
-      let listaTelefones = [];
-
       selected.forEach(cb => {
         const nome = cb.getAttribute('data-nome');
         const phone = cb.getAttribute('data-phone');
         if (phone) {
           listaContatos.push(`• ${nome}: https://wa.me/55${phone}`);
-          listaTelefones.push(`55${phone}`);
         }
       });
 
@@ -336,12 +353,9 @@
       }
 
       const mensagem = `📋 *LISTA DE TRANSMISSÃO (${activeTab.toUpperCase()})*\nTotal Selecionados: ${listaContatos.length}\n\n` + listaContatos.join('\n');
-      
-      // Abre prompt com a lista formatada pronta para copiar e colar no WhatsApp
       prompt("Copie os dados/links da lista de transmissão abaixo:", mensagem);
     }
 
-    // Modal de Integração de Servidor
     window.abrirModalGerarTeste = function(idDoc) {
       currentSelectedIdForTest = idDoc;
       document.getElementById('modal-server').classList.remove('hidden');
@@ -372,7 +386,6 @@
         const senha = passMatch ? passMatch[1].trim() : "Gerado";
         const vencimento = vencMatch ? vencMatch[1].trim() : "4 Horas";
 
-        // Salva tudo unificado no Firestore e move para 'teste'
         await updateDoc(doc(db, "leads", currentSelectedIdForTest), {
           status: 'teste',
           usuario: usuario,
@@ -388,7 +401,7 @@
         loadLeads();
       } catch (err) {
         console.error("Erro ao chamar API do Painel Master:", err);
-        alert("❌ Erro ao conectar com a API do servidor. Verifique o painel master.");
+        alert("❌ Erro ao conectar com a API do servidor.");
       } finally {
         btnConfirm.innerText = "Confirmar e Gerar";
         btnConfirm.disabled = false;
