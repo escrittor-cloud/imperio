@@ -9,35 +9,25 @@
     body { background-color: #121212; color: #fff; padding: 20px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 900px; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
     h2 { color: #e50914; margin-bottom: 20px; text-align: center; }
-
-    /* Login Form */
     .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
-    
-    /* System Interface */
     .hidden { display: none; }
-    
-    /* Navigation Tabs */
     .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
     .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .tab-btn.active { background: #e50914; color: #fff; }
-
-    /* Form Styles */
     .form-group { margin-bottom: 15px; text-align: left; }
     label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #ccc; }
     input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 1rem; }
     textarea { height: 90px; resize: vertical; }
-
-    .btn { background: #e50914; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .checkbox-container { display: flex; align-items: center; gap: 10px; background: #2a2a2a; padding: 12px; border-radius: 6px; border: 1px solid #444; margin-bottom: 20px; cursor: pointer; }
+    .checkbox-container input { width: 20px; height: 20px; accent-color: #e50914; cursor: pointer; }
+    .btn { background: #e50914; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s; width: 100%; }
     .btn:hover { background: #ff0f1a; }
     .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
-
-    /* Table Styles for Leads */
     .table-responsive { overflow-x: auto; margin-top: 15px; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th, td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.9rem; }
     th { background-color: #2a2a2a; color: #e50914; }
     tr:hover { background-color: #252525; }
-
     .status { margin-top: 15px; text-align: center; font-weight: bold; color: #4caf50; }
   </style>
 </head>
@@ -46,7 +36,7 @@
   <div class="container">
     <h2>Painel Administrativo - Império do Streaming</h2>
 
-    <!-- Tela de Login -->
+    <!-- Login -->
     <div id="login-section" class="login-box">
       <div class="form-group">
         <label>Usuário</label>
@@ -60,24 +50,22 @@
       <p id="login-err" style="color: red; text-align: center; margin-top: 10px;"></p>
     </div>
 
-    <!-- Conteúdo Principal do Painel -->
+    <!-- Admin Body -->
     <div id="admin-section" class="hidden">
-      <!-- Abas de Navegação -->
       <div class="tabs">
         <button class="tab-btn active" id="tab-leads-btn" onclick="switchTab('leads')">📋 Lista de Clientes</button>
-        <button class="tab-btn" id="tab-config-btn" onclick="switchTab('config')">⚙️ Editar Landing Page</button>
+        <button class="tab-btn" id="tab-config-btn" onclick="switchTab('config')">⚙️ Editar Promoção</button>
       </div>
 
-      <!-- ABA 1: Gerenciamento de Clientes / Leads -->
+      <!-- ABA LEADS -->
       <div id="tab-leads">
         <h3>Solicitações de Teste Grátis</h3>
-        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 15px;">Leads cadastrados através da Landing Page:</p>
-        
+        <br>
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
-                <th>Data / Hora</th>
+                <th>Data</th>
                 <th>Nome</th>
                 <th>WhatsApp</th>
                 <th>Dispositivo</th>
@@ -85,18 +73,23 @@
               </tr>
             </thead>
             <tbody id="leads-table-body">
-              <tr>
-                <td colspan="5" style="text-align: center; color: #888;">Carregando clientes...</td>
-              </tr>
+              <tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- ABA 2: Editar Conteúdo do Site -->
+      <!-- ABA PROMOÇÃO -->
       <div id="tab-config" class="hidden">
-        <h3>Editar Banners e Textos da Landing Page</h3>
+        <h3>Editar Banners e Textos</h3>
         <br>
+        
+        <!-- Caixa de Seleção para Exibir / Ocultar Imagens -->
+        <label class="checkbox-container">
+          <input type="checkbox" id="show-images-toggle">
+          <span><strong>Exibir Banners em Destaque no Site</strong> (Alternar até 3 imagens acima do texto)</span>
+        </label>
+
         <div class="form-group">
           <label>Título Principal</label>
           <input type="text" id="title-input">
@@ -107,20 +100,20 @@
         </div>
 
         <hr style="border-color: #333; margin: 20px 0;">
-        <h4>Imagens em Destaque (Até 3 imagens - Links / URLs)</h4>
-        <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Exibidas logo acima do título principal (300x300px).</p>
+        <h4>URLs das Imagens (Até 3 imagens 300x300)</h4>
+        <br>
 
         <div class="form-group">
           <label>Imagem 1 (URL)</label>
-          <input type="text" id="img1-input" placeholder="https://exemplo.com/imagem1.png">
+          <input type="text" id="img1-input" placeholder="https://exemplo.com/imagem1.jpg">
         </div>
         <div class="form-group">
           <label>Imagem 2 (URL)</label>
-          <input type="text" id="img2-input" placeholder="https://exemplo.com/imagem2.png">
+          <input type="text" id="img2-input" placeholder="https://exemplo.com/imagem2.jpg">
         </div>
         <div class="form-group">
           <label>Imagem 3 (URL)</label>
-          <input type="text" id="img3-input" placeholder="https://exemplo.com/imagem3.png">
+          <input type="text" id="img3-input" placeholder="https://exemplo.com/imagem3.jpg">
         </div>
 
         <button class="btn" onclick="saveChanges()">Salvar Alterações</button>
@@ -130,19 +123,14 @@
     </div>
   </div>
 
-  <!-- Firebase SDK v10 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      projectId: "imperio-25340"
-    };
-
+    const firebaseConfig = { projectId: "imperio-25340" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Login
     window.login = function() {
       const u = document.getElementById('username').value;
       const p = document.getElementById('password').value;
@@ -157,7 +145,6 @@
       }
     }
 
-    // Alternar Abas
     window.switchTab = function(tabName) {
       if (tabName === 'leads') {
         document.getElementById('tab-leads').classList.remove('hidden');
@@ -172,7 +159,6 @@
       }
     }
 
-    // Carregar Lista de Clientes (Leads)
     async function loadLeads() {
       const tableBody = document.getElementById('leads-table-body');
       try {
@@ -180,7 +166,7 @@
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Nenhuma solicitação encontrada ainda.</td></tr>`;
+          tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Nenhuma solicitação até o momento.</td></tr>`;
           return;
         }
 
@@ -197,18 +183,16 @@
             <td>${data.whatsapp || 'N/A'}</td>
             <td>${data.dispositivo || 'N/A'}</td>
             <td>
-              ${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}?text=Olá%20${encodeURIComponent(data.nome || '')},%20vi%20seu%20pedido%20de%20teste%20grátis%20no%20Império%20do%20Streaming!" target="_blank" class="btn-whatsapp">WhatsApp</a>` : '-'}
+              ${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}?text=Olá%20${encodeURIComponent(data.nome || '')},%20vi%20seu%20pedido%20de%20teste%20grátis!" target="_blank" class="btn-whatsapp">WhatsApp</a>` : '-'}
             </td>
           `;
           tableBody.appendChild(tr);
         });
       } catch (e) {
         console.error("Erro ao carregar leads:", e);
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Erro ao carregar solicitações. Verifique o console.</td></tr>`;
       }
     }
 
-    // Carregar Configurações do Site
     async function loadAdminData() {
       try {
         const docRef = doc(db, "config", "home");
@@ -216,6 +200,7 @@
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+          document.getElementById('show-images-toggle').checked = data.showImages === true;
           document.getElementById('title-input').value = data.title || '';
           document.getElementById('subtext-input').value = data.subtext || '';
           document.getElementById('img1-input').value = data.img1 || '';
@@ -223,17 +208,17 @@
           document.getElementById('img3-input').value = data.img3 || '';
         }
       } catch (e) {
-        console.error("Erro ao carregar dados de configuração:", e);
+        console.error("Erro ao carregar dados:", e);
       }
     }
 
-    // Salvar Configurações
     window.saveChanges = async function() {
       const statusMsg = document.getElementById('status-msg');
       statusMsg.innerText = "Salvando...";
 
       try {
         await setDoc(doc(db, "config", "home"), {
+          showImages: document.getElementById('show-images-toggle').checked,
           title: document.getElementById('title-input').value,
           subtext: document.getElementById('subtext-input').value,
           img1: document.getElementById('img1-input').value,
