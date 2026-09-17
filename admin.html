@@ -3,100 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - Império do Streaming</title>
+  <title>Painel Admin - Império do Streaming</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #121212; color: #e0e0e0; padding: 30px 10px; display: flex; justify-content: center; }
+    body { background-color: #f4f6f9; color: #333; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
     
-    .container { width: 100%; max-width: 1100px; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #2d2d2d; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    
-    h1 { text-align: center; color: #ff2a2a; margin-bottom: 25px; font-size: 26px; font-weight: bold; text-shadow: 0 0 10px rgba(255, 42, 42, 0.2); }
+    h1 { font-size: 26px; color: #222; margin-bottom: 20px; font-weight: bold; }
 
-    /* Navegação / Abas */
-    .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-    .tab-btn { background: #2a2a2a; color: #aaa; border: 1px solid #3a3a3a; padding: 10px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.2s; }
-    .tab-btn:hover { background: #333; color: #fff; }
-    .tab-btn.active { background: #e50914; color: #fff; border-color: #e50914; }
+    /* Botões de Navegação das Abas */
+    .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .btn-tab { padding: 10px 18px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; background: #ccc; color: #333; }
+    .btn-tab.active { background: #e50914; color: #fff; }
 
-    /* Topo da Tabela */
-    .table-header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .table-title { font-size: 18px; font-weight: bold; color: #fff; }
-    .btn-whatsapp-list { background: #00c853; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; }
-    .btn-whatsapp-list:hover { background: #00e676; }
+    /* Botão Verde de Lista */
+    .btn-action-green { background: #25D366; color: #fff; border: none; padding: 12px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; margin-bottom: 20px; }
+    .btn-action-green:hover { background: #1eb857; }
 
-    /* Tabela */
-    .table-responsive { width: 100%; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-    th { background: #252525; color: #ff2a2a; padding: 12px; text-align: left; font-size: 13px; font-weight: bold; border-bottom: 2px solid #333; }
-    td { padding: 14px 12px; border-bottom: 1px solid #2a2a2a; font-size: 13px; color: #ccc; }
-    tr:hover { background: #242424; }
+    /* Tabela com Cabeçalho Escuro */
+    .table-responsive { width: 100%; overflow-x: auto; background: #fff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 25px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #1a1a1a; color: #fff; padding: 12px; text-align: left; font-size: 13px; font-weight: bold; }
+    td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; }
+    tr:hover { background: #f9f9f9; }
 
-    /* Elementos das Células */
-    .user-pass { line-height: 1.5; }
-    .u-text { color: #2196F3; font-weight: 500; }
-    .s-text { color: #ff9800; font-weight: 500; }
-    .btn-wa-chat { background: #25D366; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 4px; }
-    
-    /* Botões de Ação */
-    .btn-action { padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; margin-right: 5px; color: #fff; }
-    .btn-ativar { background: #2e7d32; }
-    .btn-ativar:hover { background: #388e3c; }
-    .btn-excluir { background: #c62828; }
-    .btn-excluir:hover { background: #d32f2f; }
-    .btn-gerar { background: #0288d1; }
-    .btn-gerar:hover { background: #039be5; }
+    /* Bloco da Lista de Transmissão */
+    .broadcast-box { background: #fff; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .broadcast-box h3 { font-size: 16px; margin-bottom: 12px; color: #222; }
+    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #555; outline: none; }
 
-    /* Modal */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: #1e1e1e; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; border: 1px solid #333; }
-    .modal h3 { margin-bottom: 15px; color: #fff; font-size: 16px; }
-    .modal select { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; margin-bottom: 20px; outline: none; }
+    /* Botões de Ação na Tabela */
+    .btn-sm { padding: 5px 10px; border: none; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px; color: #fff; }
+    .btn-gerar { background: #007bff; }
+    .btn-converter { background: #28a745; }
+    .btn-excluir { background: #dc3545; }
+
+    /* Modal de Servidores */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: #fff; padding: 25px; border-radius: 6px; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .modal h3 { margin-bottom: 15px; font-size: 16px; }
+    .modal select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px; font-size: 14px; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Painel Administrativo - Império do Streaming</h1>
+    <h1>Painel de Controle - Império do Streaming</h1>
 
-    <!-- Abas Principais -->
+    <!-- Abas -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="alterarAba('solicitacoes')">📄 Solicitações</button>
-      <button class="tab-btn" onclick="alterarAba('testes')">🧪 Testes Gerados</button>
-      <button class="tab-btn" onclick="alterarAba('ativos')">✅ Clientes Ativos</button>
-      <button class="tab-btn" onclick="alterarAba('inativos')">❌ Inativos</button>
-      <button class="tab-btn" onclick="alterarAba('config')">⚙️ Configurar Site</button>
+      <button class="btn-tab active" id="tab-testes" onclick="alterarAba('testes')">Lista de Testes Gerados</button>
+      <button class="btn-tab" id="tab-convertidos" onclick="alterarAba('convertidos')">Clientes Convertidos</button>
     </div>
 
-    <!-- Cabeçalho da Tabela -->
-    <div class="table-header-action">
-      <div class="table-title" id="titulo-secao">Testes Ativos no Momento</div>
-      <button class="btn-whatsapp-list">📲 Criar Lista de Transmissão WhatsApp</button>
-    </div>
+    <!-- Botão Lista de Transmissão -->
+    <button class="btn-action-green" onclick="gerarListaWhatsApp()">Criar Lista de Transmissão (Contatos Selecionados)</button>
 
-    <!-- Tabela de Dados -->
+    <!-- Tabela -->
     <div class="table-responsive">
       <table>
         <thead>
           <tr>
-            <th width="40"><input type="checkbox" id="check-all"></th>
-            <th>Data</th>
-            <th>Cliente / E-mail</th>
-            <th>Acesso (User/Pass)</th>
+            <th width="30"><input type="checkbox" id="check-all" onclick="toggleCheckboxes(this)"></th>
+            <th>Cliente / Cidade</th>
             <th>Contato</th>
             <th>Dispositivo</th>
-            <th>Vencimento</th>
+            <th>Cliente Ativo</th>
+            <th>Opção Extra</th>
+            <th>Campo 1</th>
+            <th>Campo 2</th>
+            <th>Campo 3</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody id="lista-leads">
-          <tr><td colspan="8" style="text-align:center;">Carregando dados...</td></tr>
+          <tr><td colspan="10" style="text-align:center;">Carregando dados...</td></tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Caixa de Texto da Lista de Transmissão -->
+    <div class="broadcast-box">
+      <h3>Lista de Transmissão WhatsApp (Números Gerados)</h3>
+      <textarea id="whatsapp-output" placeholder="Selecione contatos na tabela acima e clique em 'Criar Lista de Transmissão'"></textarea>
+    </div>
   </div>
 
-  <!-- Modal Escolha do Servidor -->
+  <!-- Modal Seleção de Servidor -->
   <div class="modal-overlay" id="modal-server">
     <div class="modal">
       <h3>Selecionar Servidor para Teste</h3>
@@ -106,8 +100,8 @@
         <option value="https://paineltitan.top/api/chatbot/gerar/318243391">Painel Titan</option>
       </select>
       <div class="modal-actions">
-        <button class="btn-action btn-excluir" onclick="fecharModalServer()">Cancelar</button>
-        <button class="btn-action btn-gerar" onclick="executarGerarTesteAPI()">Confirmar e Gerar</button>
+        <button class="btn-sm btn-excluir" onclick="fecharModalServer()">Cancelar</button>
+        <button class="btn-sm btn-gerar" onclick="executarGerarTesteAPI()">Confirmar e Gerar</button>
       </div>
     </div>
   </div>
@@ -129,85 +123,82 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let currentTab = 'solicitacoes';
+    let currentTab = 'testes';
     let currentSelectedIdForTest = null;
+    let leadsCarregados = [];
 
-    // Carrega dados da aba selecionada
+    // Carrega dados do Firestore
     window.loadLeads = async function() {
       const tbody = document.getElementById('lista-leads');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Carregando...</td></tr>';
 
       try {
-        let statusBusca = 'solicitado';
-        if (currentTab === 'testes') statusBusca = 'teste';
-        if (currentTab === 'ativos') statusBusca = 'ativo';
-        if (currentTab === 'inativos') statusBusca = 'inativo';
-
-        const q = query(collection(db, "leads"), where("status", "==", statusBusca));
+        const statusBusca = currentTab === 'testes' ? 'solicitado' : 'convertido';
+        const q = query(collection(db, "leads"));
         const querySnapshot = await getDocs(q);
 
         tbody.innerHTML = '';
+        leadsCarregados = [];
 
         if (querySnapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Nenhum registro nesta aba.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">Nenhum registro encontrado.</td></tr>`;
           return;
         }
 
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const id = docSnap.id;
-          const tr = document.createElement('tr');
+          leadsCarregados.push({ id, ...data });
 
+          const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td><input type="checkbox" value="${id}"></td>
-            <td>${data.dataGeracaoTeste || (data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-')}</td>
-            <td>
-              <strong>${data.nome || 'Não Informado'}</strong><br>
-              <small style="color:#777;">${data.email || 'escritti@gmail.com'}</small>
-            </td>
-            <td>
-              <div class="user-pass">
-                <span class="u-text">U: ${data.usuario || 'Gerado'}</span><br>
-                <span class="s-text">S: ${data.senha || 'Gerado'}</span>
-              </div>
-            </td>
-            <td>
-              ${data.whatsapp || '47988027066'}<br>
-              <a href="https://wa.me/55${(data.whatsapp || '').replace(/\D/g,'')}" target="_blank" class="btn-wa-chat">WhatsApp</a>
-            </td>
+            <td><input type="checkbox" class="lead-checkbox" value="${data.whatsapp || ''}"></td>
+            <td><strong>${data.nome || 'Não Informado'}</strong></td>
+            <td>${data.whatsapp || '-'}</td>
             <td>${data.dispositivo || 'Smart TV'}</td>
-            <td style="color:#00c853;">${data.vencimento || '4 Horas'}</td>
+            <td>${data.status === 'teste' ? 'Sim' : 'Não'}</td>
+            <td>${data.servidor || '-'}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
             <td>
-              ${currentTab === 'solicitacoes' 
-                ? `<button class="btn-action btn-gerar" onclick="abrirModalServer('${id}')">Gerar Teste</button>` 
-                : `<button class="btn-action btn-ativar" onclick="mudarStatus('${id}', 'ativo')">Ativar</button>
-                   <button class="btn-action btn-excluir" onclick="deletarLead('${id}')">Excluir</button>`}
+              <button class="btn-sm btn-gerar" onclick="abrirModalServer('${id}')">Gerar Teste</button>
+              <button class="btn-sm btn-excluir" onclick="deletarLead('${id}')">Excluir</button>
             </td>
           `;
           tbody.appendChild(tr);
         });
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ff2a2a;">Erro ao carregar.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Erro ao carregar os dados.</td></tr>';
       }
     };
 
-    // Controle de Abas
+    // Alterna abas
     window.alterarAba = function(aba) {
       currentTab = aba;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-
-      const titulos = {
-        'solicitacoes': 'Solicitações Pendentes',
-        'testes': 'Testes Ativos no Momento',
-        'ativos': 'Clientes Ativos',
-        'inativos': 'Clientes Inativos',
-        'config': 'Configuração do Site'
-      };
-      document.getElementById('titulo-secao').innerText = titulos[aba] || 'Gerenciamento';
-
+      document.getElementById('tab-testes').classList.toggle('active', aba === 'testes');
+      document.getElementById('tab-convertidos').classList.toggle('active', aba === 'convertidos');
       loadLeads();
+    };
+
+    // Checkbox Todos
+    window.toggleCheckboxes = function(main) {
+      document.querySelectorAll('.lead-checkbox').forEach(cb => cb.checked = main.checked);
+    };
+
+    // Gerar Lista WhatsApp
+    window.gerarListaWhatsApp = function() {
+      const selecionados = Array.from(document.querySelectorAll('.lead-checkbox:checked'))
+                               .map(cb => cb.value)
+                               .filter(val => val !== '');
+      
+      const output = document.getElementById('whatsapp-output');
+      if (selecionados.length === 0) {
+        output.value = "Nenhum contato selecionado nas caixas acima.";
+      } else {
+        output.value = selecionados.join(', ');
+      }
     };
 
     // Modal
@@ -221,7 +212,7 @@
       document.getElementById('modal-server').style.display = 'none';
     };
 
-    // Gerar Teste API (Abre nova aba e move no Firebase)
+    // Executar Gerar API
     window.executarGerarTesteAPI = async function() {
       if (!currentSelectedIdForTest) return;
 
@@ -229,42 +220,31 @@
       const apiUrl = selectElem.value;
       const nomeServidor = selectElem.options[selectElem.selectedIndex].text;
 
+      // Abre a API numa aba secundária
       window.open(apiUrl, '_blank');
 
       try {
         await updateDoc(doc(db, "leads", currentSelectedIdForTest), {
           status: 'teste',
           servidor: nomeServidor,
-          usuario: 'Gerado',
-          senha: 'Gerado',
-          vencimento: '4 Horas',
-          dataGeracaoTeste: new Date().toLocaleDateString('pt-BR'),
           updatedAt: new Date()
         });
 
-        alert("✅ Teste gerado! O cliente foi movido para 'Testes Gerados'.");
+        alert("✅ Teste processado na aba aberta e atualizado no sistema!");
         fecharModalServer();
         loadLeads();
       } catch (err) {
-        console.error("Erro ao atualizar Firebase:", err);
+        console.error("Erro ao atualizar:", err);
       }
-    };
-
-    // Mudar Status (Ativar)
-    window.mudarStatus = async function(id, novoStatus) {
-      try {
-        await updateDoc(doc(db, "leads", id), { status: novoStatus });
-        loadLeads();
-      } catch (err) { console.error("Erro ao alterar status:", err); }
     };
 
     // Deletar
     window.deletarLead = async function(id) {
-      if (confirm("Deseja realmente excluir este registro?")) {
+      if (confirm("Deseja realmente remover este registro?")) {
         try {
           await deleteDoc(doc(db, "leads", id));
           loadLeads();
-        } catch (err) { console.error("Erro ao excluir:", err); }
+        } catch (err) { console.error("Erro ao remover:", err); }
       }
     };
 
