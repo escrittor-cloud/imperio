@@ -6,26 +6,31 @@
   <title>Painel Admin - Império do Streaming</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #121212; color: #fff; padding: 20px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 900px; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
-    h2 { color: #e50914; margin-bottom: 20px; text-align: center; }
+    body { background-color: #121212; color: #fff; padding: 15px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 1000px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
+    h2 { color: #e50914; margin-bottom: 20px; text-align: center; font-size: 1.4rem; }
     .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
     .hidden { display: none; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-    .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    
+    .tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; overflow-x: auto; }
+    .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
     .tab-btn.active { background: #e50914; color: #fff; }
+    
     .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #ccc; }
-    input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 1rem; }
-    textarea { height: 90px; resize: vertical; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.85rem; color: #ccc; }
+    input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.95rem; }
+    textarea { height: 80px; resize: vertical; }
+    
     .checkbox-container { display: flex; align-items: center; gap: 10px; background: #2a2a2a; padding: 12px; border-radius: 6px; border: 1px solid #444; margin-bottom: 20px; cursor: pointer; }
-    .checkbox-container input { width: 20px; height: 20px; accent-color: #e50914; cursor: pointer; }
-    .btn { background: #e50914; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s; width: 100%; }
+    .checkbox-container input { width: 18px; height: 18px; accent-color: #e50914; cursor: pointer; }
+    
+    .btn { background: #e50914; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; width: 100%; }
     .btn:hover { background: #ff0f1a; }
-    .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+    .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-top: 4px; }
+    
     .table-responsive { overflow-x: auto; margin-top: 15px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
+    th, td { padding: 10px; border-bottom: 1px solid #333; font-size: 0.85rem; vertical-align: middle; }
     th { background-color: #2a2a2a; color: #e50914; }
     tr:hover { background-color: #252525; }
     .status { margin-top: 15px; text-align: center; font-weight: bold; color: #4caf50; }
@@ -53,27 +58,30 @@
     <!-- Admin Body -->
     <div id="admin-section" class="hidden">
       <div class="tabs">
-        <button class="tab-btn active" id="tab-leads-btn" onclick="switchTab('leads')">📋 Lista de Clientes</button>
-        <button class="tab-btn" id="tab-config-btn" onclick="switchTab('config')">⚙️ Editar Promoção</button>
+        <button class="tab-btn active" id="tab-solicitacao-btn" onclick="switchTab('solicitacao')">📋 Solicitações</button>
+        <button class="tab-btn" id="tab-teste-btn" onclick="switchTab('teste')">🧪 Testes Gerados</button>
+        <button class="tab-btn" id="tab-ativo-btn" onclick="switchTab('ativo')">✅ Clientes Ativos</button>
+        <button class="tab-btn" id="tab-inativo-btn" onclick="switchTab('inativo')">❌ Inativos</button>
+        <button class="tab-btn" id="tab-config-btn" onclick="switchTab('config')">⚙️ Configurar Site</button>
       </div>
 
-      <!-- ABA LEADS -->
+      <!-- ABA LEADS / CLIENTES -->
       <div id="tab-leads">
-        <h3>Solicitações de Teste Grátis</h3>
-        <br>
+        <h3 id="tab-title" style="color: #ccc; font-size: 1.1rem; margin-bottom: 10px;">Solicitações Recebidas</h3>
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
                 <th>Data</th>
-                <th>Nome</th>
-                <th>WhatsApp</th>
+                <th>Cliente / ID Sigma</th>
+                <th>Contato</th>
                 <th>Dispositivo</th>
+                <th>Datas / Prazos</th>
                 <th>Ação</th>
               </tr>
             </thead>
             <tbody id="leads-table-body">
-              <tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>
+              <tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
@@ -84,10 +92,9 @@
         <h3>Editar Banners e Textos</h3>
         <br>
         
-        <!-- Caixa de Seleção para Exibir / Ocultar Imagens -->
         <label class="checkbox-container">
           <input type="checkbox" id="show-images-toggle">
-          <span><strong>Exibir Banners em Destaque no Site</strong> (Alternar até 3 imagens acima do texto)</span>
+          <span><strong>Exibir Banners em Destaque no Site</strong> (Alternar até 3 imagens)</span>
         </label>
 
         <div class="form-group">
@@ -100,7 +107,7 @@
         </div>
 
         <hr style="border-color: #333; margin: 20px 0;">
-        <h4>URLs das Imagens (Até 3 imagens 300x300)</h4>
+        <h4>URLs das Imagens (Até 3 imagens)</h4>
         <br>
 
         <div class="form-group">
@@ -125,11 +132,13 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = { projectId: "imperio-25340" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    let activeTab = 'solicitacao';
 
     window.login = function() {
       const u = document.getElementById('username').value;
@@ -146,50 +155,111 @@
     }
 
     window.switchTab = function(tabName) {
-      if (tabName === 'leads') {
-        document.getElementById('tab-leads').classList.remove('hidden');
-        document.getElementById('tab-config').classList.add('hidden');
-        document.getElementById('tab-leads-btn').classList.add('active');
-        document.getElementById('tab-config-btn').classList.remove('active');
-      } else {
-        document.getElementById('tab-config').classList.remove('hidden');
+      activeTab = tabName;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab-${tabName}-btn`).classList.add('active');
+      
+      if (tabName === 'config') {
         document.getElementById('tab-leads').classList.add('hidden');
-        document.getElementById('tab-config-btn').classList.add('active');
-        document.getElementById('tab-leads-btn').classList.remove('active');
+        document.getElementById('tab-config').classList.remove('hidden');
+      } else {
+        document.getElementById('tab-config').classList.add('hidden');
+        document.getElementById('tab-leads').classList.remove('hidden');
+        
+        const titles = {
+          'solicitacao': 'Solicitações Recebidas',
+          'teste': 'Testes Ativos no Momento',
+          'ativo': 'Clientes com Assinatura Ativa',
+          'inativo': 'Clientes Inativos / Cancelados'
+        };
+        document.getElementById('tab-title').innerText = titles[tabName] || 'Clientes';
+        loadLeads();
       }
     }
 
     async function loadLeads() {
       const tableBody = document.getElementById('leads-table-body');
+      tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>`;
+
       try {
         const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-          tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Nenhuma solicitação até o momento.</td></tr>`;
+        const filteredDocs = [];
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const status = data.status || 'solicitacao';
+          if (status === activeTab) {
+            filteredDocs.push({ id: docSnap.id, ...data });
+          }
+        });
+
+        if (filteredDocs.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">Nenhum registro nesta categoria.</td></tr>`;
           return;
         }
 
         tableBody.innerHTML = '';
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString('pt-BR') : 'N/A';
+        filteredDocs.forEach((data) => {
+          const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : 'N/A';
           const cleanPhone = (data.whatsapp || '').replace(/\D/g, '');
+
+          let botaoAcao = '';
+          if (activeTab === 'solicitacao') {
+            botaoAcao = `<button onclick="gerarTeste('${data.id}')" style="background:#2196F3; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Gerar Teste</button>`;
+          } else if (activeTab === 'teste') {
+            botaoAcao = `<button onclick="ativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Ativar Cliente</button>`;
+          } else if (activeTab === 'ativo') {
+            botaoAcao = `<button onclick="desativarCliente('${data.id}')" style="background:#ff9800; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Desativar</button>`;
+          } else if (activeTab === 'inativo') {
+            botaoAcao = `<button onclick="reativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Reativar</button>`;
+          }
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${date}</td>
-            <td><strong>${data.nome || 'Não informado'}</strong></td>
-            <td>${data.whatsapp || 'N/A'}</td>
+            <td><strong>${data.nome || 'Não informado'}</strong><br><small style="color:#aaa;">ID Sigma: ${data.idSigma || '-'}</small></td>
+            <td>${data.whatsapp || 'N/A'}<br>${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}" target="_blank" class="btn-whatsapp">WhatsApp</a>` : ''}</td>
             <td>${data.dispositivo || 'N/A'}</td>
-            <td>
-              ${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}?text=Olá%20${encodeURIComponent(data.nome || '')},%20vi%20seu%20pedido%20de%20teste%20grátis!" target="_blank" class="btn-whatsapp">WhatsApp</a>` : '-'}
-            </td>
+            <td><small>Venc: ${data.vencimento || '-'}</small><br><small style="color:#f44336;">Desat: ${data.dataDesativacao || '-'}</small></td>
+            <td>${botaoAcao}</td>
           `;
           tableBody.appendChild(tr);
         });
       } catch (e) {
-        console.error("Erro ao carregar leads:", e);
+        console.error("Erro ao carregar lista:", e);
+      }
+    }
+
+    window.gerarTeste = async function(idDoc) {
+      const idSigma = prompt("Digite o ID do Cliente no Sigma:");
+      if (idSigma !== null) {
+        await updateDoc(doc(db, "leads", idDoc), { status: 'teste', idSigma: idSigma, updatedAt: new Date() });
+        loadLeads();
+      }
+    }
+
+    window.ativarCliente = async function(idDoc) {
+      const vencimento = prompt("Digite a Data de Vencimento (Ex: DD/MM/AAAA):");
+      if (vencimento !== null) {
+        await updateDoc(doc(db, "leads", idDoc), { status: 'ativo', vencimento: vencimento, updatedAt: new Date() });
+        loadLeads();
+      }
+    }
+
+    window.desativarCliente = async function(idDoc) {
+      if (confirm("Deseja desativar este cliente?")) {
+        const dataHoje = new Date().toLocaleDateString('pt-BR');
+        await updateDoc(doc(db, "leads", idDoc), { status: 'inativo', dataDesativacao: dataHoje, updatedAt: new Date() });
+        loadLeads();
+      }
+    }
+
+    window.reativarCliente = async function(idDoc) {
+      const vencimento = prompt("Nova data de vencimento (Ex: DD/MM/AAAA):");
+      if (vencimento !== null) {
+        await updateDoc(doc(db, "leads", idDoc), { status: 'ativo', vencimento: vencimento, dataDesativacao: null, updatedAt: new Date() });
+        loadLeads();
       }
     }
 
