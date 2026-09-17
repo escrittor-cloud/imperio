@@ -3,477 +3,200 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Admin - Império do Streaming</title>
+  <title>Painel Administrativo - Império</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #121212; color: #fff; padding: 15px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 1150px; background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333; }
-    h2 { color: #e50914; margin-bottom: 20px; text-align: center; font-size: 1.4rem; }
-    .login-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f6f9; color: #333; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h1 { margin-bottom: 20px; color: #1a252f; font-size: 24px; }
     
-    /* Regra estrita para ocultar elementos */
-    .hidden { display: none !important; }
-    
-    .tabs { display: flex; gap: 6px; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; overflow-x: auto; }
-    .tab-btn { background: #2a2a2a; color: #888; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
-    .tab-btn.active { background: #e50914; color: #fff; }
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px; gap: 10px; }
+    .tab-btn { padding: 10px 20px; border: none; background: none; font-size: 16px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab-btn.active { color: #2196F3; border-bottom-color: #2196F3; }
 
-    .action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #252525; padding: 10px 15px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap; gap: 10px; }
-    .btn-broadcast { background: #25d366; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
-    .btn-broadcast:hover { background: #20ba5a; }
+    /* Table */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background-color: #f8f9fa; color: #555; font-size: 14px; }
+    tr:hover { background-color: #f1f1f1; }
 
-    .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.85rem; color: #ccc; }
-    input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.95rem; }
-    textarea { height: 80px; resize: vertical; }
-    
-    .checkbox-container { display: flex; align-items: center; gap: 10px; background: #2a2a2a; padding: 12px; border-radius: 6px; border: 1px solid #444; margin-bottom: 20px; cursor: pointer; }
-    .checkbox-container input { width: 18px; height: 18px; accent-color: #e50914; cursor: pointer; }
-    
-    .btn { background: #e50914; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; width: 100%; }
-    .btn:hover { background: #ff0f1a; }
-    .btn-whatsapp { background: #25d366; color: #fff; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-top: 4px; }
-    
-    .action-group { display: flex; gap: 4px; flex-wrap: wrap; }
-    .btn-delete { background: #f44336; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-    .btn-delete:hover { background: #d32f2f; }
+    /* Buttons & Badges */
+    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: #fff; font-size: 13px; }
+    .btn-gerar { background-color: #2196F3; }
+    .btn-gerar:hover { background-color: #1e88e5; }
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .badge-solicitado { background: #fff3cd; color: #856404; }
+    .badge-teste { background: #d4edda; color: #155724; }
 
-    .table-responsive { overflow-x: auto; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 750px; }
-    th, td { padding: 10px; border-bottom: 1px solid #333; font-size: 0.85rem; vertical-align: middle; }
-    th { background-color: #2a2a2a; color: #e50914; }
-    tr:hover { background-color: #252525; }
-    .status { margin-top: 15px; text-align: center; font-weight: bold; color: #4caf50; }
-
-    /* Modal do Seletor de Servidor */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: #222; padding: 20px; border-radius: 8px; max-width: 450px; width: 90%; border: 1px solid #444; }
-    .modal-content h3 { color: #e50914; margin-bottom: 15px; font-size: 1.1rem; }
-    .modal-content select { width: 100%; padding: 10px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem; }
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .modal h3 { margin-bottom: 15px; color: #333; }
+    .modal select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .btn-cancelar { background-color: #6c757d; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>Painel Administrativo - Império do Streaming</h2>
+    <h1>Painel de Gestão de Leads</h1>
 
-    <!-- Login -->
-    <div id="login-section" class="login-box">
-      <div class="form-group">
-        <label>Usuário</label>
-        <input type="text" id="username" placeholder="Digite o usuário">
-      </div>
-      <div class="form-group">
-        <label>Senha</label>
-        <input type="password" id="password" placeholder="Digite a senha">
-      </div>
-      <button class="btn" onclick="login()">Entrar</button>
-      <p id="login-err" style="color: red; text-align: center; margin-top: 10px;"></p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="alterarAba('solicitacoes')">Solicitações</button>
+      <button class="tab-btn" onclick="alterarAba('testes')">Testes Gerados</button>
     </div>
 
-    <!-- Admin Body -->
-    <div id="admin-section" class="hidden">
-      <div class="tabs">
-        <button class="tab-btn active" id="tab-solicitacao-btn" onclick="switchTab('solicitacao')">📋 Solicitações</button>
-        <button class="tab-btn" id="tab-teste-btn" onclick="switchTab('teste')">🧪 Testes Gerados</button>
-        <button class="tab-btn" id="tab-ativo-btn" onclick="switchTab('ativo')">✅ Clientes Ativos</button>
-        <button class="tab-btn" id="tab-inativo-btn" onclick="switchTab('inativo')">❌ Inativos</button>
-        <button class="tab-btn" id="tab-config-btn" onclick="switchTab('config')">⚙️ Configurar Site</button>
-      </div>
-
-      <!-- ABA LEADS / CLIENTES -->
-      <div id="tab-leads">
-        <div class="action-bar">
-          <h3 id="tab-title" style="color: #ccc; font-size: 1.1rem;">Solicitações Recebidas</h3>
-          <button class="btn-broadcast" onclick="criarListaTransmissao()">
-            <span>📲</span> Criar Lista de Transmissão WhatsApp
-          </button>
-        </div>
-
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th style="width: 40px; text-align: center;">
-                  <input type="checkbox" id="select-all" onclick="toggleSelectAll(this)" style="cursor: pointer; width: 16px; height: 16px;">
-                </th>
-                <th>Data</th>
-                <th>Cliente / E-mail</th>
-                <th>Acesso (User/Pass)</th>
-                <th>Contato</th>
-                <th>Dispositivo</th>
-                <th>Vencimento</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="leads-table-body">
-              <tr><td colspan="8" style="text-align: center;">Carregando...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ABA CONFIGURAÇÕES SITE -->
-      <div id="tab-config" class="hidden">
-        <h3>Editar Banners e Textos</h3>
-        <br>
-        
-        <label class="checkbox-container">
-          <input type="checkbox" id="show-images-toggle">
-          <span><strong>Exibir Banners em Destaque no Site</strong> (Alternar até 3 imagens)</span>
-        </label>
-
-        <div class="form-group">
-          <label>Título Principal</label>
-          <input type="text" id="title-input">
-        </div>
-        <div class="form-group">
-          <label>Subtexto / Descrição</label>
-          <textarea id="subtext-input"></textarea>
-        </div>
-
-        <hr style="border-color: #333; margin: 20px 0;">
-        <h4>URLs das Imagens (Até 3 imagens)</h4>
-        <br>
-
-        <div class="form-group">
-          <label>Imagem 1 (URL)</label>
-          <input type="text" id="img1-input" placeholder="https://exemplo.com/imagem1.jpg">
-        </div>
-        <div class="form-group">
-          <label>Imagem 2 (URL)</label>
-          <input type="text" id="img2-input" placeholder="https://exemplo.com/imagem2.jpg">
-        </div>
-        <div class="form-group">
-          <label>Imagem 3 (URL)</label>
-          <input type="text" id="img3-input" placeholder="https://exemplo.com/imagem3.jpg">
-        </div>
-
-        <button class="btn" onclick="saveChanges()">Salvar Alterações</button>
-        <div id="status-msg" class="status"></div>
-      </div>
-
-    </div>
+    <table id="tabela-leads">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>WhatsApp</th>
+          <th>Servidor</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="lista-leads">
+        <tr><td colspan="6">Carregando dados...</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- Modal Seletor de Servidor -->
-  <div id="modal-server" class="modal hidden">
-    <div class="modal-content">
-      <h3>Selecione o Servidor para Gerar o Teste</h3>
+  <!-- Modal Seleção de Servidor -->
+  <div class="modal-overlay" id="modal-server">
+    <div class="modal">
+      <h3>Selecionar Servidor para Teste</h3>
       <select id="server-api-select">
-        <optgroup label="CYBER">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/we6WnQ8DK8">CYBER - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/x2YD0EkWQP">CYBER - S/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/rlKWOrRDzo">CYBER - Apps Parceiros C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/RYAWR4PLjl">CYBER - Apps Parceiros S/ Adulto</option>
-        </optgroup>
-        <optgroup label="HÓRUS">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/z2BDveGLrk">HÓRUS - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/VpKDap2LRA">HÓRUS - S/ Adulto</option>
-        </optgroup>
-        <optgroup label="SKYLINE">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/kRXDgMO1ex">SKYLINE - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/ryJDzVzDge">SKYLINE - S/ Adulto</option>
-        </optgroup>
-        <optgroup label="INFINITY+">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/BKADdQeWlr">INFINITY+ - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/kRXDgQo1ex">INFINITY+ - S/ Adulto</option>
-        </optgroup>
-        <optgroup label="LINEUP">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/B0VDVayLK3">LINEUP - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/Ar0WZp2La7">LINEUP - S/ Adulto</option>
-        </optgroup>
-        <optgroup label="TITAN">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/ayb1BOPLPR">TITAN - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/Kr6LJE51v9">TITAN - S/ Adulto</option>
-        </optgroup>
-        <optgroup label="P2P BINSTREAM">
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/z2BDverLrk">P2P BINSTREAM - C/ Adulto</option>
-          <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/VpKDapkLRA">P2P BINSTREAM - S/ Adulto</option>
-        </optgroup>
+        <option value="https://painelmaster.top/api/chatbot/gerar/318243391">Painel Master</option>
+        <option value="https://painelsigma.top/api/chatbot/gerar/318243391">Painel Sigma</option>
+        <option value="https://paineltitan.top/api/chatbot/gerar/318243391">Painel Titan</option>
       </select>
-      <div style="display: flex; gap: 10px;">
-        <button class="btn" onclick="executarGerarTesteAPI()" style="background:#2196F3;">Confirmar e Gerar</button>
-        <button class="btn" onclick="fecharModalServer()" style="background:#555;">Cancelar</button>
+      <div class="modal-actions">
+        <button class="btn btn-cancelar" onclick="fecharModalServer()">Cancelar</button>
+        <button class="btn btn-gerar" onclick="executarGerarTesteAPI()">Confirmar e Gerar</button>
       </div>
     </div>
   </div>
 
+  <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = { projectId: "imperio-25340" };
+    // Suas configurações do Firebase
+    const firebaseConfig = {
+      apiKey: "Sua-ApiKey-Aqui",
+      authDomain: "imperio-25340.firebaseapp.com",
+      projectId: "imperio-25340",
+      storageBucket: "imperio-25340.appspot.com",
+      messagingSenderId: "305282928509",
+      appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let activeTab = 'solicitacao';
+    let currentTab = 'solicitacoes';
     let currentSelectedIdForTest = null;
-    let loadedLeadsCache = [];
 
-    window.login = function() {
-      const u = document.getElementById('username').value;
-      const p = document.getElementById('password').value;
-
-      if (u === "edan3" && p === "32739532") {
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('admin-section').classList.remove('hidden');
-        loadLeads();
-        loadAdminData();
-      } else {
-        document.getElementById('login-err').innerText = "Usuário ou senha incorretos!";
-      }
-    }
-
-    window.switchTab = function(tabName) {
-      activeTab = tabName;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(`tab-${tabName}-btn`).classList.add('active');
-      
-      const selectAllBox = document.getElementById('select-all');
-      if (selectAllBox) selectAllBox.checked = false;
-
-      if (tabName === 'config') {
-        document.getElementById('tab-leads').classList.add('hidden');
-        document.getElementById('tab-config').classList.remove('hidden');
-      } else {
-        document.getElementById('tab-config').classList.add('hidden');
-        document.getElementById('tab-leads').classList.remove('hidden');
-        
-        const titles = {
-          'solicitacao': 'Solicitações Recebidas',
-          'teste': 'Testes Ativos no Momento',
-          'ativo': 'Clientes com Assinatura Ativa',
-          'inativo': 'Clientes Inativos / Cancelados'
-        };
-        document.getElementById('tab-title').innerText = titles[tabName] || 'Clientes';
-        loadLeads();
-      }
-    }
-
-    async function loadLeads() {
-      const tableBody = document.getElementById('leads-table-body');
-      tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Carregando...</td></tr>`;
+    // Função para carregar os Leads do Firestore
+    window.loadLeads = async function() {
+      const tbody = document.getElementById('lista-leads');
+      tbody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
 
       try {
-        const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
+        const statusBusca = currentTab === 'solicitacoes' ? 'solicitado' : 'teste';
+        const q = query(collection(db, "leads"), where("status", "==", statusBusca));
         const querySnapshot = await getDocs(q);
 
-        loadedLeadsCache = [];
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const status = data.status || 'solicitacao';
-          if (status === activeTab) {
-            loadedLeadsCache.push({ id: docSnap.id, ...data });
-          }
-        });
+        tbody.innerHTML = '';
 
-        if (loadedLeadsCache.length === 0) {
-          tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #888;">Nenhum registro nesta categoria.</td></tr>`;
+        if (querySnapshot.empty) {
+          tbody.innerHTML = `<tr><td colspan="6">Nenhum registro encontrado em ${currentTab}.</td></tr>`;
           return;
         }
 
-        tableBody.innerHTML = '';
-        loadedLeadsCache.forEach((data) => {
-          const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : 'N/A';
-          const cleanPhone = (data.whatsapp || '').replace(/\D/g, '');
-
-          let botaoAcaoPrincipal = '';
-          if (activeTab === 'solicitacao') {
-            botaoAcaoPrincipal = `<button onclick="abrirModalGerarTeste('${data.id}')" style="background:#2196F3; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Gerar Teste</button>`;
-          } else if (activeTab === 'teste') {
-            botaoAcaoPrincipal = `<button onclick="ativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Ativar</button>`;
-          } else if (activeTab === 'ativo') {
-            botaoAcaoPrincipal = `<button onclick="desativarCliente('${data.id}')" style="background:#ff9800; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Desativar</button>`;
-          } else if (activeTab === 'inativo') {
-            botaoAcaoPrincipal = `<button onclick="reativarCliente('${data.id}')" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">Reativar</button>`;
-          }
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const id = docSnap.id;
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td style="text-align: center;">
-              <input type="checkbox" class="lead-checkbox" data-id="${data.id}" data-phone="${cleanPhone}" data-nome="${data.nome || 'Cliente'}" style="cursor: pointer; width: 16px; height: 16px;">
-            </td>
-            <td>${date}</td>
-            <td><strong>${data.nome || 'Não informado'}</strong><br><small style="color:#aaa;">${data.email || 'Sem e-mail'}</small></td>
-            <td><small style="color:#2196F3;">U: ${data.usuario || '-'}</small><br><small style="color:#ff9800;">S: ${data.senha || '-'}</small></td>
-            <td>${data.whatsapp || 'N/A'}<br>${cleanPhone ? `<a href="https://wa.me/55${cleanPhone}" target="_blank" class="btn-whatsapp">WhatsApp</a>` : ''}</td>
-            <td>${data.dispositivo || 'N/A'}</td>
-            <td><small style="color:#4CAF50;">${data.vencimento || '-'}</small></td>
+            <td>${data.nome || 'Não informado'}</td>
+            <td>${data.whatsapp || 'Não informado'}</td>
+            <td>${data.servidor || '-'}</td>
+            <td>${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString('pt-BR') : '-'}</td>
+            <td><span class="badge ${data.status === 'solicitado' ? 'badge-solicitado' : 'badge-teste'}">${data.status}</span></td>
             <td>
-              <div class="action-group">
-                ${botaoAcaoPrincipal}
-                <button class="btn-delete" onclick="excluirRegistro('${data.id}')">Excluir</button>
-              </div>
+              ${data.status === 'solicitado' 
+                ? `<button class="btn btn-gerar" onclick="abrirModalServer('${id}')">Gerar Teste</button>` 
+                : `<span style="color:#28a745; font-size:12px; font-weight:bold;">Gerado</span>`}
             </td>
           `;
-          tableBody.appendChild(tr);
+          tbody.appendChild(tr);
         });
-      } catch (e) {
-        console.error("Erro ao carregar lista:", e);
+      } catch (err) {
+        console.error("Erro ao carregar leads:", err);
+        tbody.innerHTML = '<tr><td colspan="6">Erro ao carregar dados.</td></tr>';
       }
-    }
+    };
 
-    window.excluirRegistro = async function(idDoc) {
-      if (confirm("Tem certeza que deseja excluir este registro permanentemente?")) {
-        try {
-          await deleteDoc(doc(db, "leads", idDoc));
-          alert("Registro excluído com sucesso!");
-          loadLeads();
-        } catch (e) {
-          console.error("Erro ao excluir:", e);
-          alert("Erro ao tentar excluir o registro.");
-        }
-      }
-    }
+    // Alternar entre Abas
+    window.alterarAba = function(aba) {
+      currentTab = aba;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      loadLeads();
+    };
 
-    window.toggleSelectAll = function(masterCheckbox) {
-      const checkboxes = document.querySelectorAll('.lead-checkbox');
-      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
-    }
-
-    window.criarListaTransmissao = function() {
-      const selected = document.querySelectorAll('.lead-checkbox:checked');
-      if (selected.length === 0) {
-        alert("Por favor, selecione pelo menos um cliente marcando a caixa de seleção!");
-        return;
-      }
-
-      let listaContatos = [];
-      selected.forEach(cb => {
-        const nome = cb.getAttribute('data-nome');
-        const phone = cb.getAttribute('data-phone');
-        if (phone) {
-          listaContatos.push(`• ${nome}: https://wa.me/55${phone}`);
-        }
-      });
-
-      if (listaContatos.length === 0) {
-        alert("Nenhum número de WhatsApp válido nos selecionados!");
-        return;
-      }
-
-      const mensagem = `📋 *LISTA DE TRANSMISSÃO (${activeTab.toUpperCase()})*\nTotal Selecionados: ${listaContatos.length}\n\n` + listaContatos.join('\n');
-      prompt("Copie os dados/links da lista de transmissão abaixo:", mensagem);
-    }
-
-    window.abrirModalGerarTeste = function(idDoc) {
-      currentSelectedIdForTest = idDoc;
-      document.getElementById('modal-server').classList.remove('hidden');
-    }
+    // Controle do Modal
+    window.abrirModalServer = function(id) {
+      currentSelectedIdForTest = id;
+      document.getElementById('modal-server').style.display = 'flex';
+    };
 
     window.fecharModalServer = function() {
       currentSelectedIdForTest = null;
-      document.getElementById('modal-server').classList.add('hidden');
-    }
+      document.getElementById('modal-server').style.display = 'none';
+    };
 
+    // Função Principal de Gerar o Teste via API
     window.executarGerarTesteAPI = async function() {
       if (!currentSelectedIdForTest) return;
-      const apiUrl = document.getElementById('server-api-select').value;
-      const btnConfirm = event.target;
-      btnConfirm.innerText = "Gerando na API...";
-      btnConfirm.disabled = true;
+
+      const selectElem = document.getElementById('server-api-select');
+      const apiUrl = selectElem.value;
+      const nomeServidor = selectElem.options[selectElem.selectedIndex].text;
+
+      // 1. Abre a URL da API do robô em uma nova aba
+      window.open(apiUrl, '_blank');
 
       try {
-        const response = await fetch(apiUrl);
-        const textoRetorno = await response.text();
-
-        const userMatch = textoRetorno.match(/Usuário:\s*([^\n\r]+)/i);
-        const passMatch = textoRetorno.match(/Senha:\s*([^\n\r]+)/i);
-        const vencMatch = textoRetorno.match(/Vencimento:\s*([^\n\r]+)/i);
-
-        const usuario = userMatch ? userMatch[1].trim() : "Gerado";
-        const senha = passMatch ? passMatch[1].trim() : "Gerado";
-        const vencimento = vencMatch ? vencMatch[1].trim() : "4 Horas";
-
+        // 2. Atualiza o status do cliente diretamente no Firebase para 'teste'
         await updateDoc(doc(db, "leads", currentSelectedIdForTest), {
           status: 'teste',
-          usuario: usuario,
-          senha: senha,
-          vencimento: vencimento,
-          respostaApiCompleta: textoRetorno,
+          servidor: nomeServidor,
+          usuario: 'Ver na aba aberta',
+          senha: 'Ver na aba aberta',
+          vencimento: '4 Horas',
           dataGeracaoTeste: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR'),
           updatedAt: new Date()
         });
 
-        alert(`✅ Teste Gerado com Sucesso!\nUsuário: ${usuario}\nSenha: ${senha}`);
+        alert("✅ Solicitação processada!\nO teste foi gerado na aba ao lado e o cliente foi movido para 'Testes Gerados'.");
         fecharModalServer();
         loadLeads();
       } catch (err) {
-        console.error("Erro ao chamar API do Painel Master:", err);
-        alert("❌ Erro ao conectar com a API do servidor.");
-      } finally {
-        btnConfirm.innerText = "Confirmar e Gerar";
-        btnConfirm.disabled = false;
+        console.error("Erro ao atualizar o Firebase:", err);
+        alert("❌ Erro ao mover o cliente de aba.");
       }
-    }
+    };
 
-    window.ativarCliente = async function(idDoc) {
-      const vencimento = prompt("Digite a Data de Vencimento (Ex: DD/MM/AAAA):");
-      if (vencimento !== null) {
-        await updateDoc(doc(db, "leads", idDoc), { status: 'ativo', vencimento: vencimento, updatedAt: new Date() });
-        loadLeads();
-      }
-    }
-
-    window.desativarCliente = async function(idDoc) {
-      if (confirm("Deseja desativar este cliente?")) {
-        const dataHoje = new Date().toLocaleDateString('pt-BR');
-        await updateDoc(doc(db, "leads", idDoc), { status: 'inativo', dataDesativacao: dataHoje, updatedAt: new Date() });
-        loadLeads();
-      }
-    }
-
-    window.reativarCliente = async function(idDoc) {
-      const vencimento = prompt("Nova data de vencimento (Ex: DD/MM/AAAA):");
-      if (vencimento !== null) {
-        await updateDoc(doc(db, "leads", idDoc), { status: 'ativo', vencimento: vencimento, dataDesativacao: null, updatedAt: new Date() });
-        loadLeads();
-      }
-    }
-
-    async function loadAdminData() {
-      try {
-        const docRef = doc(db, "config", "home");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById('show-images-toggle').checked = data.showImages === true;
-          document.getElementById('title-input').value = data.title || '';
-          document.getElementById('subtext-input').value = data.subtext || '';
-          document.getElementById('img1-input').value = data.img1 || '';
-          document.getElementById('img2-input').value = data.img2 || '';
-          document.getElementById('img3-input').value = data.img3 || '';
-        }
-      } catch (e) {
-        console.error("Erro ao carregar dados:", e);
-      }
-    }
-
-    window.saveChanges = async function() {
-      const statusMsg = document.getElementById('status-msg');
-      statusMsg.innerText = "Salvando...";
-
-      try {
-        await setDoc(doc(db, "config", "home"), {
-          showImages: document.getElementById('show-images-toggle').checked,
-          title: document.getElementById('title-input').value,
-          subtext: document.getElementById('subtext-input').value,
-          img1: document.getElementById('img1-input').value,
-          img2: document.getElementById('img2-input').value,
-          img3: document.getElementById('img3-input').value,
-          updatedAt: new Date()
-        });
-
-        statusMsg.innerText = "✅ Alterações salvas com sucesso!";
-        setTimeout(() => statusMsg.innerText = '', 4000);
-      } catch (e) {
-        console.error("Erro ao salvar:", e);
-        statusMsg.style.color = "red";
-        statusMsg.innerText = "❌ Erro ao salvar alterações.";
-      }
-    }
+    // Inicializa a listagem ao carregar a página
+    loadLeads();
   </script>
 </body>
 </html>
