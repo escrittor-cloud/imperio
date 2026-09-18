@@ -1,118 +1,292 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Admin - Império do Streaming</title>
+  <title>Painel de Controle - Império do Streaming</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f4f6f9; color: #333; padding: 20px; }
-    .container { max-width: 1200px; margin: 0 auto; }
+    body { 
+      background-color: #121212 !important; 
+      color: #e0e0e0 !important; 
+      padding: 20px; 
+      min-height: 100vh;
+    }
+    html { background-color: #121212 !important; }
+    .container { max-width: 1200px; margin: 0 auto; display: none; }
     
-    h1 { font-size: 26px; color: #222; margin-bottom: 20px; font-weight: bold; }
+    /* Tela de Login */
+    #login-screen {
+      max-width: 400px;
+      margin: 100px auto;
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+    #login-screen h2 { color: #fff; margin-bottom: 20px; font-size: 22px; }
+    #login-screen label { display: block; text-align: left; font-size: 13px; color: #aaa; margin-bottom: 5px; }
+    #login-screen input { width: 100%; padding: 12px; background: #121212; color: #fff; border: 1px solid #333; border-radius: 4px; margin-bottom: 15px; font-size: 14px; outline: none; }
+    #login-screen button { width: 100%; padding: 12px; background: #e50914; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    #login-screen button:hover { background: #f40612; }
+    .login-error { color: #e50914; font-size: 13px; margin-top: 10px; display: none; }
 
-    /* Botões de Navegação das Abas */
-    .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-    .btn-tab { padding: 10px 18px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; background: #ccc; color: #333; }
-    .btn-tab.active { background: #e50914; color: #fff; }
+    h1 { font-size: 26px; color: #ffffff !important; margin-bottom: 20px; font-weight: bold; }
 
-    /* Botão Verde de Lista */
+    /* Navegação pelas Abas */
+    .tabs { 
+      display: flex; 
+      gap: 8px; 
+      margin-bottom: 15px; 
+      flex-wrap: wrap; 
+      align-items: center;
+    }
+    @media (max-width: 600px) {
+      .tabs { 
+        flex-direction: column; 
+        align-items: stretch; 
+      }
+      .btn-tab { 
+        width: 100%; 
+        text-align: center; 
+      }
+    }
+    .btn-tab { padding: 10px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; background: #2c2c2c !important; color: #aaa !important; transition: 0.2s; }
+    .btn-tab.active { background: #e50914 !important; color: #fff !important; }
+    .btn-tab:hover:not(.active) { background: #3d3d3d; color: #fff; }
+
+    /* Botão Verde */
     .btn-action-green { background: #25D366; color: #fff; border: none; padding: 12px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; margin-bottom: 20px; }
     .btn-action-green:hover { background: #1eb857; }
 
-    /* Tabela com Cabeçalho Escuro */
-    .table-responsive { width: 100%; overflow-x: auto; background: #fff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 25px; }
+    /* Tabela Ajustada Fluida e Consistente */
+    .table-responsive { width: 100%; overflow-x: auto; background: #1e1e1e; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-bottom: 25px; border: 1px solid #2a2a2a; }
     table { width: 100%; border-collapse: collapse; }
-    th { background: #1a1a1a; color: #fff; padding: 12px; text-align: left; font-size: 13px; font-weight: bold; }
-    td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; }
-    tr:hover { background: #f9f9f9; }
+    th { background: #0a0a0a; color: #fff; padding: 12px 10px; text-align: left; font-size: 12px; font-weight: bold; border-bottom: 2px solid #333; white-space: nowrap; }
+    td { padding: 12px 10px; border-bottom: 1px solid #2a2a2a; font-size: 12px; color: #ccc; }
+    tr:hover { background: #252525; }
 
-    /* Bloco da Lista de Transmissão */
-    .broadcast-box { background: #fff; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .broadcast-box h3 { font-size: 16px; margin-bottom: 12px; color: #222; }
-    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #555; outline: none; }
+    /* Section Promoções e Banner Editável */
+    .promo-section { background: #1e1e1e; padding: 20px; border-radius: 6px; border: 1px solid #2a2a2a; margin-bottom: 25px; display: none; }
+    .promo-group { background: #121212; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-bottom: 20px; }
+    .promo-group h4 { color: #e50914; margin-bottom: 10px; font-size: 15px; }
+    .promo-group label { display: block; font-size: 12px; color: #aaa; margin-top: 10px; margin-bottom: 4px; }
+    .promo-group input[type="text"] { width: 100%; padding: 8px; background: #1e1e1e; color: #fff; border: 1px solid #333; border-radius: 4px; font-size: 13px; outline: none; }
+    
+    .promo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+    .plan-box-edit { background: #181818; padding: 12px; border-radius: 6px; border: 1px solid #2a2a2a; }
+    
+    .checkbox-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer; }
+    .checkbox-container input { width: 18px; height: 18px; cursor: pointer; }
 
-    /* Botões de Ação na Tabela */
-    .btn-sm { padding: 5px 10px; border: none; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px; color: #fff; }
+    .plan-visibility-check { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 12px; color: #fff; font-weight: bold; }
+    .plan-visibility-check input { width: 15px; height: 15px; cursor: pointer; }
+
+    /* Caixa Branca da Lista de Transmissão */
+    .broadcast-box { background: #1e1e1e; padding: 20px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid #2a2a2a; }
+    .broadcast-box h3 { font-size: 16px; margin-bottom: 12px; color: #fff; }
+    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; background: #ffffff; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #333333; outline: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    /* Botões */
+    .btn-sm { padding: 6px 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; color: #fff; margin-right: 3px; margin-bottom: 3px; display: inline-block; }
     .btn-gerar { background: #007bff; }
-    .btn-converter { background: #28a745; }
+    .btn-ativar { background: #28a745; }
+    .btn-desativar { background: #ffc107; color: #000; }
+    .btn-reativar { background: #17a2b8; }
     .btn-excluir { background: #dc3545; }
 
-    /* Modal de Servidores */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: #fff; padding: 25px; border-radius: 6px; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    .modal h3 { margin-bottom: 15px; font-size: 16px; }
-    .modal select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px; font-size: 14px; }
+    /* Modais */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: #1e1e1e; padding: 25px; border-radius: 6px; width: 100%; max-width: 450px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #333; }
+    .modal h3 { margin-bottom: 15px; font-size: 16px; color: #fff; }
+    .modal label { display: block; margin-bottom: 5px; font-size: 12px; color: #aaa; }
+    .modal select, .modal input { width: 100%; padding: 10px; background: #121212; color: #fff; border: 1px solid #333; border-radius: 4px; margin-bottom: 15px; font-size: 14px; outline: none; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Painel de Controle - Império do Streaming</h1>
-
-    <!-- Abas -->
-    <div class="tabs">
-      <button class="btn-tab active" id="tab-testes" onclick="alterarAba('testes')">Lista de Testes Gerados</button>
-      <button class="btn-tab" id="tab-convertidos" onclick="alterarAba('convertidos')">Clientes Convertidos</button>
-    </div>
-
-    <!-- Botão Lista de Transmissão -->
-    <button class="btn-action-green" onclick="gerarListaWhatsApp()">Criar Lista de Transmissão (Contatos Selecionados)</button>
-
-    <!-- Tabela -->
-    <div class="table-responsive">
-      <table>
-        <thead>
-          <tr>
-            <th width="30"><input type="checkbox" id="check-all" onclick="toggleCheckboxes(this)"></th>
-            <th>Cliente / Cidade</th>
-            <th>Contato</th>
-            <th>Dispositivo</th>
-            <th>Cliente Ativo</th>
-            <th>Opção Extra</th>
-            <th>Campo 1</th>
-            <th>Campo 2</th>
-            <th>Campo 3</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="lista-leads">
-          <tr><td colspan="10" style="text-align:center;">Carregando dados...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Caixa de Texto da Lista de Transmissão -->
-    <div class="broadcast-box">
-      <h3>Lista de Transmissão WhatsApp (Números Gerados)</h3>
-      <textarea id="whatsapp-output" placeholder="Selecione contatos na tabela acima e clique em 'Criar Lista de Transmissão'"></textarea>
-    </div>
+  <div id="login-screen" style="display: none;">
+    <h2>🔒 Restrito ao Admin</h2>
+    <form id="loginForm" onsubmit="realizarLogin(event)">
+      <label>Usuário:</label>
+      <input type="text" id="login-user" required="" placeholder="Digite o usuário">
+      <label>Senha:</label>
+      <input type="password" id="login-pass" required="" placeholder="Digite a senha">
+      <button type="submit">Entrar no Painel</button>
+      <div id="login-error" class="login-error">Usuário ou senha incorretos!</div>
+    </form>
   </div>
 
-  <!-- Modal Seleção de Servidor -->
-  <div class="modal-overlay" id="modal-server">
+  <div class="container" id="main-container" style="display: block;">
+    <h1>Painel de Controle - Império do Streaming</h1>
+
+    <div class="tabs">
+      <button class="btn-tab active" id="tab-solicitacoes" onclick="alterarAba('solicitacoes')">1. Solicitações Geradas</button>
+      <button class="btn-tab" id="tab-testes" onclick="alterarAba('testes')">2. Testes Gerados</button>
+      <button class="btn-tab" id="tab-ativos" onclick="alterarAba('ativos')">3. Clientes Ativos</button>
+      <button class="btn-tab" id="tab-inativos" onclick="alterarAba('inativos')">4. Clientes Inativos</button>
+      <button class="btn-tab" id="tab-promocoes" onclick="alterarAba('promocoes')">5. Editar Promoções e Textos</button>
+    </div>
+
+    <div id="section-leads">
+      <button class="btn-action-green" onclick="gerarListaWhatsApp()">Criar Lista de Transmissão (Contatos Selecionados)</button>
+
+      <div class="table-responsive">
+        <table>
+          <thead id="tabela-cabecalho"><tr>
+          <th width="40"><input type="checkbox" id="check-all" onclick="toggleCheckboxes(this)"></th>
+          <th>Cliente / Cidade</th>
+          <th>Contato</th>
+          <th>Dispositivo</th>
+          <th>ID Cliente</th>
+          <th>Servidor / Opção</th>
+          <th>Vencimento</th>
+          <th width="130">Ações</th>
+        </tr></thead>
+          <tbody id="lista-leads"><tr><td colspan="8" style="text-align:center;">Nenhum registro nesta lista.</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="broadcast-box">
+        <h3>Lista de Transmissão WhatsApp (Números Gerados)</h3>
+        <textarea id="whatsapp-output" placeholder="Selecione contatos na tabela acima e clique em 'Criar Lista de Transmissão'"></textarea>
+      </div>
+    </div>
+
+    <div id="section-promocoes" class="promo-section">
+      
+      <div class="promo-group">
+        <h4>Textos Principais do Header (Página Inicial)</h4>
+        <label>Título Principal:</label>
+        <input type="text" id="config-titulo-principal" value="Mais de 30.000 Conteúdos ao Seu Alcance">
+        <label>Subtítulo / Descrição:</label>
+        <input type="text" id="config-subtitulo-principal" value="Filmes, séries, canais ao vivo, jogos e esportes na sua TV, celular ou computador.">
+      </div>
+
+      <div class="promo-group">
+        <h4>Configuração de Imagens (Banners 300x300px)</h4>
+        <label class="checkbox-container">
+          <input type="checkbox" id="config-exibir-imagens">
+          <span style="color:#fff; font-weight:bold; font-size:13px;">Exibir as 3 imagens acima do título na página principal</span>
+        </label>
+        <label>URL da Imagem 1 (300x300px):</label>
+        <input type="text" id="config-img-1" placeholder="https://exemplo.com/imagem1.png">
+        <label>URL da Imagem 2 (300x300px):</label>
+        <input type="text" id="config-img-2" placeholder="https://exemplo.com/imagem2.png">
+        <label>URL da Imagem 3 (300x300px):</label>
+        <input type="text" id="config-img-3" placeholder="https://exemplo.com/imagem3.png">
+      </div>
+
+      <div class="promo-group">
+        <h4>Gerenciar as 4 Caixas de Promoção (Planos)</h4>
+        <div class="promo-grid">
+          
+          <div class="plan-box-edit">
+            <label class="plan-visibility-check"><input type="checkbox" id="vis-teste" checked=""> Exibir Caixa</label>
+            <label>Título:</label>
+            <input type="text" id="promo-teste-titulo" value="Teste Grátis">
+            <label>Preço (R$):</label>
+            <input type="text" id="promo-teste-preco" value="0">
+            <label>Descrição:</label>
+            <input type="text" id="promo-teste-desc" value="Acesso total por 4 Horas">
+          </div>
+
+          <div class="plan-box-edit">
+            <label class="plan-visibility-check"><input type="checkbox" id="vis-mensal" checked=""> Exibir Caixa</label>
+            <label>Título:</label>
+            <input type="text" id="promo-mensal-titulo" value="Plano Mensal">
+            <label>Preço (R$):</label>
+            <input type="text" id="promo-mensal-preco" value="25,00">
+            <label>Descrição:</label>
+            <input type="text" id="promo-mensal-desc" value="Acesso total por 30 dias">
+          </div>
+
+          <div class="plan-box-edit">
+            <label class="plan-visibility-check"><input type="checkbox" id="vis-trimestral" checked=""> Exibir Caixa</label>
+            <label>Título:</label>
+            <input type="text" id="promo-trimestral-titulo" value="Plano Trimestral">
+            <label>Preço (R$):</label>
+            <input type="text" id="promo-trimestral-preco" value="65,00">
+            <label>Descrição:</label>
+            <input type="text" id="promo-trimestral-desc" value="Acesso total por 90 dias">
+          </div>
+
+          <div class="plan-box-edit">
+            <label class="plan-visibility-check"><input type="checkbox" id="vis-anual" checked=""> Exibir Caixa</label>
+            <label>Título:</label>
+            <input type="text" id="promo-anual-titulo" value="Plano Anual">
+            <label>Preço (R$):</label>
+            <input type="text" id="promo-anual-preco" value="240,00">
+            <label>Descrição:</label>
+            <input type="text" id="promo-anual-desc" value="Acesso total por 365 dias">
+          </div>
+
+        </div>
+      </div>
+
+      <button class="btn-action-green" onclick="salvarConfiguracoesGerais()">Salvar Todas as Alterações</button>
+    </div>
+
+  </div>
+
+  <div class="modal-overlay" id="modal-gerar-teste">
     <div class="modal">
-      <h3>Selecionar Servidor para Teste</h3>
-      <select id="server-api-select">
-        <option value="https://painelmaster.top/api/chatbot/gerar/318243391">Painel Master</option>
-        <option value="https://painelsigma.top/api/chatbot/gerar/318243391">Painel Sigma</option>
-        <option value="https://paineltitan.top/api/chatbot/gerar/318243391">Painel Titan</option>
+      <h3>Gerar Teste via API</h3>
+      <label>Selecione o Servidor:</label>
+      <select id="server-api-select" onchange="abrirLinkApiSelecionado()">
+        <option value="">Selecione um servidor...</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/we6WnQ8DK8">CYBER - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/x2YD0EkWQP">CYBER - S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/rlKWOrRDzo">CYBER - Apps C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/RYAWR4PLjl">CYBER - Apps S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/z2BDveGLrk">HÓRUS - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/VpKDap2LRA">HÓRUS - S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/kRXDgMO1ex">SKYLINE - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/ryJDzVzDge">SKYLINE - S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/BKADdQeWlr">INFINITY+ - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/kRXDgQo1ex">INFINITY+ - S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/B0VDVayLK3">LINEUP - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/Ar0WZp2La7">LINEUP - S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/ayb1BOPLPR">TITAN - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/Kr6LJE51v9">TITAN - S/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/z2BDverLrk">P2P BINSTREAM - C/ Adulto</option>
+        <option value="https://painelmaster.top/api/chatbot/x2YD0ba1QP/VpKDapkLRA">P2P BINSTREAM - S/ Adulto</option>
       </select>
+      <p style="font-size: 11px; color: #25D366; margin-bottom: 15px;">💡 Ao selecionar o servidor, ele abrirá a API em nova aba para gerar o teste no painel master.</p>
+      
+      <label>Dados da API (Opcional):</label>
+      <input type="text" id="input-dados-api" placeholder="Ex: Usuário: user123 | Senha: 123 (opcional)">
+      
+      <label>ID do Cliente (Opcional):</label>
+      <input type="text" id="input-id-cliente" placeholder="Ex: 10452">
+
       <div class="modal-actions">
-        <button class="btn-sm btn-excluir" onclick="fecharModalServer()">Cancelar</button>
-        <button class="btn-sm btn-gerar" onclick="executarGerarTesteAPI()">Confirmar e Gerar</button>
+        <button class="btn-sm btn-excluir" style="padding: 10px 15px;" onclick="fecharModais()">Cancelar</button>
+        <button class="btn-sm btn-gerar" style="padding: 10px 15px;" onclick="executarGerarTeste()">Salvar Teste Gerado</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase JavaScript -->
+  <div class="modal-overlay" id="modal-ativar-cliente">
+    <div class="modal">
+      <h3>Ativar Cliente</h3>
+      <label>ID do Cliente no Painel (Opcional):</label>
+      <input type="text" id="input-id-ativar" placeholder="Ex: 10452">
+      <label>Data de Vencimento:</label>
+      <input type="date" id="input-data-vencimento">
+      <div class="modal-actions">
+        <button class="btn-sm btn-excluir" style="padding: 10px 15px;" onclick="fecharModais()">Cancelar</button>
+        <button class="btn-sm btn-ativar" style="padding: 10px 15px;" onclick="executarAtivarCliente()">Confirmar Ativação</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "Sua-ApiKey-Aqui",
       authDomain: "imperio-25340.firebaseapp.com",
       projectId: "imperio-25340",
       storageBucket: "imperio-25340.appspot.com",
@@ -123,122 +297,306 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let currentTab = 'testes';
-    let currentSelectedIdForTest = null;
-    let leadsCarregados = [];
+    let currentTab = 'solicitacoes';
+    let selectedLeadId = null;
 
-    // Carrega dados do Firestore
+    window.realizarLogin = function(e) {
+      e.preventDefault();
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+
+      if (user === "edan3" && pass === "32739532") {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-container').style.display = 'block';
+        document.body.style.backgroundColor = '#121212';
+        document.body.style.color = '#e0e0e0';
+        document.documentElement.style.backgroundColor = '#121212';
+        loadLeads();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    };
+
     window.loadLeads = async function() {
       const tbody = document.getElementById('lista-leads');
-      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Carregando...</td></tr>';
+      const thead = document.getElementById('tabela-cabecalho');
+      tbody.innerHTML = '<tr><td style="text-align:center;">Carregando...</td></tr>';
+
+      // Configuração dinâmica do cabeçalho alinhado por aba
+      if (currentTab === 'solicitacoes') {
+        thead.innerHTML = `<tr>
+          <th width="40"><input type="checkbox" id="check-all" onclick="toggleCheckboxes(this)"></th>
+          <th>Cliente / Cidade</th>
+          <th>Contato</th>
+          <th>Dispositivo</th>
+          <th>ID Cliente</th>
+          <th>Servidor / Opção</th>
+          <th>Vencimento</th>
+          <th width="130">Ações</th>
+        </tr>`;
+      } else if (currentTab === 'testes') {
+        thead.innerHTML = `<tr>
+          <th width="40"><input type="checkbox" id="check-all" onclick="toggleCheckboxes(this)"></th>
+          <th>Cliente / Cidade</th>
+          <th>Contato</th>
+          <th>Dispositivo</th>
+          <th>ID Cliente</th>
+          <th>Servidor / Opção</th>
+          <th>Dados da API (Usuário / Senha)</th>
+          <th width="130">Ações</th>
+        </tr>`;
+      } else {
+        // Ativos e Inativos
+        thead.innerHTML = `<tr>
+          <th width="40"><input type="checkbox" id="check-all" onclick="toggleCheckboxes(this)"></th>
+          <th>Cliente / Cidade</th>
+          <th>Contato</th>
+          <th>Dispositivo</th>
+          <th>ID Cliente</th>
+          <th>Servidor / Opção</th>
+          <th>Dados da API (Usuário / Senha)</th>
+          <th>Vencimento</th>
+          <th width="130">Ações</th>
+        </tr>`;
+      }
 
       try {
-        const statusBusca = currentTab === 'testes' ? 'solicitado' : 'convertido';
         const q = query(collection(db, "leads"));
         const querySnapshot = await getDocs(q);
 
         tbody.innerHTML = '';
-        leadsCarregados = [];
-
-        if (querySnapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">Nenhum registro encontrado.</td></tr>`;
-          return;
-        }
+        let totalLinhas = 0;
 
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const id = docSnap.id;
-          leadsCarregados.push({ id, ...data });
+          const statusLead = (data.status || 'solicitacao').toLowerCase();
 
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><input type="checkbox" class="lead-checkbox" value="${data.whatsapp || ''}"></td>
-            <td><strong>${data.nome || 'Não Informado'}</strong></td>
-            <td>${data.whatsapp || '-'}</td>
-            <td>${data.dispositivo || 'Smart TV'}</td>
-            <td>${data.status === 'teste' ? 'Sim' : 'Não'}</td>
-            <td>${data.servidor || '-'}</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>
-              <button class="btn-sm btn-gerar" onclick="abrirModalServer('${id}')">Gerar Teste</button>
-              <button class="btn-sm btn-excluir" onclick="deletarLead('${id}')">Excluir</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
+          const isSolicitacao = (currentTab === 'solicitacoes' && (statusLead === 'solicitacao' || statusLead === 'pendente' || !data.status));
+          const isTeste = (currentTab === 'testes' && statusLead === 'teste');
+          const isAtivo = (currentTab === 'ativos' && statusLead === 'ativo');
+          const isInativo = (currentTab === 'inativos' && statusLead === 'inativo');
+
+          if (isSolicitacao || isTeste || isAtivo || isInativo) {
+            totalLinhas++;
+            const tr = document.createElement('tr');
+            
+            let acoesHtml = '';
+            if (isSolicitacao) {
+              acoesHtml = `<button class="btn-sm btn-gerar" onclick="abrirModalGerar('${id}', '${data.idCliente || ''}')">Gerar Teste</button>`;
+            } else if (isTeste) {
+              acoesHtml = `<button class="btn-sm btn-ativar" onclick="abrirModalAtivar('${id}', '${data.idCliente || ''}')">Ativar</button>`;
+            } else if (isAtivo) {
+              acoesHtml = `<button class="btn-sm btn-desativar" onclick="desativarCliente('${id}')">Desativar</button>`;
+            } else if (isInativo) {
+              acoesHtml = `<button class="btn-sm btn-reativar" onclick="reativarCliente('${id}')">Reativar</button>`;
+            }
+            acoesHtml += `<button class="btn-sm btn-excluir" onclick="deletarLead('${id}')">Excluir</button>`;
+
+            const apiInfo = data.dadosApi ? `<span style="color:#25D366; font-weight:bold;">${data.dadosApi}</span>` : '-';
+
+            if (isSolicitacao) {
+              tr.innerHTML = `
+                <td><input type="checkbox" class="lead-checkbox" value="${data.whatsapp || ''}"></td>
+                <td><strong>${data.nome || 'Não Informado'}</strong><br><small style="color:#aaa;">${data.cidade || ''}</small></td>
+                <td>${data.whatsapp || '-'}</td>
+                <td>${data.dispositivo || 'Smart TV'}</td>
+                <td>${data.idCliente || '-'}</td>
+                <td>${data.servidor || '-'}</td>
+                <td>${data.vencimento || '-'}</td>
+                <td>${acoesHtml}</td>
+              `;
+            } else if (isTeste) {
+              tr.innerHTML = `
+                <td><input type="checkbox" class="lead-checkbox" value="${data.whatsapp || ''}"></td>
+                <td><strong>${data.nome || 'Não Informado'}</strong><br><small style="color:#aaa;">${data.cidade || ''}</small></td>
+                <td>${data.whatsapp || '-'}</td>
+                <td>${data.dispositivo || 'Smart TV'}</td>
+                <td>${data.idCliente || '-'}</td>
+                <td>${data.servidor || '-'}</td>
+                <td>${apiInfo}</td>
+                <td>${acoesHtml}</td>
+              `;
+            } else {
+              tr.innerHTML = `
+                <td><input type="checkbox" class="lead-checkbox" value="${data.whatsapp || ''}"></td>
+                <td><strong>${data.nome || 'Não Informado'}</strong><br><small style="color:#aaa;">${data.cidade || ''}</small></td>
+                <td>${data.whatsapp || '-'}</td>
+                <td>${data.dispositivo || 'Smart TV'}</td>
+                <td>${data.idCliente || '-'}</td>
+                <td>${data.servidor || '-'}</td>
+                <td>${apiInfo}</td>
+                <td>${data.vencimento || '-'}</td>
+                <td>${acoesHtml}</td>
+              `;
+            }
+            tbody.appendChild(tr);
+          }
         });
+
+        const colSpanCount = (currentTab === 'solicitacoes') ? 8 : (currentTab === 'testes' ? 8 : 9);
+        if (totalLinhas === 0) {
+          tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="text-align:center;">Nenhum registro nesta lista.</td></tr>`;
+        }
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Erro ao carregar os dados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Erro ao carregar os dados.</td></tr>';
       }
     };
 
-    // Alterna abas
     window.alterarAba = function(aba) {
       currentTab = aba;
-      document.getElementById('tab-testes').classList.toggle('active', aba === 'testes');
-      document.getElementById('tab-convertidos').classList.toggle('active', aba === 'convertidos');
-      loadLeads();
+      // Garante tema escuro em TODAS as abas (evita override de tradutor/extensões)
+      document.body.style.backgroundColor = '#121212';
+      document.body.style.color = '#e0e0e0';
+      document.documentElement.style.backgroundColor = '#121212';
+      const h1 = document.querySelector('h1');
+      if (h1) h1.style.color = '#ffffff';
+      // Remove estilos injetados por tradutores (Google Translate etc)
+      document.querySelectorAll('style').forEach(s => {
+        if (s.parentElement && s.parentElement.tagName === 'SPAN' && s.innerText.includes('background-color: #fff')) {
+          s.remove();
+        }
+      });
+      document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${aba}`).classList.add('active');
+
+      if (aba === 'promocoes') {
+        document.getElementById('section-leads').style.display = 'none';
+        document.getElementById('section-promocoes').style.display = 'block';
+        carregarConfiguracoes();
+      } else {
+        document.getElementById('section-leads').style.display = 'block';
+        document.getElementById('section-promocoes').style.display = 'none';
+        loadLeads();
+      }
     };
 
-    // Checkbox Todos
     window.toggleCheckboxes = function(main) {
       document.querySelectorAll('.lead-checkbox').forEach(cb => cb.checked = main.checked);
     };
 
-    // Gerar Lista WhatsApp
     window.gerarListaWhatsApp = function() {
       const selecionados = Array.from(document.querySelectorAll('.lead-checkbox:checked'))
-                               .map(cb => cb.value)
-                               .filter(val => val !== '');
+                                 .map(cb => cb.value)
+                                 .filter(val => val !== '');
       
       const output = document.getElementById('whatsapp-output');
-      if (selecionados.length === 0) {
-        output.value = "Nenhum contato selecionado nas caixas acima.";
-      } else {
-        output.value = selecionados.join(', ');
+      output.value = selecionados.length === 0 
+        ? "Nenhum contato selecionado nas caixas acima." 
+        : selecionados.join(', ');
+    };
+
+    window.fecharModais = function() {
+      selectedLeadId = null;
+      document.getElementById('modal-gerar-teste').style.display = 'none';
+      document.getElementById('modal-ativar-cliente').style.display = 'none';
+    };
+
+    window.abrirModalGerar = function(id, idCliente) {
+      selectedLeadId = id;
+      document.getElementById('input-id-cliente').value = (idCliente && idCliente !== '-') ? idCliente : '';
+      document.getElementById('input-dados-api').value = '';
+      document.getElementById('server-api-select').value = '';
+      document.getElementById('modal-gerar-teste').style.display = 'flex';
+    };
+
+    window.abrirLinkApiSelecionado = function() {
+      const selectElem = document.getElementById('server-api-select');
+      const url = selectElem.value;
+      if (url) {
+        window.open(url, '_blank');
       }
     };
 
-    // Modal
-    window.abrirModalServer = function(id) {
-      currentSelectedIdForTest = id;
-      document.getElementById('modal-server').style.display = 'flex';
-    };
-
-    window.fecharModalServer = function() {
-      currentSelectedIdForTest = null;
-      document.getElementById('modal-server').style.display = 'none';
-    };
-
-    // Executar Gerar API
-    window.executarGerarTesteAPI = async function() {
-      if (!currentSelectedIdForTest) return;
+    window.executarGerarTeste = async function() {
+      if (!selectedLeadId) return;
 
       const selectElem = document.getElementById('server-api-select');
-      const apiUrl = selectElem.value;
-      const nomeServidor = selectElem.options[selectElem.selectedIndex].text;
-
-      // Abre a API numa aba secundária
-      window.open(apiUrl, '_blank');
+      const nomeOpcao = selectElem.options[selectElem.selectedIndex].text;
+      const idCliente = document.getElementById('input-id-cliente').value.trim();
+      const dadosApi = document.getElementById('input-dados-api').value.trim();
 
       try {
-        await updateDoc(doc(db, "leads", currentSelectedIdForTest), {
+        await updateDoc(doc(db, "leads", selectedLeadId), {
           status: 'teste',
-          servidor: nomeServidor,
+          servidor: nomeOpcao !== 'Selecione um servidor...' ? nomeOpcao : 'Servidor API',
+          idCliente: idCliente || '-',
+          dadosApi: dadosApi || 'Gerado (Não informado)',
           updatedAt: new Date()
         });
 
-        alert("✅ Teste processado na aba aberta e atualizado no sistema!");
-        fecharModalServer();
+        alert("✅ Teste gerado e salvo com sucesso!");
+        fecharModais();
         loadLeads();
       } catch (err) {
-        console.error("Erro ao atualizar:", err);
+        console.error("Erro no salvamento:", err);
+        alert("Erro ao salvar o teste.");
       }
     };
 
-    // Deletar
+    window.abrirModalAtivar = function(id, idCliente) {
+      selectedLeadId = id;
+      document.getElementById('input-id-ativar').value = (idCliente && idCliente !== '-') ? idCliente : '';
+      document.getElementById('input-data-vencimento').value = '';
+      document.getElementById('modal-ativar-cliente').style.display = 'flex';
+    };
+
+    window.executarAtivarCliente = async function() {
+      if (!selectedLeadId) return;
+
+      const idCliente = document.getElementById('input-id-ativar').value.trim();
+      const vencimento = document.getElementById('input-data-vencimento').value;
+
+      if (!vencimento) {
+        alert("Por favor, selecione uma Data de Vencimento!");
+        return;
+      }
+
+      try {
+        await updateDoc(doc(db, "leads", selectedLeadId), {
+          status: 'ativo',
+          idCliente: idCliente || '-',
+          vencimento: vencimento,
+          updatedAt: new Date()
+        });
+
+        alert("✅ Cliente ativado com sucesso!");
+        fecharModais();
+        loadLeads();
+      } catch (err) {
+        console.error("Erro ao ativar:", err);
+        alert("Erro ao ativar o cliente.");
+      }
+    };
+
+    window.desativarCliente = async function(id) {
+      if (confirm("Deseja desativar este cliente?")) {
+        const hoje = new Date().toLocaleDateString('pt-BR');
+        try {
+          await updateDoc(doc(db, "leads", id), {
+            status: 'inativo',
+            dataDesativacao: hoje,
+            updatedAt: new Date()
+          });
+          loadLeads();
+        } catch (err) { console.error("Erro ao desativar:", err); }
+      }
+    };
+
+    window.reativarCliente = async function(id) {
+      if (confirm("Deseja reativar este cliente?")) {
+        try {
+          await updateDoc(doc(db, "leads", id), {
+            status: 'ativo',
+            dataDesativacao: '-',
+            updatedAt: new Date()
+          });
+          loadLeads();
+        } catch (err) { console.error("Erro ao reativar:", err); }
+      }
+    };
+
     window.deletarLead = async function(id) {
       if (confirm("Deseja realmente remover este registro?")) {
         try {
@@ -248,7 +606,81 @@
       }
     };
 
-    loadLeads();
+    async function carregarConfiguracoes() {
+      try {
+        const docRef = doc(db, "configuracoes", "site");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.titulo) document.getElementById('config-titulo-principal').value = data.titulo;
+          if (data.subtitulo) document.getElementById('config-subtitulo-principal').value = data.subtitulo;
+          if (data.exibirImagens !== undefined) document.getElementById('config-exibir-imagens').checked = data.exibirImagens;
+          if (data.img1) document.getElementById('config-img-1').value = data.img1;
+          if (data.img2) document.getElementById('config-img-2').value = data.img2;
+          if (data.img3) document.getElementById('config-img-3').value = data.img3;
+
+          if (data.testeTitulo !== undefined) document.getElementById('promo-teste-titulo').value = data.testeTitulo;
+          if (data.testePreco !== undefined) document.getElementById('promo-teste-preco').value = data.testePreco;
+          if (data.testeDesc !== undefined) document.getElementById('promo-teste-desc').value = data.testeDesc;
+          if (data.visTeste !== undefined) document.getElementById('vis-teste').checked = data.visTeste;
+
+          if (data.mensalPreco) document.getElementById('promo-mensal-preco').value = data.mensalPreco;
+          if (data.mensalDesc) document.getElementById('promo-mensal-desc').value = data.mensalDesc;
+          if (data.mensalTitulo) document.getElementById('promo-mensal-titulo').value = data.mensalTitulo;
+          if (data.visMensal !== undefined) document.getElementById('vis-mensal').checked = data.visMensal;
+
+          if (data.trimestralPreco) document.getElementById('promo-trimestral-preco').value = data.trimestralPreco;
+          if (data.trimestralDesc) document.getElementById('promo-trimestral-desc').value = data.trimestralDesc;
+          if (data.trimestralTitulo) document.getElementById('promo-trimestral-titulo').value = data.trimestralTitulo;
+          if (data.visTrimestral !== undefined) document.getElementById('vis-trimestral').checked = data.visTrimestral;
+
+          if (data.anualPreco) document.getElementById('promo-anual-preco').value = data.anualPreco;
+          if (data.anualDesc) document.getElementById('promo-anual-desc').value = data.anualDesc;
+          if (data.anualTitulo) document.getElementById('promo-anual-titulo').value = data.anualTitulo;
+          if (data.visAnual !== undefined) document.getElementById('vis-anual').checked = data.visAnual;
+        }
+      } catch (e) {
+        console.error("Erro ao carregar configurações:", e);
+      }
+    }
+
+    window.salvarConfiguracoesGerais = async function() {
+      try {
+        await setDoc(doc(db, "configuracoes", "site"), {
+          titulo: document.getElementById('config-titulo-principal').value,
+          subtitulo: document.getElementById('config-subtitulo-principal').value,
+          exibirImagens: document.getElementById('config-exibir-imagens').checked,
+          img1: document.getElementById('config-img-1').value,
+          img2: document.getElementById('config-img-2').value,
+          img3: document.getElementById('config-img-3').value,
+          
+          testeTitulo: document.getElementById('promo-teste-titulo').value,
+          testePreco: document.getElementById('promo-teste-preco').value,
+          testeDesc: document.getElementById('promo-teste-desc').value,
+          visTeste: document.getElementById('vis-teste').checked,
+
+          mensalTitulo: document.getElementById('promo-mensal-titulo').value,
+          mensalPreco: document.getElementById('promo-mensal-preco').value,
+          mensalDesc: document.getElementById('promo-mensal-desc').value,
+          visMensal: document.getElementById('vis-mensal').checked,
+
+          trimestralTitulo: document.getElementById('promo-trimestral-titulo').value,
+          trimestralPreco: document.getElementById('promo-trimestral-preco').value,
+          trimestralDesc: document.getElementById('promo-trimestral-desc').value,
+          visTrimestral: document.getElementById('vis-trimestral').checked,
+
+          anualTitulo: document.getElementById('promo-anual-titulo').value,
+          anualPreco: document.getElementById('promo-anual-preco').value,
+          anualDesc: document.getElementById('promo-anual-desc').value,
+          visAnual: document.getElementById('vis-anual').checked
+        });
+        alert("✅ Configurações salvas e publicadas para a página principal!");
+      } catch (e) {
+        console.error("Erro ao salvar:", e);
+        alert("Erro ao salvar configurações.");
+      }
+    };
   </script>
-</body>
-</html>
+
+</body></html>
