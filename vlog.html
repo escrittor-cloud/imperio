@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vídeos – Império do Streaming</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0b0b12; color: #eee; min-height: 100vh; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 14px 4%; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #1f1f2e; background: #0a0a10; }
+    .logo { color: #e50914; font-weight: 800; font-size: 1.15rem; text-decoration: none; }
+    .nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    .nav a { text-decoration: none; color: #fff; font-size: 0.85rem; font-weight: 600; padding: 8px 14px; border-radius: 20px; background: #2a2a3a; }
+    .nav a.cta { background: #e50914; }
+    .nav a.fb { background: #1877F2; }
+    .nav a.wa { background: #25D366; }
+    .nav a.vid { background: #3b82f6; }
+    .nav a.gal { background: #8b5cf6; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 4% 60px; }
+    h1 { font-size: 1.8rem; margin-bottom: 8px; }
+    .sub { color: #9ca3af; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    .card { background: #141422; border: 1px solid #2a2a3a; border-radius: 12px; overflow: hidden; text-decoration: none; color: #eee; transition: 0.15s; }
+    .card:hover { border-color: #7c3aed; transform: translateY(-2px); }
+    .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: #111; }
+    .card .info { padding: 12px; }
+    .card .info h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .card .info p { font-size: 0.8rem; color: #9ca3af; }
+    .status { color: #9ca3af; padding: 40px 0; text-align: center; }
+    .ads-section { max-width: 1100px; margin: 30px auto 40px; padding: 0 4%; }
+    .ads-section h3 { font-size: 0.75rem; color: #9ca3af; letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
+    .ads-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 700px) { .ads-grid { grid-template-columns: repeat(2, 1fr); } }
+    .ad-slot { border-radius: 8px; overflow: hidden; background: #1a1a28; border: 1px solid #2a2a3a; aspect-ratio: 3/2; }
+    .ad-slot a { display: block; width: 100%; height: 100%; }
+    .ad-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/">IMPÉRIO DO STREAMING</a>
+    <nav class="nav">
+      <a href="/">Home</a>
+      <a class="fb" href="https://www.facebook.com/imperiodostreaming" target="_blank" rel="noopener">Facebook</a>
+      <a class="wa" href="https://wa.me/5547988307184" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="cta" href="/#cadastro">Testar Agora</a>
+      <a class="vid" href="/vlog.html">Vídeos</a>
+      <a class="gal" href="/galeria.html?id=super-stream">Galeria</a>
+    </nav>
+  </header>
+  <div class="wrap">
+    <h1>Catálogo de Séries</h1>
+    <p class="sub">Produções originais Império do Streaming</p>
+    <div id="grid" class="status">Carregando...</div>
+  </div>
+  <section class="ads-section" id="ads-section" style="display:none;">
+    <h3>PUBLICIDADE</h3>
+    <div class="ads-grid" id="ads-grid"></div>
+  </section>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    const firebaseConfig = {
+      authDomain: "imperio-25340.firebaseapp.com",
+      projectId: "imperio-25340",
+      storageBucket: "imperio-25340.appspot.com",
+      messagingSenderId: "305282928509",
+      appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+    };
+    function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
+    async function load() {
+      const grid = document.getElementById("grid");
+      try {
+        let app;
+        try { const r = await fetch("/__/firebase/init.json"); if (r.ok) app = initializeApp(await r.json()); } catch(_){}
+        if (!app) app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        try {
+          const site = await getDoc(doc(db, "configuracoes", "site"));
+          if (site.exists()) {
+            const data = site.data();
+            let html = "";
+            [13,14,15,16].forEach(n => {
+              const p = "an" + n + "_";
+              if (data[p + "exibir"] !== true) return;
+              const imgs = [data[p+"img1"], data[p+"img2"], data[p+"img3"]].filter(Boolean);
+              if (!imgs.length) return;
+              const link = data[p+"link"] || "#";
+              const title = data[p+"titulo"] || "";
+              html += '<div class="ad-slot" title="'+String(title).replace(/"/g,'&quot;')+'"><a href="'+String(link).replace(/"/g,'&quot;')+'" target="_blank" rel="noopener"><img src="'+String(imgs[0]).replace(/"/g,'&quot;')+'" alt="" loading="lazy"></a></div>';
+            });
+            if (html) {
+              document.getElementById("ads-grid").innerHTML = html;
+              document.getElementById("ads-section").style.display = "block";
+            }
+          }
+        } catch (e) { console.warn(e); }
+        const snap = await getDocs(collection(db, "series"));
+        const items = [];
+        snap.forEach(d => {
+          const x = d.data();
+          if (x.published === false) return;
+          items.push({ id: d.id, ...x });
+        });
+        items.sort((a,b) => (a.ordem||99)-(b.ordem||99));
+        if (!items.length) {
+          // fallback link
+          grid.className = "grid";
+          grid.innerHTML = `<a class="card" href="/serie.html?id=super-stream"><div class="info"><h3>Super Stream</h3><p>Série</p></div></a>`;
+          return;
+        }
+        grid.className = "grid";
+        grid.innerHTML = items.map(s => `
+          <a class="card" href="/serie.html?id=${encodeURIComponent(s.id)}">
+            ${s.poster ? `<img src="${esc(s.poster)}" alt="">` : `<div style="aspect-ratio:2/3;background:#1a1a28;display:flex;align-items:center;justify-content:center;color:#555;">Sem poster</div>`}
+            <div class="info">
+              <h3>${esc(s.title || s.id)}</h3>
+              <p>${esc(s.year || "")} ${s.genres ? "· " + esc(s.genres) : ""}</p>
+            </div>
+          </a>
+        `).join("");
+      } catch (e) {
+        console.error(e);
+        grid.innerHTML = "Erro ao carregar catálogo. <a href='/serie.html?id=super-stream' style='color:#8b5cf6'>Abrir Super Stream</a>";
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

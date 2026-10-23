@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Enviar Vídeo | Império do Streaming</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav class="top-nav">
+    <a href="../../index.html" class="logo logo-imperio">Império do Streaming</a>
+    <div class="nav-links">
+      <a href="../../index.html" class="home">Home</a>
+      <a href="../vlog.html" class="videos">Vídeos</a>
+      <a href="../galeria.html" class="galeria">Galeria</a>
+      <a href="form.html" class="active">Admin</a>
+    </div>
+  </nav>
+
+  <div class="admin-page">
+    <div class="admin-header">
+      <h1>Enviar Vídeo / Episódio</h1>
+      <p>
+        Preencha os campos abaixo. Tudo é editável e reutilizável para qualquer série ou personagem.<br>
+        Mídia: pastas <code>Videos/</code> e <code>Imagens/</code> no GitHub + metadados no Firestore.
+      </p>
+    </div>
+
+    <form class="form-card" id="videoForm" onsubmit="return handleSubmit(event)">
+
+      <!-- TÍTULO -->
+      <div class="form-group">
+        <label for="title">Título *</label>
+        <input type="text" id="title" name="title" placeholder="Ex: Nome do episódio ou vídeo" required>
+      </div>
+
+      <!-- TEMPORADA / NÚMERO -->
+      <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label for="season">Temporada</label>
+          <input type="text" id="season" name="season" placeholder="Ex: TP 1" value="TP 1">
+        </div>
+        <div>
+          <label for="epNum">Número do episódio</label>
+          <input type="text" id="epNum" name="epNum" placeholder="Ex: EP 01">
+        </div>
+      </div>
+
+      <!-- TAGS -->
+      <div class="form-group">
+        <label for="tagInput">Tags</label>
+        <div class="tags-input-wrapper" id="tagsWrapper">
+          <input type="text" id="tagInput" placeholder="Digite e pressione Enter">
+        </div>
+        <input type="hidden" name="tags" id="tagsHidden">
+      </div>
+
+      <!-- DESCRIÇÃO + TOOLBAR -->
+      <div class="form-group">
+        <label>Descrição</label>
+        <div class="toolbar" id="toolbar">
+          <button type="button" data-cmd="bold" title="Negrito"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="Itálico"><i>I</i></button>
+          <button type="button" data-cmd="underline" title="Sublinhado"><u>U</u></button>
+          <span class="divider"></span>
+          <button type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button>
+          <button type="button" data-cmd="insertOrderedList" title="Lista numerada">1.</button>
+          <span class="divider"></span>
+          <button type="button" data-cmd="createLink" title="Link">🔗</button>
+          <button type="button" data-cmd="removeFormat" title="Limpar">✕</button>
+        </div>
+        <div
+          class="editor-area"
+          id="description"
+          contenteditable="true"
+          data-placeholder="Digite a descrição do vídeo aqui... Use a barra de ferramentas para formatar."
+        ></div>
+      </div>
+
+      <!-- URL DO VÍDEO (GitHub raw ou externo) -->
+      <div class="form-group">
+        <label for="videoUrl">URL do Vídeo *</label>
+        <input type="url" id="videoUrl" name="videoUrl"
+          placeholder="https://raw.githubusercontent.com/escrittor-cloud/imperio/main/Videos/ep01.mp4"
+          required>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:6px;">
+          Coloque o arquivo na pasta <code>Videos/</code> do GitHub e use a URL raw.
+        </p>
+      </div>
+
+      <!-- URL THUMB / POSTER -->
+      <div class="form-group">
+        <label for="thumbUrl">URL da Thumbnail / Pôster</label>
+        <input type="url" id="thumbUrl" name="thumbUrl"
+          placeholder="https://raw.githubusercontent.com/escrittor-cloud/imperio/main/Imagens/thumb.jpg">
+      </div>
+
+      <!-- Upload local (opcional / demo) -->
+      <div class="form-group">
+        <label>Arquivo de Vídeo (opcional – referência local)</label>
+        <div class="file-upload" id="dropZone" onclick="document.getElementById('videoFile').click()">
+          <div style="font-size:2rem;">📤</div>
+          <p><strong>Clique ou arraste</strong> o vídeo aqui</p>
+          <p style="font-size:0.8rem;margin-top:4px;">MP4, WebM • depois suba para o GitHub Videos/</p>
+          <input type="file" id="videoFile" name="video" accept="video/*" hidden>
+        </div>
+        <p id="fileName" style="margin-top:8px;font-size:0.85rem;color:var(--accent-light);"></p>
+      </div>
+
+      <div class="form-group">
+        <label>Pôster / Thumbnail (opcional – arquivo)</label>
+        <div class="file-upload" id="posterZone" onclick="document.getElementById('posterFile').click()">
+          <div style="font-size:1.6rem;">🖼</div>
+          <p><strong>Clique ou arraste</strong> a imagem</p>
+          <input type="file" id="posterFile" name="poster" accept="image/*" hidden>
+        </div>
+        <p id="posterName" style="margin-top:8px;font-size:0.85rem;color:var(--accent-light);"></p>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Salvar Episódio</button>
+        <button type="button" class="btn-cancel" onclick="window.location.href='../vlog.html'">Cancelar</button>
+      </div>
+      <p id="form-status" style="margin-top:12px;font-size:0.9rem;"></p>
+    </form>
+
+    <!-- Config rápida da série -->
+    <div class="form-card" style="margin-top:28px;">
+      <h2 style="font-size:1.2rem;margin-bottom:16px;">Configuração da Série / Personagem</h2>
+      <div class="form-group">
+        <label for="cfg-title">Título da série</label>
+        <input type="text" id="cfg-title" placeholder="Ex: Super Stream, Flash, etc.">
+      </div>
+      <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label for="cfg-year">Ano</label>
+          <input type="text" id="cfg-year" placeholder="2024">
+        </div>
+        <div>
+          <label for="cfg-genres">Gêneros</label>
+          <input type="text" id="cfg-genres" placeholder="Ação, Ficção">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cfg-synopsis">Sinopse</label>
+        <textarea id="cfg-synopsis" rows="3" style="width:100%;padding:12px;background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;color:var(--text);"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="cfg-poster">URL do Poster principal</label>
+        <input type="url" id="cfg-poster" placeholder="https://raw.githubusercontent.com/.../Imagens/poster.jpg">
+      </div>
+      <button type="button" class="btn-submit" onclick="salvarSerie()">Salvar Série</button>
+      <p id="serie-status" style="margin-top:10px;font-size:0.9rem;"></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const app = initializeApp({
+      projectId: "imperio-25340",
+      authDomain: "imperio-25340.firebaseapp.com"
+    });
+    const db = getFirestore(app);
+
+    // Tags
+    let tags = [];
+    const tagsWrapper = document.getElementById("tagsWrapper");
+    const tagInput = document.getElementById("tagInput");
+    const tagsHidden = document.getElementById("tagsHidden");
+
+    function renderTags() {
+      tagsWrapper.querySelectorAll(".tag-chip").forEach(c => c.remove());
+      tags.forEach((tag, i) => {
+        const chip = document.createElement("span");
+        chip.className = "tag-chip";
+        chip.innerHTML = `${tag} <button type="button" data-i="${i}">×</button>`;
+        chip.querySelector("button").onclick = () => {
+          tags.splice(i, 1);
+          renderTags();
+        };
+        tagsWrapper.insertBefore(chip, tagInput);
+      });
+      tagsHidden.value = tags.join(",");
+    }
+
+    tagInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        const val = tagInput.value.trim().replace(/^#/, "");
+        if (val && !tags.includes(val)) {
+          tags.push(val);
+          renderTags();
+        }
+        tagInput.value = "";
+      }
+    });
+
+    // Toolbar
+    document.getElementById("toolbar").addEventListener("click", e => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      e.preventDefault();
+      const cmd = btn.dataset.cmd;
+      if (cmd === "createLink") {
+        const url = prompt("URL do link:");
+        if (url) document.execCommand("createLink", false, url);
+      } else if (cmd) {
+        document.execCommand(cmd, false, null);
+      }
+      document.getElementById("description").focus();
+    });
+
+    // Upload zones
+    function setupDrop(zoneId, inputId, nameId) {
+      const zone = document.getElementById(zoneId);
+      const input = document.getElementById(inputId);
+      const nameEl = document.getElementById(nameId);
+      ["dragenter", "dragover"].forEach(evt => {
+        zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.add("dragover"); });
+      });
+      ["dragleave", "drop"].forEach(evt => {
+        zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.remove("dragover"); });
+      });
+      zone.addEventListener("drop", e => {
+        if (e.dataTransfer.files.length) {
+          input.files = e.dataTransfer.files;
+          nameEl.textContent = e.dataTransfer.files[0].name;
+        }
+      });
+      input.addEventListener("change", () => {
+        if (input.files.length) nameEl.textContent = input.files[0].name;
+      });
+    }
+    setupDrop("dropZone", "videoFile", "fileName");
+    setupDrop("posterZone", "posterFile", "posterName");
+
+    // Carregar série atual
+    async function loadSerie() {
+      try {
+        const snap = await getDoc(doc(db, "config", "vlog"));
+        if (snap.exists() && snap.data().series) {
+          const s = snap.data().series;
+          document.getElementById("cfg-title").value = s.title || "";
+          document.getElementById("cfg-year").value = s.year || "";
+          document.getElementById("cfg-genres").value = s.genres || "";
+          document.getElementById("cfg-synopsis").value = s.synopsis || "";
+          document.getElementById("cfg-poster").value = s.poster || "";
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    loadSerie();
+
+    window.salvarSerie = async function () {
+      const status = document.getElementById("serie-status");
+      status.style.color = "#fff";
+      status.textContent = "Salvando...";
+      try {
+        const snap = await getDoc(doc(db, "config", "vlog"));
+        const current = snap.exists() ? (snap.data().series || {}) : {};
+        const series = {
+          ...current,
+          title: document.getElementById("cfg-title").value.trim() || "[Título]",
+          year: document.getElementById("cfg-year").value.trim(),
+          genres: document.getElementById("cfg-genres").value.trim(),
+          synopsis: document.getElementById("cfg-synopsis").value.trim(),
+          poster: document.getElementById("cfg-poster").value.trim(),
+          seasons: current.seasons || [{ id: "tp1", name: "TP 1", episodesCount: 0, episodes: [] }]
+        };
+        await setDoc(doc(db, "config", "vlog"), { series }, { merge: true });
+        status.style.color = "#10b981";
+        status.textContent = "✅ Série salva! Atualize a página Vídeos.";
+      } catch (e) {
+        status.style.color = "#ef4444";
+        status.textContent = "❌ Erro: " + e.message;
+      }
+    };
+
+    window.handleSubmit = async function (e) {
+      e.preventDefault();
+      const status = document.getElementById("form-status");
+      status.style.color = "#fff";
+      status.textContent = "Salvando episódio...";
+
+      const title = document.getElementById("title").value.trim();
+      const seasonName = document.getElementById("season").value.trim() || "TP 1";
+      const epNum = document.getElementById("epNum").value.trim() || "";
+      const videoUrl = document.getElementById("videoUrl").value.trim();
+      const thumbUrl = document.getElementById("thumbUrl").value.trim();
+      const desc = document.getElementById("description").innerText.trim();
+
+      if (!title || !videoUrl) {
+        status.style.color = "#ef4444";
+        status.textContent = "Preencha título e URL do vídeo.";
+        return false;
+      }
+
+      try {
+        const snap = await getDoc(doc(db, "config", "vlog"));
+        const current = snap.exists() ? (snap.data().series || {}) : {};
+        let seasons = current.seasons || [];
+
+        const seasonId = seasonName.toLowerCase().replace(/\s+/g, "");
+        let season = seasons.find(s => s.id === seasonId || s.name === seasonName);
+        if (!season) {
+          season = { id: seasonId, name: seasonName, episodesCount: 0, episodes: [] };
+          seasons.push(season);
+        }
+
+        season.episodes = season.episodes || [];
+        season.episodes.push({
+          num: epNum,
+          title,
+          desc,
+          thumb: thumbUrl,
+          video: videoUrl,
+          tags: [...tags]
+        });
+        season.episodesCount = season.episodes.length;
+
+        const series = {
+          ...current,
+          seasons,
+          totalEpisodes: seasons.reduce((n, s) => n + (s.episodes?.length || 0), 0)
+        };
+
+        await setDoc(doc(db, "config", "vlog"), { series }, { merge: true });
+        status.style.color = "#10b981";
+        status.textContent = "✅ Episódio salvo! Veja em Vídeos.";
+        document.getElementById("videoForm").reset();
+        document.getElementById("description").innerHTML = "";
+        tags = [];
+        renderTags();
+      } catch (err) {
+        console.error(err);
+        status.style.color = "#ef4444";
+        status.textContent = "❌ Erro: " + err.message;
+      }
+      return false;
+    };
+  </script>
+</body>
+</html>

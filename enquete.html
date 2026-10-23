@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Enquete – Império</title>
+  <style>
+    :root { --primary: #e50914; --bg: #121212; --card: #1a1a1a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #e0e0e0; padding: 24px 16px 60px; }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    h1 { color: #fff; font-size: 1.5rem; margin-bottom: 6px; }
+    .sub { color: #888; font-size: 0.9rem; margin-bottom: 22px; }
+    .card {
+      background: var(--card); border: 1px solid #333; border-radius: 12px;
+      padding: 18px; margin-bottom: 16px;
+    }
+    .card h2 { font-size: 1.05rem; color: #fff; margin-bottom: 12px; }
+    label { display: block; font-size: 0.85rem; color: #aaa; margin: 10px 0 4px; }
+    input[type="text"], textarea {
+      width: 100%; padding: 10px 12px; background: #0d0d0d; border: 1px solid #333;
+      border-radius: 8px; color: #fff; font-size: 0.95rem;
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 80px; gap: 8px; }
+    .checks { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .checks label {
+      display: flex; align-items: center; gap: 10px; color: #ddd; font-size: 0.95rem;
+      margin: 0; cursor: pointer;
+    }
+    .checks input { width: 18px; height: 18px; accent-color: var(--primary); }
+    .btn {
+      display: inline-block; border: none; border-radius: 8px; padding: 12px 18px;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer; margin: 6px 6px 0 0;
+    }
+    .btn-green { background: #25d366; color: #000; }
+    .btn-red { background: var(--primary); color: #fff; }
+    .btn-gray { background: #333; color: #fff; }
+    .btn-blue { background: #0d6efd; color: #fff; }
+    .status { margin-top: 12px; font-size: 0.9rem; min-height: 1.3em; }
+    .badge {
+      display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+    }
+    .badge.on { background: #14532d; color: #86efac; }
+    .badge.off { background: #3f3f46; color: #a1a1aa; }
+    .counts {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px;
+    }
+    .counts div {
+      background: #0d0d0d; border: 1px solid #333; border-radius: 10px; padding: 12px; text-align: center;
+    }
+    .counts strong { display: block; font-size: 1.5rem; color: #fff; }
+    .link-row { margin-top: 14px; font-size: 0.85rem; }
+    .link-row a { color: #60a5fa; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📊 Enquete (painel separado)</h1>
+    <p class="sub">Controla a <code>indexnew.html</code>. Não altera a index original até você ativar.</p>
+
+    <div class="card">
+      <h2>Página principal do site</h2>
+      <p style="color:#aaa;font-size:0.9rem;margin-bottom:10px;">
+        Status atual: <span class="badge off" id="badge-pagina">Index original</span>
+      </p>
+      <button type="button" class="btn btn-green" id="btn-ativar">▶ Ativar enquete (usar indexnew)</button>
+      <button type="button" class="btn btn-gray" id="btn-desativar">■ Desativar (voltar index original)</button>
+      <p class="status" id="status-pagina"></p>
+      <p class="link-row">
+        Abrir: <a href="/indexnew.html" target="_blank">indexnew.html</a> ·
+        <a href="/" target="_blank">index original (/)</a>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Quadros na indexnew (checkbox)</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="exibirEnquete" checked> Exibir quadro da <strong>enquete</strong></label>
+        <label><input type="checkbox" id="exibirImagensPainel" checked> Exibir quadro de <strong>imagens</strong> (centro)</label>
+        <label><input type="checkbox" id="exibirContador" checked> Exibir quadro do <strong>contador / gráfico</strong></label>
+      </div>
+      <button type="button" class="btn btn-blue" id="btn-vis" style="margin-top:14px;">Salvar visibilidade dos quadros</button>
+      <p class="status" id="status-vis"></p>
+    </div>
+
+    <div class="card">
+      <h2>🖼️ Carrossel do quadro central (só indexnew)</h2>
+      <p style="color:#888;font-size:0.85rem;margin-bottom:10px;">
+        Independente das img1/img2/img3 do admin original. Use links raw do GitHub ou o botão Listar imagens abaixo.
+      </p>
+      <label>Imagem 1 (URL)</label>
+      <div class="row" style="grid-template-columns:1fr 56px;">
+        <input type="text" id="painelImg1" placeholder="https://raw.githubusercontent.com/...">
+        <img id="prevPainel1" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#111;border:1px solid #333;">
+      </div>
+      <label>Imagem 2 (URL)</label>
+      <div class="row" style="grid-template-columns:1fr 56px;">
+        <input type="text" id="painelImg2" placeholder="https://raw.githubusercontent.com/...">
+        <img id="prevPainel2" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#111;border:1px solid #333;">
+      </div>
+      <label>Imagem 3 (URL)</label>
+      <div class="row" style="grid-template-columns:1fr 56px;">
+        <input type="text" id="painelImg3" placeholder="https://raw.githubusercontent.com/...">
+        <img id="prevPainel3" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#111;border:1px solid #333;">
+      </div>
+      <button type="button" class="btn btn-green" id="btn-painel-imgs" style="margin-top:12px;">💾 Salvar carrossel do painel</button>
+      <p class="status" id="status-painel"></p>
+    </div>
+
+    <div class="card">
+      <h2>Texto da enquete</h2>
+      <label>Pergunta</label>
+      <textarea id="pergunta" placeholder="Qual personagem você quer ver no próximo episódio?"></textarea>
+
+      <label>Opção A — nome</label>
+      <input type="text" id="opcaoA" placeholder="Relâmpago">
+      <label>Miniatura A (URL da imagem no GitHub)</label>
+      <div class="row" style="grid-template-columns:1fr 56px;">
+        <input type="text" id="iconeA" placeholder="https://raw.githubusercontent.com/.../Imagens/relampago.png">
+        <img id="prevA" src="" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#111;border:1px solid #333;" onerror="this.style.opacity=0.3">
+      </div>
+
+      <label>Opção B — nome</label>
+      <input type="text" id="opcaoB" placeholder="Cruzeiro">
+      <label>Miniatura B (URL GitHub)</label>
+      <div class="row" style="grid-template-columns:1fr 56px;">
+        <input type="text" id="iconeB" placeholder="https://raw.githubusercontent.com/.../Imagens/cruzeiro.png">
+        <img id="prevB" src="" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#111;border:1px solid #333;" onerror="this.style.opacity=0.3">
+      </div>
+
+      <label>Opção C — nome</label>
+      <input type="text" id="opcaoC" placeholder="Loveless">
+      <label>Miniatura C (URL GitHub)</label>
+      <div class="row" style="grid-template-columns:1fr 56px;">
+        <input type="text" id="iconeC" placeholder="https://raw.githubusercontent.com/.../Imagens/loveless.png">
+        <img id="prevC" src="" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#111;border:1px solid #333;" onerror="this.style.opacity=0.3">
+      </div>
+      <p style="color:#888;font-size:0.8rem;margin-top:8px;">Suba as imagens em <code>Imagens/</code> no GitHub e cole o link <strong>raw</strong> (raw.githubusercontent.com).</p>
+
+      <button type="button" class="btn btn-green" id="btn-salvar">💾 Salvar enquete</button>
+      <button type="button" class="btn btn-red" id="btn-zerar">Zerar votos</button>
+      <p class="status" id="status-save"></p>
+
+      <div class="counts">
+        <div><span>A</span><strong id="vA">0</strong></div>
+        <div><span>B</span><strong id="vB">0</strong></div>
+        <div><span>C</span><strong id="vC">0</strong></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📁 Imagens no GitHub (miniaturas da enquete)</h2>
+      <p style="color:#888;font-size:0.85rem;margin-bottom:10px;">
+        Token é o mesmo do admin (Firebase). Upload vai para a pasta <code>Imagens/</code> do repositório.
+      </p>
+      <label>Arquivo</label>
+      <input type="file" id="gh-file" accept="image/*" style="color:#ccc;font-size:13px;margin-bottom:8px;">
+      <label>Nome no GitHub (opcional)</label>
+      <input type="text" id="gh-name" placeholder="ex: relampago.png — se vazio usa o nome do arquivo">
+      <button type="button" class="btn btn-green" id="btn-upload-gh">⬆ Enviar para GitHub</button>
+      <button type="button" class="btn btn-blue" id="btn-list-gh">📋 Listar imagens</button>
+      <p class="status" id="status-gh"></p>
+      <div id="gh-list" style="margin-top:12px;max-height:320px;overflow:auto;"></div>
+    </div>
+
+    <p style="color:#666;font-size:0.8rem;margin-top:8px;">
+      As imagens do quadro central vêm dos mesmos campos <code>img1/img2/img3</code> da aba Promoções do admin principal.
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      authDomain: "imperio-25340.firebaseapp.com",
+      projectId: "imperio-25340",
+      storageBucket: "imperio-25340.appspot.com",
+      messagingSenderId: "305282928509",
+      appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+    };
+
+    let app;
+    try {
+      const r = await fetch("/__/firebase/init.json");
+      if (r.ok) app = initializeApp(await r.json());
+    } catch (_) {}
+    if (!app) app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const refEnquete = doc(db, "configuracoes", "enquete");
+    const refSite = doc(db, "configuracoes", "site");
+
+    function setBadge(ativa) {
+      const b = document.getElementById("badge-pagina");
+      if (ativa) {
+        b.textContent = "indexnew (enquete ativa)";
+        b.className = "badge on";
+      } else {
+        b.textContent = "Index original";
+        b.className = "badge off";
+      }
+    }
+
+    function fillForm(d) {
+      document.getElementById("pergunta").value = d.pergunta || "";
+      document.getElementById("opcaoA").value = d.opcaoA || "";
+      document.getElementById("opcaoB").value = d.opcaoB || "";
+      document.getElementById("opcaoC").value = d.opcaoC || "";
+      document.getElementById("iconeA").value = d.iconeA || d.imgA || "";
+      document.getElementById("iconeB").value = d.iconeB || d.imgB || "";
+      document.getElementById("iconeC").value = d.iconeC || d.imgC || "";
+      ["A","B","C"].forEach(function(L) {
+        var u = document.getElementById("icone" + L).value.trim();
+        var p = document.getElementById("prev" + L);
+        if (p) { p.src = u || ""; p.style.opacity = u ? 1 : 0.3; }
+      });
+      document.getElementById("exibirEnquete").checked = d.exibirEnquete !== false;
+      document.getElementById("exibirImagensPainel").checked = d.exibirImagensPainel !== false;
+      document.getElementById("exibirContador").checked = d.exibirContador !== false;
+      ["1","2","3"].forEach(function(n) {
+        var el = document.getElementById("painelImg" + n);
+        var pr = document.getElementById("prevPainel" + n);
+        var u = (d["painelImg" + n] || "").trim();
+        if (el) el.value = u;
+        if (pr) { pr.src = u || ""; pr.style.opacity = u ? 1 : 0.3; }
+      });
+      document.getElementById("vA").textContent = d.votosA || 0;
+      document.getElementById("vB").textContent = d.votosB || 0;
+      document.getElementById("vC").textContent = d.votosC || 0;
+    }
+
+    onSnapshot(refSite, (snap) => {
+      const d = snap.exists() ? snap.data() : {};
+      setBadge(d.paginaPrincipal === "indexnew");
+    });
+
+    onSnapshot(refEnquete, (snap) => {
+      if (snap.exists()) fillForm(snap.data());
+    });
+
+    document.getElementById("btn-ativar").onclick = async () => {
+      const st = document.getElementById("status-pagina");
+      try {
+        await setDoc(refSite, { paginaPrincipal: "indexnew" }, { merge: true });
+        // Garante doc enquete
+        const e = await getDoc(refEnquete);
+        if (!e.exists()) {
+          await setDoc(refEnquete, {
+            pergunta: "Qual personagem você quer ver no próximo episódio?",
+            opcaoA: "Relâmpago", opcaoB: "Cruzeiro", opcaoC: "Loveless",
+            iconeA: "⚡", iconeB: "⭐", iconeC: "❤️",
+            votosA: 0, votosB: 0, votosC: 0,
+            exibirEnquete: true, exibirImagensPainel: true, exibirContador: true
+          }, { merge: true });
+        }
+        st.style.color = "#25d366";
+        st.textContent = "✅ Ativado. A index original redireciona para indexnew (após publicar o redirect).";
+      } catch (err) {
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + err.message;
+      }
+    };
+
+    document.getElementById("btn-desativar").onclick = async () => {
+      const st = document.getElementById("status-pagina");
+      try {
+        await setDoc(refSite, { paginaPrincipal: "index" }, { merge: true });
+        st.style.color = "#25d366";
+        st.textContent = "✅ Desativado. Site volta para a index original.";
+      } catch (err) {
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + err.message;
+      }
+    };
+
+    document.getElementById("btn-vis").onclick = async () => {
+      const st = document.getElementById("status-vis");
+      try {
+        await setDoc(refEnquete, {
+          exibirEnquete: document.getElementById("exibirEnquete").checked,
+          exibirImagensPainel: document.getElementById("exibirImagensPainel").checked,
+          exibirContador: document.getElementById("exibirContador").checked
+        }, { merge: true });
+        st.style.color = "#25d366";
+        st.textContent = "✅ Visibilidade salva.";
+      } catch (err) {
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + err.message;
+      }
+    };
+
+    document.getElementById("btn-salvar").onclick = async () => {
+      const st = document.getElementById("status-save");
+      try {
+        await setDoc(refEnquete, {
+          pergunta: document.getElementById("pergunta").value.trim(),
+          opcaoA: document.getElementById("opcaoA").value.trim(),
+          opcaoB: document.getElementById("opcaoB").value.trim(),
+          opcaoC: document.getElementById("opcaoC").value.trim(),
+          iconeA: document.getElementById("iconeA").value.trim() || "⚡",
+          iconeB: document.getElementById("iconeB").value.trim() || "⭐",
+          iconeC: document.getElementById("iconeC").value.trim() || "❤️"
+        }, { merge: true });
+        st.style.color = "#25d366";
+        st.textContent = "✅ Enquete salva.";
+      } catch (err) {
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + err.message;
+      }
+    };
+
+    ["A","B","C"].forEach(function(L) {
+      var inp = document.getElementById("icone" + L);
+      if (inp) inp.addEventListener("input", function() {
+        var p = document.getElementById("prev" + L);
+        if (p) { p.src = this.value.trim(); p.style.opacity = this.value.trim() ? 1 : 0.3; }
+      });
+    });
+
+    document.getElementById("btn-zerar").onclick = async () => {
+      if (!confirm("Zerar todos os votos?")) return;
+      const st = document.getElementById("status-save");
+      try {
+        await setDoc(refEnquete, { votosA: 0, votosB: 0, votosC: 0 }, { merge: true });
+        st.style.color = "#25d366";
+        st.textContent = "✅ Votos zerados.";
+      } catch (err) {
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + err.message;
+      }
+    };
+  
+    // ===== GitHub Imagens/ =====
+    const GH_OWNER = "escrittor-cloud";
+    const GH_REPO = "imperio";
+    window._githubTokenMem = window._githubTokenMem || "";
+
+    async function carregarTokenGh() {
+      try {
+        const snap = await getDoc(refSite);
+        if (!snap.exists()) return "";
+        const t = String(snap.data().githubToken || "").trim();
+        if (t.startsWith("ghp_") || t.startsWith("github_pat_")) {
+          window._githubTokenMem = t;
+          return t;
+        }
+      } catch (e) { console.warn(e); }
+      return window._githubTokenMem || "";
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(",")[1]);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function rawUrl(path) {
+      return "https://raw.githubusercontent.com/" + GH_OWNER + "/" + GH_REPO + "/main/" + path.split("/").map(encodeURIComponent).join("/");
+    }
+
+    async function uploadImagemGh() {
+      const st = document.getElementById("status-gh");
+      const input = document.getElementById("gh-file");
+      const nameField = document.getElementById("gh-name");
+      if (!input.files || !input.files[0]) {
+        st.style.color = "#e50914";
+        st.textContent = "Escolha um arquivo de imagem.";
+        return;
+      }
+      const file = input.files[0];
+      let token = await carregarTokenGh();
+      if (!token) {
+        st.style.color = "#e50914";
+        st.textContent = "Token GitHub não encontrado. Salve o token ghp_... no admin (aba Promoções).";
+        return;
+      }
+      st.style.color = "#fff";
+      st.textContent = "Enviando...";
+      try {
+        let fname = (nameField.value || file.name || "imagem.png").trim();
+        fname = fname.replace(/[^a-zA-Z0-9._\-]/g, "_");
+        if (!/\.(png|jpe?g|webp|gif)$/i.test(fname)) {
+          const ext = (file.name.match(/\.(png|jpe?g|webp|gif)$/i) || [".png"])[0];
+          fname += ext;
+        }
+        const path = "Imagens/" + fname;
+        const content = await fileToBase64(file);
+        const apiUrl = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + path.split("/").map(encodeURIComponent).join("/");
+
+        let sha = null;
+        const head = await fetch(apiUrl, { headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" } });
+        if (head.ok) {
+          const j = await head.json();
+          sha = j.sha || null;
+        }
+
+        const body = {
+          message: "enquete: upload " + fname,
+          content: content,
+          branch: "main"
+        };
+        if (sha) body.sha = sha;
+
+        const resp = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/vnd.github+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+        if (!resp.ok) {
+          const errTxt = await resp.text();
+          throw new Error(resp.status + " " + errTxt.slice(0, 200));
+        }
+        const url = rawUrl(path);
+        st.style.color = "#25d366";
+        st.textContent = "✅ Enviado: " + url;
+        input.value = "";
+        await listarImagensGh();
+        // se algum campo miniatura estiver vazio, sugere
+      } catch (e) {
+        console.error(e);
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + (e.message || e);
+      }
+    }
+
+    async function listarImagensGh() {
+      const st = document.getElementById("status-gh");
+      const box = document.getElementById("gh-list");
+      let token = await carregarTokenGh();
+      if (!token) {
+        st.style.color = "#e50914";
+        st.textContent = "Token GitHub não encontrado no Firebase.";
+        return;
+      }
+      box.innerHTML = "<p style='color:#888'>Carregando Imagens/...</p>";
+      try {
+        const apiUrl = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/Imagens?ref=main";
+        const resp = await fetch(apiUrl, {
+          headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" }
+        });
+        if (!resp.ok) throw new Error("GitHub " + resp.status);
+        const files = await resp.json();
+        if (!Array.isArray(files)) {
+          box.innerHTML = "<p style='color:#e50914'>Pasta Imagens/ vazia ou inacessível.</p>";
+          return;
+        }
+        const imgs = files.filter(f => f.type === "file" && /\.(png|jpe?g|webp|gif)$/i.test(f.name));
+        if (!imgs.length) {
+          box.innerHTML = "<p style='color:#888'>Nenhuma imagem em Imagens/.</p>";
+          return;
+        }
+        imgs.sort((a, b) => a.name.localeCompare(b.name));
+        box.innerHTML = "<table style='width:100%;font-size:12px;border-collapse:collapse;'>" +
+          "<tr style='background:#0d0d0d;text-align:left;'><th style='padding:6px'>Mini</th><th style='padding:6px'>Nome</th><th style='padding:6px'>Usar</th></tr>" +
+          imgs.map(f => {
+            const url = f.download_url || rawUrl("Imagens/" + f.name);
+            const safe = url.replace(/'/g, "\\'");
+            return "<tr style='border-bottom:1px solid #2a2a2a'>" +
+              "<td style='padding:6px'><img src='" + url.replace(/'/g, "%27") + "' alt='' style='width:48px;height:48px;object-fit:cover;border-radius:6px;background:#111' loading='lazy'></td>" +
+              "<td style='padding:6px;word-break:break-all'>" + f.name + "</td>" +
+              "<td style='padding:6px;white-space:nowrap'>" +
+              "<button type='button' class='btn btn-gray' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='copy'>Copiar link</button>" +
+              "<button type='button' class='btn btn-green' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='A'>→ A</button>" +
+              "<button type='button' class='btn btn-green' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='B'>→ B</button>" +
+              "<button type='button' class='btn btn-green' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='C'>→ C</button>" +
+              "<button type='button' class='btn btn-blue' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='P1'>Painel1</button>" +
+              "<button type='button' class='btn btn-blue' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='P2'>Painel2</button>" +
+              "<button type='button' class='btn btn-blue' style='padding:4px 8px;font-size:11px;margin:2px' data-url='" + url.replace(/'/g, "&apos;") + "' data-act='P3'>Painel3</button>" +
+              "</td></tr>";
+          }).join("") + "</table>";
+        box.querySelectorAll("button[data-url]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const url = btn.getAttribute("data-url");
+            const act = btn.getAttribute("data-act");
+            if (act === "copy") {
+              try {
+                await navigator.clipboard.writeText(url);
+                st.style.color = "#25d366";
+                st.textContent = "Link copiado!";
+              } catch (_) {
+                prompt("Copie o link:", url);
+              }
+              return;
+            }
+            if (act === "P1" || act === "P2" || act === "P3") {
+              const n = act.charAt(1);
+              const field = document.getElementById("painelImg" + n);
+              const prev = document.getElementById("prevPainel" + n);
+              if (field) field.value = url;
+              if (prev) { prev.src = url; prev.style.opacity = 1; }
+              st.style.color = "#25d366";
+              st.textContent = "Painel imagem " + n + " preenchida. Clique em Salvar carrossel do painel.";
+              return;
+            }
+            const field = document.getElementById("icone" + act);
+            const prev = document.getElementById("prev" + act);
+            if (field) field.value = url;
+            if (prev) { prev.src = url; prev.style.opacity = 1; }
+            st.style.color = "#25d366";
+            st.textContent = "Miniatura " + act + " preenchida. Clique em Salvar enquete.";
+          });
+        });
+        st.style.color = "#25d366";
+        st.textContent = imgs.length + " imagem(ns) em Imagens/";
+      } catch (e) {
+        console.error(e);
+        box.innerHTML = "";
+        st.style.color = "#e50914";
+        st.textContent = "Erro ao listar: " + (e.message || e);
+      }
+    }
+
+    
+    document.getElementById("btn-painel-imgs").onclick = async () => {
+      const st = document.getElementById("status-painel");
+      try {
+        await setDoc(refEnquete, {
+          painelImg1: document.getElementById("painelImg1").value.trim(),
+          painelImg2: document.getElementById("painelImg2").value.trim(),
+          painelImg3: document.getElementById("painelImg3").value.trim()
+        }, { merge: true });
+        st.style.color = "#25d366";
+        st.textContent = "✅ Carrossel do painel salvo (só indexnew).";
+      } catch (err) {
+        st.style.color = "#e50914";
+        st.textContent = "Erro: " + err.message;
+      }
+    };
+    ["1","2","3"].forEach(function(n) {
+      var inp = document.getElementById("painelImg" + n);
+      if (inp) inp.addEventListener("input", function() {
+        var p = document.getElementById("prevPainel" + n);
+        if (p) { p.src = this.value.trim(); p.style.opacity = this.value.trim() ? 1 : 0.3; }
+      });
+    });
+
+    document.getElementById("btn-upload-gh").onclick = uploadImagemGh;
+    document.getElementById("btn-list-gh").onclick = listarImagensGh;
+    carregarTokenGh();
+
+  </script>
+</body>
+</html>

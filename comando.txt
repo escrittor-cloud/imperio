@@ -1,3 +1,0 @@
-cd C:\Users\PC\Downloads\imperio
-
-firebase deploy --only hosting

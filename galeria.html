@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeria – Império do Streaming</title>
+  <style>
+    :root { --bg:#0b0b12; --card:#141422; --primary:#e50914; --muted:#9ca3af; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #eee; min-height: 100vh; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 4%; flex-wrap: wrap; gap: 12px;
+      border-bottom: 1px solid #1f1f2e; background: #0a0a10;
+    }
+    .logo { color: var(--primary); font-weight: 800; font-size: 1.15rem; text-decoration: none; letter-spacing: 0.5px; }
+    .nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .nav a {
+      text-decoration: none; color: #fff; font-size: 0.85rem; font-weight: 600;
+      padding: 8px 14px; border-radius: 20px; background: #2a2a3a; transition: 0.15s;
+    }
+    .nav a:hover { opacity: 0.9; transform: translateY(-1px); }
+    .nav a.fb { background: #1877F2; }
+    .nav a.wa { background: #25D366; }
+    .nav a.cta { background: var(--primary); }
+    .nav a.vid { background: #3b82f6; }
+    .nav a.gal { background: #8b5cf6; }
+
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 24px 4% 50px; }
+    .back {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #252538; color: #fff; border-radius: 20px;
+      padding: 8px 16px; font-weight: 600; font-size: 0.85rem;
+      text-decoration: none; margin-bottom: 20px;
+    }
+    .back:hover { background: #33334a; }
+    h1 { font-size: 1.75rem; margin-bottom: 6px; }
+    .sub { color: var(--muted); margin-bottom: 22px; font-size: 0.95rem; }
+
+    /* Grade uniforme de thumbs */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 800px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } }
+    @media (max-width: 520px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+
+    .thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #1a1a28;
+      border: 1px solid #2a2a3a;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .thumb:hover { transform: scale(1.03); border-color: #8b5cf6; }
+    .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      align-items: center; justify-content: center;
+      padding: 16px; flex-direction: column; gap: 12px;
+    }
+    #lightbox.show { display: flex; }
+    #lightbox img {
+      max-width: min(960px, 95vw);
+      max-height: 82vh;
+      border-radius: 10px;
+      border: 1px solid #333;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+    #lightbox .lb-bar {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;
+    }
+    #lightbox button {
+      background: #333; color: #fff; border: none; border-radius: 8px;
+      padding: 8px 16px; font-weight: 600; cursor: pointer;
+    }
+    #lightbox button:hover { background: #444; }
+    #lb-caption { color: #ccc; font-size: 0.9rem; text-align: center; max-width: 90vw; }
+
+    .status { color: var(--muted); padding: 40px 0; text-align: center; }
+
+    /* Anúncios rodapé (4 slots) */
+    .ads-section { max-width: 1000px; margin: 10px auto 40px; padding: 0 4%; }
+    .ads-section h3 { font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
+    .ads-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 700px) { .ads-grid { grid-template-columns: repeat(2, 1fr); } }
+    .ad-slot {
+      border-radius: 8px; overflow: hidden; background: #1a1a28;
+      border: 1px solid #2a2a3a; aspect-ratio: 3/2;
+    }
+    .ad-slot a { display: block; width: 100%; height: 100%; }
+    .ad-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/">IMPÉRIO DO STREAMING</a>
+    <nav class="nav">
+      <a href="/">Home</a>
+      <a class="fb" href="https://www.facebook.com/imperiodostreaming" target="_blank" rel="noopener">Facebook</a>
+      <a class="wa" href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site." target="_blank" rel="noopener">WhatsApp</a>
+      <a class="cta" href="/#cadastro">Testar Agora</a>
+      <a class="vid" href="/vlog.html">Vídeos</a>
+      <a class="gal" href="/galeria.html?id=super-stream">Galeria</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <a class="back" id="back-link" href="/serie.html?id=super-stream">← Voltar</a>
+    <h1 id="title">Galeria</h1>
+    <p class="sub" id="sub">Imagens da série — clique para ampliar</p>
+    <div id="grid" class="status">Carregando...</div>
+  </div>
+
+  <section class="ads-section" id="ads-section" style="display:none;">
+    <h3>PUBLICIDADE</h3>
+    <div class="ads-grid" id="ads-grid"></div>
+  </section>
+
+  <div id="lightbox" onclick="if(event.target===this)fecharLb()">
+    <img id="lb-img" src="" alt="">
+    <div class="lb-bar">
+      <button type="button" id="lb-prev">← Anterior</button>
+      <button type="button" onclick="fecharLb()">Fechar</button>
+      <button type="button" id="lb-next">Próxima →</button>
+    </div>
+    <div id="lb-caption"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      authDomain: "imperio-25340.firebaseapp.com",
+      projectId: "imperio-25340",
+      storageBucket: "imperio-25340.appspot.com",
+      messagingSenderId: "305282928509",
+      appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+    };
+
+    const serieId = (new URLSearchParams(location.search).get("id") || "super-stream").toLowerCase();
+    document.getElementById("back-link").href = "/serie.html?id=" + encodeURIComponent(serieId);
+
+    let gallery = [];
+    let lbIndex = 0;
+
+    function esc(s) {
+      return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+    }
+
+    function getApp() {
+      return (async () => {
+        try {
+          const r = await fetch("/__/firebase/init.json");
+          if (r.ok) return initializeApp(await r.json());
+        } catch (_) {}
+        return initializeApp(firebaseConfig);
+      })();
+    }
+
+    window.abrirLb = function(i) {
+      lbIndex = i;
+      const item = gallery[i];
+      if (!item) return;
+      const url = item.url || item;
+      document.getElementById("lb-img").src = url;
+      document.getElementById("lb-caption").textContent = item.title || ("Imagem " + (i + 1));
+      document.getElementById("lightbox").classList.add("show");
+    };
+    window.fecharLb = function() {
+      document.getElementById("lightbox").classList.remove("show");
+      document.getElementById("lb-img").src = "";
+    };
+    document.getElementById("lb-prev").onclick = (e) => {
+      e.stopPropagation();
+      if (!gallery.length) return;
+      abrirLb((lbIndex - 1 + gallery.length) % gallery.length);
+    };
+    document.getElementById("lb-next").onclick = (e) => {
+      e.stopPropagation();
+      if (!gallery.length) return;
+      abrirLb((lbIndex + 1) % gallery.length);
+    };
+    document.addEventListener("keydown", (e) => {
+      if (!document.getElementById("lightbox").classList.contains("show")) return;
+      if (e.key === "Escape") fecharLb();
+      if (e.key === "ArrowLeft") document.getElementById("lb-prev").click();
+      if (e.key === "ArrowRight") document.getElementById("lb-next").click();
+    });
+
+    async function loadAds(db) {
+      try {
+        const snap = await getDoc(doc(db, "configuracoes", "site"));
+        if (!snap.exists()) return;
+        const data = snap.data();
+        // 4 anúncios do rodapé: slots 13–16 (como a faixa de 4 do site)
+        const slots = [13, 14, 15, 16];
+        const grid = document.getElementById("ads-grid");
+        const section = document.getElementById("ads-section");
+        let html = "";
+        slots.forEach(n => {
+          const p = "an" + n + "_";
+          if (data[p + "exibir"] !== true) return;
+          const imgs = [data[p + "img1"], data[p + "img2"], data[p + "img3"]].filter(Boolean);
+          if (!imgs.length) return;
+          const link = data[p + "link"] || "#";
+          const title = data[p + "titulo"] || "";
+          html += `<div class="ad-slot" title="${esc(title)}"><a href="${esc(link)}" target="_blank" rel="noopener"><img src="${esc(imgs[0])}" alt="${esc(title)}" loading="lazy"></a></div>`;
+        });
+        if (html) {
+          grid.innerHTML = html;
+          section.style.display = "block";
+        }
+      } catch (e) { console.warn("ads", e); }
+    }
+
+    async function load() {
+      const grid = document.getElementById("grid");
+      try {
+        const app = await getApp();
+        const db = getFirestore(app);
+        loadAds(db);
+
+        let title = serieId;
+        const snap = await getDoc(doc(db, "series", serieId));
+        if (snap.exists()) {
+          const d = snap.data();
+          title = d.title || serieId;
+          gallery = Array.isArray(d.gallery) ? d.gallery : [];
+        }
+        if (!gallery.length) {
+          const g = await getDoc(doc(db, "config", "galeria"));
+          if (g.exists()) {
+            const d = g.data();
+            if (d.title) title = d.title;
+            gallery = Array.isArray(d.images) ? d.images : (Array.isArray(d.gallery) ? d.gallery : []);
+          }
+        }
+
+        document.getElementById("title").textContent = "Galeria — " + title;
+        document.title = "Galeria — " + title;
+
+        if (!gallery.length) {
+          grid.className = "status";
+          grid.innerHTML = "Nenhuma imagem na galeria.";
+          return;
+        }
+
+        grid.className = "grid";
+        grid.innerHTML = gallery.map((img, i) => {
+          const url = img.url || img;
+          return `<div class="thumb" onclick="abrirLb(${i})" title="${esc(img.title || "")}">
+            <img src="${esc(url)}" alt="${esc(img.title || "Foto " + (i+1))}" loading="lazy">
+          </div>`;
+        }).join("");
+      } catch (e) {
+        console.error(e);
+        grid.className = "status";
+        grid.innerHTML = "Erro ao carregar: " + esc(e.message || e);
+      }
+    }
+    load();
+  </script>
+</body>
+</html>
