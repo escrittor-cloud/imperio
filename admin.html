@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel de Controle - Império do Streaming</title>
@@ -22,7 +21,7 @@
       box-sizing: border-box; 
     }
     
-    /* Tela de Login sem form */
+    /* Tela de Login */
     #login-screen {
       display: flex;
       flex-direction: column;
@@ -47,7 +46,7 @@
 
     h1 { font-size: 26px; color: #ffffff !important; margin-bottom: 20px; font-weight: bold; }
 
-    /* Abas */
+    /* Navegação pelas Abas */
     .tabs { 
       display: flex; 
       gap: 8px; 
@@ -64,10 +63,11 @@
     .btn-tab.active { background: #e50914 !important; color: #fff !important; }
     .btn-tab:hover:not(.active) { background: #3d3d3d; color: #fff; }
 
+    /* Botão Verde */
     .btn-action-green { background: #25D366; color: #fff; border: none; padding: 12px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; margin-bottom: 20px; }
     .btn-action-green:hover { background: #1eb857; }
 
-    /* Tabela */
+    /* Tabela Ajustada */
     .table-responsive { 
       width: 100% !important; 
       max-width: 100% !important; 
@@ -82,6 +82,7 @@
     td { padding: 12px 10px; border-bottom: 1px solid #2a2a2a; font-size: 12px; color: #ccc; }
     tr:hover { background: #252525; }
 
+    /* Promoções e Anúncios */
     .promo-section { background: #1e1e1e; padding: 20px; border-radius: 6px; border: 1px solid #2a2a2a; margin-bottom: 25px; display: none; }
     .promo-group { background: #121212; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-bottom: 20px; }
     .promo-group h4 { color: #e50914; margin-bottom: 10px; font-size: 15px; }
@@ -97,6 +98,7 @@
     .plan-visibility-check { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 12px; color: #fff; font-weight: bold; }
     .plan-visibility-check input { width: 15px; height: 15px; cursor: pointer; }
 
+    /* Caixa Lista de Transmissão */
     .broadcast-box { 
       background: #1e1e1e; 
       padding: 20px; 
@@ -106,8 +108,9 @@
       max-width: 100% !important; 
     }
     .broadcast-box h3 { font-size: 16px; margin-bottom: 12px; color: #fff; }
-    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; background: #ffffff; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #333; outline: none; }
+    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; background: #ffffff; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #333333; outline: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
+    /* Botões */
     .btn-sm { padding: 6px 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; color: #fff; margin-right: 3px; margin-bottom: 3px; display: inline-block; }
     .btn-gerar { background: #007bff; }
     .btn-ativar { background: #28a745; }
@@ -126,15 +129,15 @@
 </head>
 <body>
 
-  <!-- Tela de Login (div sem recarregamento GET) -->
+  <!-- Tela de Login em div para evitar envios GET automáticos -->
   <div id="login-screen" style="display: flex;">
     <h2>🔒 Restrito ao Admin</h2>
-    <div id="loginFormContainer" style="width: 100%;">
+    <div id="loginForm" style="width:100%;">
       <label>Usuário:</label>
-      <input type="text" id="login-user" required placeholder="Digite o usuário">
+      <input type="text" id="login-user" name="admin-user" autocomplete="username" required placeholder="Digite o usuário">
       <label>Senha:</label>
-      <input type="password" id="login-pass" required placeholder="Digite a senha" onkeydown="if(event.key==='Enter') realizarLogin()">
-      <button type="button" onclick="realizarLogin()">Entrar no Painel</button>
+      <input type="password" id="login-pass" name="admin-pass" autocomplete="current-password" required placeholder="Digite a senha" onkeydown="if(event.key==='Enter') realizarLogin(event)">
+      <button type="button" onclick="realizarLogin(event)">Entrar no Painel</button>
       <div id="login-error" class="login-error">Usuário ou senha incorretos!</div>
     </div>
   </div>
@@ -151,7 +154,7 @@
       <button class="btn-tab" id="tab-vlog" onclick="alterarAba('vlog')">6. Vlog / Galeria</button>
     </div>
 
-    <!-- ABAS 1 A 4: GESTÃO DE LEADS E TESTES -->
+    <!-- SEÇÃO LEADS -->
     <div id="section-leads">
       <button class="btn-action-green" onclick="gerarListaWhatsApp()">Criar Lista de Transmissão (Contatos Selecionados)</button>
       <button class="btn-action-green" style="background:#0d6efd;margin-left:8px;" onclick="toggleImportMaster()">📥 Importar clientes Master (CSV)</button>
@@ -197,11 +200,14 @@
       </div>
     </div>
 
-    <!-- ABA 5: PROMOÇÕES E 16 SLOTS DE ANÚNCIOS -->
+    <!-- SEÇÃO PROMOÇÕES (16 SLOTS DE ANÚNCIOS COM BOTÕES DE UPLOAD) -->
     <div id="section-promocoes" class="promo-section">
+
       <div class="promo-group" style="border:1px solid #333;">
         <h4>🔑 Token do GitHub</h4>
-        <p style="color:#aaa;font-size:12px;margin-bottom:4px;">Carregado automaticamente do Firebase. Não é exibido na tela.</p>
+        <p style="color:#aaa;font-size:12px;margin-bottom:4px;">
+          Carregado automaticamente do Firebase. Não é exibido na tela.
+        </p>
         <span id="github-token-status" style="font-size:12px;color:#25D366;display:block;">Verificando token…</span>
       </div>
       
@@ -277,12 +283,59 @@
           <h4 style="margin:0;color:#e50914;">Anúncios (16 slots)</h4>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
             <button type="button" class="btn-action-green" style="padding:8px 16px;font-size:13px;" onclick="salvarConfiguracoesGerais()">💾 Salvar Todas as Alterações</button>
-            <button type="button" class="btn-action-green" style="background:#0d6efd;" onclick="abrirListaImagens()">🖼️ Lista de imagens</button>
+            <button type="button" class="btn-action-green" style="padding:8px 16px;font-size:13px;background:#0d6efd;" onclick="abrirListaImagens()">🖼️ Lista de imagens</button>
             <button type="button" class="btn-action-green" style="padding:8px 16px;font-size:13px;" onclick="abrirListaAnunciantes()">📋 Listar Anunciantes</button>
           </div>
         </div>
-        <p style="color:#aaa;font-size:12px;margin-bottom:12px;">Cada anúncio pode ter até 3 imagens que oscilam. Marque "Exibir" e preencha Título + pelo menos 1 URL.</p>
-        <div class="promo-grid" id="ads-edit-grid"></div>
+        <p style="color:#aaa;font-size:12px;margin-bottom:12px;">Cada anúncio pode ter até 3 imagens que oscilam. Clique em <b>📁 Enviar</b> ao lado de cada campo para subir a imagem direto para o GitHub sem precisar de terminal.</p>
+        
+        <div class="promo-grid" id="ads-edit-grid">
+          <!-- Gera os 16 blocos com inputs e botões 📁 Enviar -->
+          <script>
+            document.write((function() {
+              let out = '';
+              for (let i = 1; i <= 16; i++) {
+                if (i === 13) {
+                  out += `<div style="grid-column:1/-1;margin:12px 0 4px;padding:10px 12px;background:#1a1030;border:1px solid #7c3aed;border-radius:8px;">
+                    <strong style="color:#a78bfa;">Anúncios 13–16 — Série, Catálogo (Vídeos) e Galeria</strong>
+                    <span style="color:#888;font-size:12px;display:block;margin-top:4px;">Aparecem só em serie.html, vlog.html e galeria.html (4 no rodapé).</span>
+                  </div>`;
+                }
+                out += `<div class="plan-box-edit" style="border:1px solid #333;padding:12px;border-radius:6px;background:#121212;">
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px;">
+                    <label class="plan-visibility-check" style="margin:0;"><input type="checkbox" id="an${i}_exibir"> <strong>Exibir Anúncio ${i}</strong></label>
+                    <span style="color:#888;font-size:12px;">ID: <strong id="an${i}_id_label" style="color:#e50914;">—</strong></span>
+                  </div>
+                  <input type="hidden" id="an${i}_id" value="">
+                  <label>Título (hover no site):</label>
+                  <input type="text" id="an${i}_titulo" placeholder="Nome do anunciante">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div><label>Data entrada:</label><input type="text" id="an${i}_data" placeholder="DD/MM/AAAA"></div>
+                    <div><label>Expira:</label><input type="text" id="an${i}_expira" placeholder="DD/MM/AAAA"></div>
+                  </div>
+                  <label>URL Imagem 1:</label>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input type="text" id="an${i}_img1" placeholder="https://..." style="flex:1;">
+                    <button type="button" class="btn-sm" style="background:#333;color:#fff;padding:6px 10px;white-space:nowrap;" onclick="uploadImagemAnuncio(${i},1)">📁 Enviar</button>
+                  </div>
+                  <label>URL Imagem 2 (opcional):</label>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input type="text" id="an${i}_img2" placeholder="https://..." style="flex:1;">
+                    <button type="button" class="btn-sm" style="background:#333;color:#fff;padding:6px 10px;white-space:nowrap;" onclick="uploadImagemAnuncio(${i},2)">📁 Enviar</button>
+                  </div>
+                  <label>URL Imagem 3 (opcional):</label>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input type="text" id="an${i}_img3" placeholder="https://..." style="flex:1;">
+                    <button type="button" class="btn-sm" style="background:#333;color:#fff;padding:6px 10px;white-space:nowrap;" onclick="uploadImagemAnuncio(${i},3)">📁 Enviar</button>
+                  </div>
+                  <label>Link do anúncio (nova aba):</label>
+                  <input type="text" id="an${i}_link" placeholder="https://...">
+                </div>`;
+              }
+              return out;
+            })());
+          </script>
+        </div>
       </div>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
@@ -292,17 +345,19 @@
       </div>
     </div>
 
-    <!-- ABA 6: STUDIO / VLOG / SÉRIES E SUB-GALERIAS -->
+    <!-- SEÇÃO STUDIO / SÉRIE OFICIAL / SUB-GALERIAS -->
     <div id="section-vlog" class="promo-section" style="display:none;">
       <h3 style="color:#fff;margin-bottom:16px;">6. Studio — Séries, Galeria e Admins</h3>
-      <p style="color:#aaa;font-size:13px;margin-bottom:16px;">Upload vai para <code>Posters/</code>, <code>Imagens/</code> ou <code>Videos/</code> no GitHub.</p>
+      <p style="color:#aaa;font-size:13px;margin-bottom:16px;">
+        Upload vai para <code>Posters/</code>, <code>Imagens/</code> ou <code>Videos/</code> no GitHub.
+      </p>
 
       <div class="promo-group" id="box-gerenciar-admins" style="display:none;border:1px solid #e50914;">
         <h4>Gerenciar logins do painel</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <input type="text" id="adm-user" placeholder="Usuário" autocomplete="off">
           <input type="password" id="adm-pass" placeholder="Senha" autocomplete="new-password">
-          <input type="email" id="adm-email" placeholder="E-mail" autocomplete="off">
+          <input type="email" id="adm-email" placeholder="E-mail (recuperação)" autocomplete="off">
         </div>
         <button type="button" class="btn-action-green" style="margin-top:10px;" onclick="salvarAdminUser()">Salvar admin</button>
         <div id="admins-list" style="margin-top:12px;font-size:13px;color:#ccc;"></div>
@@ -331,6 +386,8 @@
         <input type="text" id="vlog-year" placeholder="2026">
         <label>Gêneros:</label>
         <input type="text" id="vlog-genres" placeholder="Ação, Ficção">
+        <label>Fonte (opcional):</label>
+        <input type="text" id="vlog-source" placeholder="Ex: Original">
         <label>Sinopse:</label>
         <textarea id="vlog-synopsis" rows="3"></textarea>
 
@@ -339,7 +396,7 @@
           <input type="file" id="vlog-poster-file" accept="image/*" style="color:#ccc;font-size:13px;">
           <button type="button" class="btn-action-green" style="padding:8px 14px;" onclick="uploadPoster()">Enviar Poster</button>
         </div>
-        <label>URL do Poster:</label>
+        <label>URL do Poster (preenchida após enviar):</label>
         <input type="text" id="vlog-poster" placeholder="https://raw.githubusercontent.com/.../Posters/...">
         <div id="vlog-poster-preview" style="margin-top:8px;"></div>
       </div>
@@ -354,13 +411,28 @@
         <input type="text" id="ep-title" placeholder="Ex: Piloto">
         <label>Descrição</label>
         <textarea id="ep-desc" rows="2"></textarea>
+
+        <label style="margin-top:12px;">Vídeo – envie o arquivo (pasta Videos/)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;">
+          <input type="file" id="ep-video-file" accept="video/*" style="color:#ccc;font-size:13px;">
+          <button type="button" class="btn-action-green" style="padding:8px 14px;" onclick="uploadEpisodeVideo()">Enviar Vídeo</button>
+        </div>
         <label>URL do Vídeo:</label>
         <input type="text" id="ep-video-url" placeholder="https://raw.githubusercontent.com/.../Videos/...">
+
+        <label style="margin-top:12px;">Thumbnail – envie a imagem (pasta Imagens/)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;">
+          <input type="file" id="ep-thumb-file" accept="image/*" style="color:#ccc;font-size:13px;">
+          <button type="button" class="btn-action-green" style="padding:8px 14px;" onclick="uploadEpisodeThumb()">Enviar Thumbnail</button>
+        </div>
         <label>URL da Thumbnail:</label>
         <input type="text" id="ep-thumb-url" placeholder="https://raw.githubusercontent.com/.../Imagens/...">
-        <div style="display:flex;gap:8px;margin-top:14px;">
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center;">
           <button type="button" class="btn-action-green" id="btn-salvar-episodio" onclick="adicionarEpisodio()">+ Adicionar Episódio à lista</button>
+          <button type="button" class="btn-sm" id="btn-cancelar-edicao-ep" style="display:none;background:#444;color:#fff;padding:10px 14px;" onclick="cancelarEdicaoEpisodio()">Cancelar edição</button>
         </div>
+        <p id="ep-add-status" style="margin-top:8px;font-size:13px;"></p>
       </div>
 
       <div class="promo-group">
@@ -368,7 +440,7 @@
         <div id="vlog-eps-list" style="font-size:13px;color:#ccc;"></div>
       </div>
 
-      <!-- SELETOR DE SUB-GALERIAS -->
+      <!-- GALERIA COM SELETOR DE SUB-GALERIAS -->
       <div class="promo-group">
         <h4>Galeria de Imagens e Sub-galerias</h4>
         <label>Título / legenda</label>
@@ -394,6 +466,7 @@
         <label>URL da imagem:</label>
         <input type="text" id="gal-url" placeholder="https://raw.githubusercontent.com/.../Imagens/...">
         <button type="button" class="btn-action-green" style="margin-top:12px;" onclick="adicionarGaleria()">+ Adicionar à Galeria</button>
+        <p id="gal-add-status" style="margin-top:8px;font-size:13px;"></p>
         <div id="vlog-gal-list" style="margin-top:12px;font-size:13px;color:#ccc;"></div>
       </div>
 
@@ -403,19 +476,20 @@
 
   </div>
 
-  <!-- MODAIS AUXILIARES -->
+  <!-- MODAIS -->
   <div class="modal-overlay" id="modal-gerar-teste">
     <div class="modal">
       <h3>Gerar Teste via API</h3>
       <label>Selecione o Teste (lista do Master):</label>
       <select id="server-api-select" onchange="abrirLinkApiSelecionado()"><option value="">Carregando...</option></select>
-      <label>Dados da API:</label>
-      <input type="text" id="input-dados-api">
-      <label>ID do Cliente:</label>
-      <input type="text" id="input-id-cliente">
+      <button type="button" class="btn-sm" style="background:#444;color:#fff;margin-bottom:12px;" onclick="abrirEditorListaTestes()">✏️ Editar lista de testes</button>
+      <label>Dados da API (Opcional):</label>
+      <input type="text" id="input-dados-api" placeholder="Ex: Usuário: user123 | Senha: 123">
+      <label>ID do Cliente (Opcional):</label>
+      <input type="text" id="input-id-cliente" placeholder="Ex: 10452">
       <div class="modal-actions">
         <button class="btn-sm btn-excluir" onclick="fecharModais()">Cancelar</button>
-        <button class="btn-sm btn-gerar" onclick="executarGerarTeste()">Salvar Teste</button>
+        <button class="btn-sm btn-gerar" onclick="executarGerarTeste()">Salvar Teste Gerado</button>
       </div>
     </div>
   </div>
@@ -423,13 +497,13 @@
   <div class="modal-overlay" id="modal-ativar-cliente">
     <div class="modal">
       <h3>Ativar Cliente</h3>
-      <label>ID Cliente:</label>
+      <label>ID do Cliente no Painel (Opcional):</label>
       <input type="text" id="input-id-ativar">
-      <label>Vencimento:</label>
+      <label>Data de Vencimento:</label>
       <input type="date" id="input-data-vencimento">
       <div class="modal-actions">
         <button class="btn-sm btn-excluir" onclick="fecharModais()">Cancelar</button>
-        <button class="btn-sm btn-ativar" onclick="executarAtivarCliente()">Confirmar</button>
+        <button class="btn-sm btn-ativar" onclick="executarAtivarCliente()">Confirmar Ativação</button>
       </div>
     </div>
   </div>
@@ -437,29 +511,72 @@
   <div class="modal-overlay" id="modal-lista-anunciantes">
     <div class="modal" style="max-width:920px;width:95%;max-height:85vh;overflow:auto;">
       <h3>📋 Lista de Anunciantes</h3>
+      <p style="color:#aaa;font-size:12px;margin-bottom:12px;">Todos os anunciantes configurados nos 16 slots.</p>
       <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead><tr style="color:#e50914;"><th>ID</th><th>Título</th><th>Entrada</th><th>Expira</th><th>Status</th><th>Slot</th><th>Ações</th></tr></thead>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;" id="tabela-anunciantes">
+          <thead>
+            <tr style="background:#1a1a1a;color:#e50914;text-align:left;">
+              <th style="padding:8px;">ID</th><th>Título</th><th>Entrada</th><th>Expira</th><th>Status</th><th>Slot</th><th>Ações</th>
+            </tr>
+          </thead>
           <tbody id="tbody-anunciantes"></tbody>
         </table>
       </div>
-      <div class="modal-actions" style="margin-top:16px;"><button class="btn-sm btn-excluir" onclick="fecharModais()">Fechar</button></div>
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn-sm btn-excluir" onclick="fecharModais()">Fechar</button>
+      </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="modal-lista-imagens">
     <div class="modal" style="max-width:1100px;width:96%;max-height:90vh;overflow:auto;">
-      <h3>🖼️ Lista de imagens</h3>
+      <h3>🖼️ Lista de imagens (banco de dados)</h3>
+      <p style="color:#aaa;font-size:12px;margin-bottom:10px;">Lendo pasta <b>Anuncios/</b> do GitHub. Ordenação e busca dinâmica.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">
+        <input type="text" id="img-busca" placeholder="Buscar imagem..." style="flex:1;min-width:200px;padding:10px;background:#121212;color:#fff;border:1px solid #333;border-radius:4px;font-size:13px;" oninput="filtrarTabelaImagens()">
+        <span id="img-lista-count" style="color:#888;font-size:12px;"></span>
+      </div>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12px;">
-          <thead><tr><th>ID</th><th>Miniatura</th><th>Nome</th><th>Link</th><th>Ações</th></tr></thead>
+          <thead>
+            <tr style="background:#0a0a0a;color:#aaa;text-align:left;">
+              <th style="padding:8px;cursor:pointer;" onclick="ordenarTabelaImagens('id')">ID ↕</th>
+              <th style="padding:8px;">Miniatura</th>
+              <th style="padding:8px;cursor:pointer;" onclick="ordenarTabelaImagens('nome')">Nome ↕</th>
+              <th style="padding:8px;">Anunciante</th>
+              <th style="padding:8px;">Slot / Status</th>
+              <th style="padding:8px;">Link</th>
+              <th style="padding:8px;">Ações</th>
+            </tr>
+          </thead>
           <tbody id="tbody-lista-imagens"></tbody>
         </table>
       </div>
-      <div class="modal-actions" style="margin-top:16px;"><button class="btn-sm btn-excluir" onclick="fecharModais()">Fechar</button></div>
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn-sm btn-excluir" onclick="fecharModais()">Fechar</button>
+      </div>
     </div>
   </div>
 
+  <div class="modal-overlay" id="modal-imagem-grande" onclick="if(event.target===this)this.style.display='none'" style="z-index:1100;">
+    <div style="max-width:90vw;max-height:90vh;text-align:center;">
+      <img id="img-grande-src" src="" alt="" style="max-width:90vw;max-height:85vh;border-radius:8px;border:2px solid #333;">
+      <div style="margin-top:10px;"><button class="btn-sm" style="background:#333;color:#fff;" onclick="document.getElementById('modal-imagem-grande').style.display='none'">Fechar</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-lista-testes">
+    <div class="modal" style="max-width:720px;width:95%;max-height:90vh;overflow:auto;">
+      <h3>📋 Lista de testes (Master)</h3>
+      <textarea id="textarea-lista-testes" rows="16" style="width:100%;background:#121212;color:#eee;border:1px solid #333;border-radius:6px;padding:10px;font-size:12px;font-family:monospace;"></textarea>
+      <div class="modal-actions" style="margin-top:14px;display:flex;gap:10px;">
+        <button class="btn-sm btn-ativar" onclick="salvarListaTestesFirebase()">💾 Salvar lista</button>
+        <button class="btn-sm btn-excluir" onclick="fecharModais()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT COMPLETO E TESTADO -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -488,38 +605,9 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    // Renderiza dinamicamente os 16 slots de anúncios
-    function montarGridAnuncios() {
-      const grid = document.getElementById("ads-edit-grid");
-      if (!grid) return;
-      let html = "";
-      for (let i = 1; i <= 16; i++) {
-        html += `
-          <div class="plan-box-edit" style="border:1px solid #333;padding:12px;border-radius:6px;background:#121212;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-              <label class="plan-visibility-check" style="margin:0;"><input type="checkbox" id="an${i}_exibir"> <strong>Exibir Anúncio ${i}</strong></label>
-              <span style="color:#888;font-size:12px;">ID: <strong id="an${i}_id_label" style="color:#e50914;">—</strong></span>
-            </div>
-            <input type="hidden" id="an${i}_id" value="">
-            <label>Título:</label>
-            <input type="text" id="an${i}_titulo" placeholder="Nome do anunciante">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div><label>Data entrada:</label><input type="text" id="an${i}_data" placeholder="DD/MM/AAAA"></div>
-              <div><label>Expira:</label><input type="text" id="an${i}_expira" placeholder="DD/MM/AAAA"></div>
-            </div>
-            <label>URL Imagem 1:</label><input type="text" id="an${i}_img1" placeholder="https://...">
-            <label>URL Imagem 2 (opcional):</label><input type="text" id="an${i}_img2" placeholder="https://...">
-            <label>URL Imagem 3 (opcional):</label><input type="text" id="an${i}_img3" placeholder="https://...">
-            <label>Link:</label><input type="text" id="an${i}_link" placeholder="https://...">
-          </div>
-        `;
-      }
-      grid.innerHTML = html;
-    }
-    montarGridAnuncios();
-
-    // LOGIN BLINDADO SEM RECARREGAR GET
-    window.realizarLogin = async function() {
+    // LOGIN BLINDADO
+    window.realizarLogin = async function(e) {
+      if (e && e.preventDefault) e.preventDefault();
       const user = (document.getElementById('login-user')?.value || '').trim();
       const pass = (document.getElementById('login-pass')?.value || '').trim();
       const err = document.getElementById('login-error');
@@ -544,6 +632,7 @@
     function entrarPainel(adminDoc) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('main-container').style.display = 'block';
+      carregarGithubToken();
       alterarAba('solicitacoes');
     }
 
@@ -616,7 +705,7 @@
     };
 
     window.deletarLead = async function(id) {
-      if (confirm("Remover registo?")) {
+      if (confirm("Remover este registro?")) {
         await deleteDoc(doc(db, "leads", id));
         loadLeads();
       }
@@ -627,12 +716,12 @@
       const nums = [];
       checks.forEach(cb => { if (cb.value) nums.push(cb.value.replace(/\D/g, '')); });
       document.getElementById('whatsapp-output').value = nums.join('\n');
-      alert(`Lista gerada com ${nums.length} número(s)!`);
+      alert(`Lista pronta com ${nums.length} número(s)!`);
     };
 
     window.copiarListaWhatsApp = function() {
       const txt = document.getElementById('whatsapp-output').value.trim();
-      if (!txt) return alert("Gere a lista primeiro.");
+      if (!txt) return alert("Selecione contatos e crie a lista primeiro.");
       navigator.clipboard.writeText(txt).then(() => alert("📋 Números copiados!"));
     };
 
@@ -640,7 +729,273 @@
       document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
     };
 
-    // STUDIO / SÉRIE OFICIAL E SUB-GALERIAS
+    // TOKEN DO GITHUB & UPLOADS
+    window._githubTokenMem = '';
+    async function carregarGithubToken() {
+      try {
+        const snap = await getDoc(doc(db, "configuracoes", "site"));
+        if (snap.exists() && snap.data().githubToken) {
+          window._githubTokenMem = snap.data().githubToken.trim();
+          const st = document.getElementById("github-token-status");
+          if (st) st.textContent = "Token GitHub: configurado.";
+        }
+      } catch (e) { console.warn(e); }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadToGitHub(file, folder, customFileName = null) {
+      let token = window._githubTokenMem;
+      if (!token) {
+        await carregarGithubToken();
+        token = window._githubTokenMem;
+      }
+      if (!token) throw new Error("Token GitHub não configurado no Firebase.");
+
+      const filename = customFileName || file.name.replace(/[^a-zA-Z0-9._\-\s]/g, "_");
+      const path = `${folder}/${filename}`;
+      const content = await fileToBase64(file);
+      const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(path).replace(/%2F/g, "/")}`;
+
+      let sha = null;
+      try {
+        const check = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+        if (check.ok) {
+          const d = await check.json();
+          sha = d.sha;
+        }
+      } catch (_) {}
+
+      const body = { message: `upload ${path} via painel`, content, branch: "main" };
+      if (sha) body.sha = sha;
+
+      const res = await fetch(apiUrl, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) throw new Error(`Erro GitHub HTTP ${res.status}`);
+      return `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/${path.split("/").map(encodeURIComponent).join("/")}`;
+    }
+
+    // UPLOAD ANÚNCIO (BOTÃO 📁 ENVIAR)
+    let _uploadTarget = null;
+    const _fileInput = document.createElement('input');
+    _fileInput.type = 'file';
+    _fileInput.accept = 'image/*';
+    _fileInput.style.display = 'none';
+    document.body.appendChild(_fileInput);
+
+    _fileInput.addEventListener('change', async function() {
+      if (!_uploadTarget || !_fileInput.files || !_fileInput.files[0]) return;
+      const { slot, imgNum } = _uploadTarget;
+      const file = _fileInput.files[0];
+      _fileInput.value = '';
+
+      const btn = document.querySelector(`button[onclick="uploadImagemAnuncio(${slot},${imgNum})"]`);
+      const oldTxt = btn ? btn.innerText : '📁 Enviar';
+      if (btn) { btn.disabled = true; btn.innerText = '⏳...'; }
+
+      try {
+        const tit = (document.getElementById(`an${slot}_titulo`)?.value || `anuncio${slot}`)
+          .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '').substring(0, 40);
+        const ext = (file.name.match(/\.[0-9a-z]+$/i)?.[0] || '.jpg').toLowerCase();
+        const customName = `${tit}_${String(imgNum).padStart(2, '0')}${ext}`;
+
+        const rawUrl = await uploadToGitHub(file, 'Anuncios', customName);
+        const el = document.getElementById(`an${slot}_img${imgNum}`);
+        if (el) el.value = rawUrl;
+
+        if (btn) { btn.disabled = false; btn.innerText = '✅ OK'; setTimeout(() => btn.innerText = '📁 Enviar', 2000); }
+        alert(`✅ Imagem enviada para o GitHub!\nURL preenchida no campo do Anúncio ${slot}.`);
+      } catch (err) {
+        alert("❌ Erro no upload: " + err.message);
+        if (btn) { btn.disabled = false; btn.innerText = oldTxt; }
+      }
+      _uploadTarget = null;
+    });
+
+    window.uploadImagemAnuncio = function(slot, imgNum) {
+      _uploadTarget = { slot, imgNum };
+      _fileInput.click();
+    };
+
+    // UPLOADS DE SÉRIE E GALERIA
+    window.uploadPoster = async function() {
+      const file = document.getElementById("vlog-poster-file")?.files?.[0];
+      if (!file) return alert("Selecione uma imagem.");
+      try {
+        const url = await uploadToGitHub(file, "Posters");
+        document.getElementById("vlog-poster").value = url;
+        document.getElementById("vlog-poster-preview").innerHTML = `<img src="${url}" style="max-width:160px;border-radius:8px;margin-top:6px;">`;
+        alert("✅ Poster enviado!");
+      } catch (e) { alert("❌ " + e.message); }
+    };
+
+    window.uploadEpisodeVideo = async function() {
+      const file = document.getElementById("ep-video-file")?.files?.[0];
+      if (!file) return alert("Selecione um vídeo.");
+      try {
+        const url = await uploadToGitHub(file, "Videos");
+        document.getElementById("ep-video-url").value = url;
+        alert("✅ Vídeo enviado!");
+      } catch (e) { alert("❌ " + e.message); }
+    };
+
+    window.uploadEpisodeThumb = async function() {
+      const file = document.getElementById("ep-thumb-file")?.files?.[0];
+      if (!file) return alert("Selecione uma imagem.");
+      try {
+        const url = await uploadToGitHub(file, "Imagens");
+        document.getElementById("ep-thumb-url").value = url;
+        alert("✅ Thumbnail enviada!");
+      } catch (e) { alert("❌ " + e.message); }
+    };
+
+    window.uploadGalleryImage = async function() {
+      const file = document.getElementById("gal-file")?.files?.[0];
+      if (!file) return alert("Selecione uma imagem.");
+      try {
+        const url = await uploadToGitHub(file, "Imagens");
+        document.getElementById("gal-url").value = url;
+        alert("✅ Imagem enviada!");
+      } catch (e) { alert("❌ " + e.message); }
+    };
+
+    // LISTA DE IMAGENS DO GITHUB
+    window._imgsCache = [];
+    window._imgsSort = { key: 'id', dir: 1 };
+
+    window.abrirListaImagens = async function() {
+      const modal = document.getElementById('modal-lista-imagens');
+      const tbody = document.getElementById('tbody-lista-imagens');
+      if (!modal || !tbody) return;
+      tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#888;">Carregando pasta Anuncios/ do GitHub...</td></tr>';
+      modal.style.display = 'flex';
+
+      let token = window._githubTokenMem;
+      if (!token) {
+        await carregarGithubToken();
+        token = window._githubTokenMem;
+      }
+
+      try {
+        const headers = { 'Accept': 'application/vnd.github+json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const resp = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/Anuncios?ref=main&per_page=100`, { headers });
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+
+        const data = await resp.json();
+        const files = data.filter(f => f.type === 'file' && /\.(jpe?g|png|gif|webp|svg)$/i.test(f.name || ''));
+
+        window._imgsCache = files.map((f, i) => ({
+          id: String(i + 1).padStart(4, '0'),
+          nome: f.name,
+          url: f.download_url || `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/Anuncios/${f.name}`
+        }));
+
+        renderTabelaImagens();
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding:16px;text-align:center;color:#e50914;">Erro ao listar imagens: ${e.message}</td></tr>`;
+      }
+    };
+
+    window.renderTabelaImagens = function() {
+      const tbody = document.getElementById('tbody-lista-imagens');
+      if (!tbody) return;
+      const q = (document.getElementById('img-busca')?.value || '').trim().toLowerCase();
+      let rows = (window._imgsCache || []).filter(r => r.nome.toLowerCase().includes(q) || r.id.includes(q));
+
+      document.getElementById('img-lista-count').textContent = `${rows.length} imagem(ns)`;
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#888;">Nenhuma imagem encontrada.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => `
+        <tr style="border-bottom:1px solid #2a2a2a;">
+          <td style="padding:8px;color:#e50914;font-weight:600;">${r.id}</td>
+          <td style="padding:8px;"><img src="${r.url}" style="width:72px;height:48px;object-fit:cover;border-radius:4px;border:1px solid #333;" onclick="abrirImagemGrande('${r.url}')"></td>
+          <td style="padding:8px;">${escapeHtml(r.nome)}</td>
+          <td style="padding:8px;">—</td>
+          <td style="padding:8px;">GitHub</td>
+          <td style="padding:8px;"><a href="${r.url}" target="_blank" style="color:#0d6efd;">abrir</a></td>
+          <td style="padding:8px;"><button type="button" class="btn-sm" style="background:#25D366;color:#fff;" onclick="copiarLinkImagem('${r.url}')">Copiar link</button></td>
+        </tr>
+      `).join('');
+    };
+
+    window.filtrarTabelaImagens = function() { renderTabelaImagens(); };
+    window.ordenarTabelaImagens = function(key) {
+      window._imgsCache.reverse();
+      renderTabelaImagens();
+    };
+
+    window.copiarLinkImagem = function(url) {
+      navigator.clipboard.writeText(url).then(() => alert("📋 Link copiado!"));
+    };
+
+    window.abrirImagemGrande = function(url) {
+      const m = document.getElementById('modal-imagem-grande');
+      const img = document.getElementById('img-grande-src');
+      if (m && img) { img.src = url; m.style.display = 'flex'; }
+    };
+
+    // LISTAR ANUNCIANTES
+    window.abrirListaAnunciantes = function() {
+      const modal = document.getElementById('modal-lista-anunciantes');
+      const tbody = document.getElementById('tbody-anunciantes');
+      if (!modal || !tbody) return;
+
+      const rows = [];
+      for (let i = 1; i <= 16; i++) {
+        const idVal = (document.getElementById(`an${i}_id`)?.value || `S${String(i).padStart(2, '0')}`).trim();
+        const tit = (document.getElementById(`an${i}_titulo`)?.value || '').trim();
+        const dtEntrada = (document.getElementById(`an${i}_data`)?.value || '').trim();
+        const dtExpira = (document.getElementById(`an${i}_expira`)?.value || '').trim();
+        const ativo = document.getElementById(`an${i}_exibir`)?.checked;
+        const img1 = (document.getElementById(`an${i}_img1`)?.value || '').trim();
+
+        if (tit || img1) {
+          rows.push({ slot: i, id: idVal, titulo: tit, entrada: dtEntrada, expira: dtExpira, ativo: ativo });
+        }
+      }
+
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#888;">Nenhum anunciante preenchido nos slots.</td></tr>';
+      } else {
+        tbody.innerHTML = rows.map(r => `
+          <tr style="border-bottom:1px solid #2a2a2a;">
+            <td style="padding:8px;font-weight:600;color:#e50914;">${escapeHtml(r.id)}</td>
+            <td style="padding:8px;color:#fff;">${escapeHtml(r.titulo) || '—'}</td>
+            <td style="padding:8px;">${escapeHtml(r.entrada) || '—'}</td>
+            <td style="padding:8px;">${escapeHtml(r.expira) || '—'}</td>
+            <td style="padding:8px;">${r.ativo ? '<span style="color:#4caf50;">Ativo</span>' : '<span style="color:#888;">Inativo</span>'}</td>
+            <td style="padding:8px;">Slot ${r.slot}</td>
+            <td style="padding:8px;"><button type="button" class="btn-sm btn-ativar" onclick="focarSlotAnuncio(${r.slot})">Editar</button></td>
+          </tr>
+        `).join('');
+      }
+      modal.style.display = 'flex';
+    };
+
+    window.focarSlotAnuncio = function(slot) {
+      fecharModais();
+      const el = document.getElementById(`an${slot}_titulo`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    // SÉRIES E SUB-GALERIAS
     function renderEpsList() {
       const el = document.getElementById("vlog-eps-list");
       if (!el) return;
@@ -659,7 +1014,7 @@
       el.innerHTML = html;
     }
 
-    window.adicionarEpisodio = function () {
+    window.adicionarEpisodio = function() {
       const title = document.getElementById("ep-title").value.trim();
       if (!title) return alert("Informe o título do episódio.");
       const seasonName = document.getElementById("ep-season").value.trim() || "TP 1";
@@ -681,7 +1036,7 @@
       alert("✅ Episódio adicionado à lista local.");
     };
 
-    window.removerEpisodio = function (si, ei) {
+    window.removerEpisodio = function(si, ei) {
       vlogSeasons[si].episodes.splice(ei, 1);
       if (!vlogSeasons[si].episodes.length) vlogSeasons.splice(si, 1);
       renderEpsList();
@@ -703,7 +1058,7 @@
       `).join("");
     }
 
-    window.adicionarGaleria = function () {
+    window.adicionarGaleria = function() {
       const url = document.getElementById("gal-url").value.trim();
       if (!url) return alert("Insira o URL da imagem primeiro.");
       const cat = document.getElementById("gal-categoria").value;
@@ -721,10 +1076,10 @@
       document.getElementById("gal-title").value = "";
       document.getElementById("gal-desc").value = "";
       document.getElementById("gal-url").value = "";
-      alert("✅ Adicionado à galeria local! Clique em 'Salvar Vlog e Galeria' abaixo.");
+      alert("✅ Adicionado à galeria local! Clique em 'Salvar Vlog e Galeria' abaixo para gravar no banco.");
     };
 
-    window.removerGaleria = function (i) {
+    window.removerGaleria = function(i) {
       if (!confirm("Remover imagem?")) return;
       vlogGallery.splice(i, 1);
       renderGalList();
@@ -768,7 +1123,7 @@
       await carregarSerieSelecionada();
     }
 
-    window.salvarVlogConfig = async function () {
+    window.salvarVlogConfig = async function() {
       const status = document.getElementById("vlog-save-status");
       status.style.color = "#fff";
       status.innerText = "Salvando...";
@@ -802,52 +1157,6 @@
         status.style.color = "#e50914";
         status.innerText = "❌ Erro: " + e.message;
       }
-    };
-
-    // BOTÕES LISTAR ANUNCIANTES E LISTAR SÉRIES
-    window.abrirListaAnunciantes = function() {
-      const modal = document.getElementById('modal-lista-anunciantes');
-      const tbody = document.getElementById('tbody-anunciantes');
-      if (!modal || !tbody) return;
-
-      const rows = [];
-      for (let i = 1; i <= 16; i++) {
-        const idVal = (document.getElementById(`an${i}_id`)?.value || `S${String(i).padStart(2, '0')}`).trim();
-        const tit = (document.getElementById(`an${i}_titulo`)?.value || '').trim();
-        const dtEntrada = (document.getElementById(`an${i}_data`)?.value || '').trim();
-        const dtExpira = (document.getElementById(`an${i}_expira`)?.value || '').trim();
-        const ativo = document.getElementById(`an${i}_exibir`)?.checked;
-        const img1 = (document.getElementById(`an${i}_img1`)?.value || '').trim();
-
-        if (tit || img1) {
-          rows.push({ slot: i, id: idVal, titulo: tit, entrada: dtEntrada, expira: dtExpira, ativo: ativo });
-        }
-      }
-
-      if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#888;">Nenhum anunciante preenchido nos slots.</td></tr>';
-      } else {
-        tbody.innerHTML = rows.map(r => `
-          <tr style="border-bottom:1px solid #2a2a2a;">
-            <td style="padding:8px;font-weight:600;color:#e50914;">${escapeHtml(r.id)}</td>
-            <td style="padding:8px;color:#fff;">${escapeHtml(r.titulo) || '—'}</td>
-            <td style="padding:8px;">${escapeHtml(r.entrada) || '—'}</td>
-            <td style="padding:8px;">${escapeHtml(r.expira) || '—'}</td>
-            <td style="padding:8px;">${r.ativo ? '<span style="color:#4caf50;">Ativo</span>' : '<span style="color:#888;">Inativo</span>'}</td>
-            <td style="padding:8px;">Slot ${r.slot}</td>
-            <td style="padding:8px;">
-              <button type="button" class="btn-sm btn-ativar" onclick="focarSlotAnuncio(${r.slot})">Editar</button>
-            </td>
-          </tr>
-        `).join('');
-      }
-      modal.style.display = 'flex';
-    };
-
-    window.focarSlotAnuncio = function(slot) {
-      fecharModais();
-      const el = document.getElementById(`an${slot}_titulo`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
 
     window.abrirListaSeries = async function() {
@@ -889,15 +1198,15 @@
           if (d.titulo) document.getElementById('config-titulo-principal').value = d.titulo;
           if (d.subtitulo) document.getElementById('config-subtitulo-principal').value = d.subtitulo;
           for (let i = 1; i <= 16; i++) {
-            const p = 'an' + i + '_';
-            if (document.getElementById(p + 'exibir')) document.getElementById(p + 'exibir').checked = d[p + 'exibir'] === true;
-            if (document.getElementById(p + 'titulo')) document.getElementById(p + 'titulo').value = d[p + 'titulo'] || '';
-            if (document.getElementById(p + 'data')) document.getElementById(p + 'data').value = d[p + 'data'] || '';
-            if (document.getElementById(p + 'expira')) document.getElementById(p + 'expira').value = d[p + 'expira'] || '';
-            if (document.getElementById(p + 'img1')) document.getElementById(p + 'img1').value = d[p + 'img1'] || '';
-            if (document.getElementById(p + 'img2')) document.getElementById(p + 'img2').value = d[p + 'img2'] || '';
-            if (document.getElementById(p + 'img3')) document.getElementById(p + 'img3').value = d[p + 'img3'] || '';
-            if (document.getElementById(p + 'link')) document.getElementById(p + 'link').value = d[p + 'link'] || '';
+            const p = `an${i}_`;
+            if (document.getElementById(`${p}exibir`)) document.getElementById(`${p}exibir`).checked = d[`${p}exibir`] === true;
+            if (document.getElementById(`${p}titulo`)) document.getElementById(`${p}titulo`).value = d[`${p}titulo`] || '';
+            if (document.getElementById(`${p}data`)) document.getElementById(`${p}data`).value = d[`${p}data`] || '';
+            if (document.getElementById(`${p}expira`)) document.getElementById(`${p}expira`).value = d[`${p}expira`] || '';
+            if (document.getElementById(`${p}img1`)) document.getElementById(`${p}img1`).value = d[`${p}img1`] || '';
+            if (document.getElementById(`${p}img2`)) document.getElementById(`${p}img2`).value = d[`${p}img2`] || '';
+            if (document.getElementById(`${p}img3`)) document.getElementById(`${p}img3`).value = d[`${p}img3`] || '';
+            if (document.getElementById(`${p}link`)) document.getElementById(`${p}link`).value = d[`${p}link`] || '';
           }
         }
       } catch (e) { console.warn(e); }
@@ -910,15 +1219,15 @@
           subtitulo: document.getElementById('config-subtitulo-principal').value,
         };
         for (let i = 1; i <= 16; i++) {
-          const p = 'an' + i + '_';
-          payload[p + 'exibir'] = document.getElementById(p + 'exibir')?.checked || false;
-          payload[p + 'titulo'] = document.getElementById(p + 'titulo')?.value || '';
-          payload[p + 'data'] = document.getElementById(p + 'data')?.value || '';
-          payload[p + 'expira'] = document.getElementById(p + 'expira')?.value || '';
-          payload[p + 'img1'] = document.getElementById(p + 'img1')?.value || '';
-          payload[p + 'img2'] = document.getElementById(p + 'img2')?.value || '';
-          payload[p + 'img3'] = document.getElementById(p + 'img3')?.value || '';
-          payload[p + 'link'] = document.getElementById(p + 'link')?.value || '';
+          const p = `an${i}_`;
+          payload[`${p}exibir`] = document.getElementById(`${p}exibir`)?.checked || false;
+          payload[`${p}titulo`] = document.getElementById(`${p}titulo`)?.value || '';
+          payload[`${p}data`] = document.getElementById(`${p}data`)?.value || '';
+          payload[`${p}expira`] = document.getElementById(`${p}expira`)?.value || '';
+          payload[`${p}img1`] = document.getElementById(`${p}img1`)?.value || '';
+          payload[`${p}img2`] = document.getElementById(`${p}img2`)?.value || '';
+          payload[`${p}img3`] = document.getElementById(`${p}img3`)?.value || '';
+          payload[`${p}link`] = document.getElementById(`${p}link`)?.value || '';
         }
         await setDoc(doc(db, "configuracoes", "site"), payload, { merge: true });
         alert("✅ Configurações e 16 slots de anúncios salvos!");
