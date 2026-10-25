@@ -22,7 +22,7 @@
       box-sizing: border-box; 
     }
     
-    /* Tela de Login */
+    /* Tela de Login sem form */
     #login-screen {
       display: flex;
       flex-direction: column;
@@ -47,7 +47,7 @@
 
     h1 { font-size: 26px; color: #ffffff !important; margin-bottom: 20px; font-weight: bold; }
 
-    /* Navegação pelas Abas */
+    /* Abas */
     .tabs { 
       display: flex; 
       gap: 8px; 
@@ -64,11 +64,10 @@
     .btn-tab.active { background: #e50914 !important; color: #fff !important; }
     .btn-tab:hover:not(.active) { background: #3d3d3d; color: #fff; }
 
-    /* Botão Verde */
     .btn-action-green { background: #25D366; color: #fff; border: none; padding: 12px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; margin-bottom: 20px; }
     .btn-action-green:hover { background: #1eb857; }
 
-    /* Tabela Ajustada Fluida e Consistente */
+    /* Tabela */
     .table-responsive { 
       width: 100% !important; 
       max-width: 100% !important; 
@@ -83,7 +82,6 @@
     td { padding: 12px 10px; border-bottom: 1px solid #2a2a2a; font-size: 12px; color: #ccc; }
     tr:hover { background: #252525; }
 
-    /* Section Promoções e Banner Editável */
     .promo-section { background: #1e1e1e; padding: 20px; border-radius: 6px; border: 1px solid #2a2a2a; margin-bottom: 25px; display: none; }
     .promo-group { background: #121212; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-bottom: 20px; }
     .promo-group h4 { color: #e50914; margin-bottom: 10px; font-size: 15px; }
@@ -99,7 +97,6 @@
     .plan-visibility-check { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 12px; color: #fff; font-weight: bold; }
     .plan-visibility-check input { width: 15px; height: 15px; cursor: pointer; }
 
-    /* Caixa Branca da Lista de Transmissão */
     .broadcast-box { 
       background: #1e1e1e; 
       padding: 20px; 
@@ -109,9 +106,8 @@
       max-width: 100% !important; 
     }
     .broadcast-box h3 { font-size: 16px; margin-bottom: 12px; color: #fff; }
-    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; background: #ffffff; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #333333; outline: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .broadcast-box textarea { width: 100%; height: 100px; padding: 12px; background: #ffffff; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-size: 13px; color: #333; outline: none; }
 
-    /* Botões */
     .btn-sm { padding: 6px 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; color: #fff; margin-right: 3px; margin-bottom: 3px; display: inline-block; }
     .btn-gerar { background: #007bff; }
     .btn-ativar { background: #28a745; }
@@ -130,14 +126,14 @@
 </head>
 <body>
 
-  <!-- Tela de Login Sem Form (Elimina recarregamento GET) -->
+  <!-- Tela de Login (div sem recarregamento GET) -->
   <div id="login-screen" style="display: flex;">
     <h2>🔒 Restrito ao Admin</h2>
-    <div id="loginForm" style="width: 100%;">
+    <div id="loginFormContainer" style="width: 100%;">
       <label>Usuário:</label>
       <input type="text" id="login-user" required placeholder="Digite o usuário">
       <label>Senha:</label>
-      <input type="password" id="login-pass" required placeholder="Digite a senha">
+      <input type="password" id="login-pass" required placeholder="Digite a senha" onkeydown="if(event.key==='Enter') realizarLogin()">
       <button type="button" onclick="realizarLogin()">Entrar no Painel</button>
       <div id="login-error" class="login-error">Usuário ou senha incorretos!</div>
     </div>
@@ -286,9 +282,7 @@
           </div>
         </div>
         <p style="color:#aaa;font-size:12px;margin-bottom:12px;">Cada anúncio pode ter até 3 imagens que oscilam. Marque "Exibir" e preencha Título + pelo menos 1 URL.</p>
-        <div class="promo-grid" id="ads-edit-grid">
-          <!-- Gerados dinamicamente no carregamento para garantir a integridade dos 16 slots -->
-        </div>
+        <div class="promo-grid" id="ads-edit-grid"></div>
       </div>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
@@ -298,9 +292,10 @@
       </div>
     </div>
 
-    <!-- ABA 6: VLOG / STUDIO / SÉRIE OFICIAL / SUB-GALERIAS -->
+    <!-- ABA 6: STUDIO / VLOG / SÉRIES E SUB-GALERIAS -->
     <div id="section-vlog" class="promo-section" style="display:none;">
       <h3 style="color:#fff;margin-bottom:16px;">6. Studio — Séries, Galeria e Admins</h3>
+      <p style="color:#aaa;font-size:13px;margin-bottom:16px;">Upload vai para <code>Posters/</code>, <code>Imagens/</code> ou <code>Videos/</code> no GitHub.</p>
 
       <div class="promo-group" id="box-gerenciar-admins" style="display:none;border:1px solid #e50914;">
         <h4>Gerenciar logins do painel</h4>
@@ -318,6 +313,14 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
           <select id="serie-select" onchange="carregarSerieSelecionada()" style="padding:8px;background:#121212;color:#fff;border:1px solid #333;border-radius:4px;min-width:220px;"></select>
           <button type="button" class="btn-sm" style="background:#0d6efd;color:#fff;padding:8px 12px;" onclick="novaSerie()">+ Nova série</button>
+          <button type="button" class="btn-sm" style="background:#17a2b8;color:#fff;padding:8px 12px;" onclick="abrirListaSeries()">📋 Listar</button>
+        </div>
+        <div id="series-grid-panel" style="display:none;margin:12px 0 16px;padding:12px;background:#0a0a0a;border:1px solid #333;border-radius:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <strong style="color:#fff;">Séries cadastradas</strong>
+            <button type="button" class="btn-sm" style="background:#444;color:#fff;" onclick="document.getElementById('series-grid-panel').style.display='none'">Fechar</button>
+          </div>
+          <div id="series-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;"></div>
         </div>
         <label>ID / slug (URL):</label>
         <input type="text" id="vlog-slug" placeholder="super-stream">
@@ -365,7 +368,7 @@
         <div id="vlog-eps-list" style="font-size:13px;color:#ccc;"></div>
       </div>
 
-      <!-- SELETOR DE CATEGORIA E SUB-GALERIAS -->
+      <!-- SELETOR DE SUB-GALERIAS -->
       <div class="promo-group">
         <h4>Galeria de Imagens e Sub-galerias</h4>
         <label>Título / legenda</label>
@@ -434,10 +437,12 @@
   <div class="modal-overlay" id="modal-lista-anunciantes">
     <div class="modal" style="max-width:920px;width:95%;max-height:85vh;overflow:auto;">
       <h3>📋 Lista de Anunciantes</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr><th>ID</th><th>Título</th><th>Entrada</th><th>Expira</th><th>Status</th><th>Slot</th><th>Ações</th></tr></thead>
-        <tbody id="tbody-anunciantes"></tbody>
-      </table>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="color:#e50914;"><th>ID</th><th>Título</th><th>Entrada</th><th>Expira</th><th>Status</th><th>Slot</th><th>Ações</th></tr></thead>
+          <tbody id="tbody-anunciantes"></tbody>
+        </table>
+      </div>
       <div class="modal-actions" style="margin-top:16px;"><button class="btn-sm btn-excluir" onclick="fecharModais()">Fechar</button></div>
     </div>
   </div>
@@ -483,7 +488,7 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    // Renderiza os 16 slots de anúncios no grid
+    // Renderiza dinamicamente os 16 slots de anúncios
     function montarGridAnuncios() {
       const grid = document.getElementById("ads-edit-grid");
       if (!grid) return;
@@ -513,7 +518,7 @@
     }
     montarGridAnuncios();
 
-    // LOGIN BLINDADO
+    // LOGIN BLINDADO SEM RECARREGAR GET
     window.realizarLogin = async function() {
       const user = (document.getElementById('login-user')?.value || '').trim();
       const pass = (document.getElementById('login-pass')?.value || '').trim();
@@ -635,7 +640,7 @@
       document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
     };
 
-    // STUDIO / SÉRIES E SUB-GALERIAS
+    // STUDIO / SÉRIE OFICIAL E SUB-GALERIAS
     function renderEpsList() {
       const el = document.getElementById("vlog-eps-list");
       if (!el) return;
@@ -736,17 +741,17 @@
     };
 
     window.carregarSerieSelecionada = async function() {
-      const id = document.getElementById("serie-select").value || "super-stream";
+      const id = document.getElementById("serie-select")?.value || "super-stream";
       currentSerieId = id;
       const snap = await getDoc(doc(db, "series", id));
       if (snap.exists()) {
         const s = snap.data();
-        document.getElementById("vlog-slug").value = id;
-        document.getElementById("vlog-title").value = s.title || "";
-        document.getElementById("vlog-year").value = s.year || "2026";
-        document.getElementById("vlog-genres").value = s.genres || "";
-        document.getElementById("vlog-synopsis").value = s.synopsis || "";
-        document.getElementById("vlog-poster").value = s.poster || "";
+        if (document.getElementById("vlog-slug")) document.getElementById("vlog-slug").value = id;
+        if (document.getElementById("vlog-title")) document.getElementById("vlog-title").value = s.title || "";
+        if (document.getElementById("vlog-year")) document.getElementById("vlog-year").value = s.year || "2026";
+        if (document.getElementById("vlog-genres")) document.getElementById("vlog-genres").value = s.genres || "";
+        if (document.getElementById("vlog-synopsis")) document.getElementById("vlog-synopsis").value = s.synopsis || "";
+        if (document.getElementById("vlog-poster")) document.getElementById("vlog-poster").value = s.poster || "";
         vlogSeasons = Array.isArray(s.seasons) ? s.seasons : [];
         renderEpsList();
       }
@@ -799,6 +804,82 @@
       }
     };
 
+    // BOTÕES LISTAR ANUNCIANTES E LISTAR SÉRIES
+    window.abrirListaAnunciantes = function() {
+      const modal = document.getElementById('modal-lista-anunciantes');
+      const tbody = document.getElementById('tbody-anunciantes');
+      if (!modal || !tbody) return;
+
+      const rows = [];
+      for (let i = 1; i <= 16; i++) {
+        const idVal = (document.getElementById(`an${i}_id`)?.value || `S${String(i).padStart(2, '0')}`).trim();
+        const tit = (document.getElementById(`an${i}_titulo`)?.value || '').trim();
+        const dtEntrada = (document.getElementById(`an${i}_data`)?.value || '').trim();
+        const dtExpira = (document.getElementById(`an${i}_expira`)?.value || '').trim();
+        const ativo = document.getElementById(`an${i}_exibir`)?.checked;
+        const img1 = (document.getElementById(`an${i}_img1`)?.value || '').trim();
+
+        if (tit || img1) {
+          rows.push({ slot: i, id: idVal, titulo: tit, entrada: dtEntrada, expira: dtExpira, ativo: ativo });
+        }
+      }
+
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#888;">Nenhum anunciante preenchido nos slots.</td></tr>';
+      } else {
+        tbody.innerHTML = rows.map(r => `
+          <tr style="border-bottom:1px solid #2a2a2a;">
+            <td style="padding:8px;font-weight:600;color:#e50914;">${escapeHtml(r.id)}</td>
+            <td style="padding:8px;color:#fff;">${escapeHtml(r.titulo) || '—'}</td>
+            <td style="padding:8px;">${escapeHtml(r.entrada) || '—'}</td>
+            <td style="padding:8px;">${escapeHtml(r.expira) || '—'}</td>
+            <td style="padding:8px;">${r.ativo ? '<span style="color:#4caf50;">Ativo</span>' : '<span style="color:#888;">Inativo</span>'}</td>
+            <td style="padding:8px;">Slot ${r.slot}</td>
+            <td style="padding:8px;">
+              <button type="button" class="btn-sm btn-ativar" onclick="focarSlotAnuncio(${r.slot})">Editar</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      modal.style.display = 'flex';
+    };
+
+    window.focarSlotAnuncio = function(slot) {
+      fecharModais();
+      const el = document.getElementById(`an${slot}_titulo`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    window.abrirListaSeries = async function() {
+      const panel = document.getElementById("series-grid-panel");
+      const grid = document.getElementById("series-grid");
+      if (!panel || !grid) return;
+      panel.style.display = "block";
+      grid.innerHTML = "<p style='color:#888;'>Carregando séries...</p>";
+      try {
+        const snap = await getDocs(collection(db, "series"));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        if (items.length === 0) {
+          grid.innerHTML = "<p style='color:#888;'>Nenhuma série encontrada.</p>";
+          return;
+        }
+        grid.innerHTML = items.map(s => `
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:8px;">
+            <img src="${s.poster || ''}" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:6px;background:#111;">
+            <div style="margin-top:8px;font-size:13px;font-weight:600;color:#fff;">${escapeHtml(s.title || s.id)}</div>
+            <button type="button" class="btn-sm" style="background:#0d6efd;color:#fff;width:100%;margin-top:6px;" onclick="selecionarSerieGrid('${escapeHtml(s.id)}')">Carregar</button>
+          </div>
+        `).join('');
+      } catch (e) { grid.innerHTML = `<p style="color:#e50914;">Erro ao listar: ${escapeHtml(e.message)}</p>`; }
+    };
+
+    window.selecionarSerieGrid = function(id) {
+      const sel = document.getElementById("serie-select");
+      if (sel) { sel.value = id; carregarSerieSelecionada(); }
+      document.getElementById("series-grid-panel").style.display = "none";
+    };
+
     // PROMOÇÕES E CONFIGURAÇÕES
     async function carregarConfiguracoes() {
       try {
@@ -811,7 +892,11 @@
             const p = 'an' + i + '_';
             if (document.getElementById(p + 'exibir')) document.getElementById(p + 'exibir').checked = d[p + 'exibir'] === true;
             if (document.getElementById(p + 'titulo')) document.getElementById(p + 'titulo').value = d[p + 'titulo'] || '';
+            if (document.getElementById(p + 'data')) document.getElementById(p + 'data').value = d[p + 'data'] || '';
+            if (document.getElementById(p + 'expira')) document.getElementById(p + 'expira').value = d[p + 'expira'] || '';
             if (document.getElementById(p + 'img1')) document.getElementById(p + 'img1').value = d[p + 'img1'] || '';
+            if (document.getElementById(p + 'img2')) document.getElementById(p + 'img2').value = d[p + 'img2'] || '';
+            if (document.getElementById(p + 'img3')) document.getElementById(p + 'img3').value = d[p + 'img3'] || '';
             if (document.getElementById(p + 'link')) document.getElementById(p + 'link').value = d[p + 'link'] || '';
           }
         }
@@ -828,7 +913,11 @@
           const p = 'an' + i + '_';
           payload[p + 'exibir'] = document.getElementById(p + 'exibir')?.checked || false;
           payload[p + 'titulo'] = document.getElementById(p + 'titulo')?.value || '';
+          payload[p + 'data'] = document.getElementById(p + 'data')?.value || '';
+          payload[p + 'expira'] = document.getElementById(p + 'expira')?.value || '';
           payload[p + 'img1'] = document.getElementById(p + 'img1')?.value || '';
+          payload[p + 'img2'] = document.getElementById(p + 'img2')?.value || '';
+          payload[p + 'img3'] = document.getElementById(p + 'img3')?.value || '';
           payload[p + 'link'] = document.getElementById(p + 'link')?.value || '';
         }
         await setDoc(doc(db, "configuracoes", "site"), payload, { merge: true });
