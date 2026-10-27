@@ -129,15 +129,14 @@
 </head>
 <body>
 
-  <!-- Tela de Login em div para evitar envios GET automáticos -->
-  <div id="login-screen" style="display: flex;">
+ <div id="login-screen" style="display: flex;">
     <h2>🔒 Restrito ao Admin</h2>
-    <div id="loginForm" style="width:100%;">
+    <div id="loginForm" style="width: 100%;">
       <label>Usuário:</label>
-      <input type="text" id="login-user" name="admin-user" autocomplete="username" required placeholder="Digite o usuário">
+      <input type="text" id="login-user" required placeholder="Digite o usuário">
       <label>Senha:</label>
-      <input type="password" id="login-pass" name="admin-pass" autocomplete="current-password" required placeholder="Digite a senha" onkeydown="if(event.key==='Enter') realizarLogin(event)">
-      <button type="button" onclick="realizarLogin(event)">Entrar no Painel</button>
+      <input type="password" id="login-pass" required placeholder="Digite a senha" onkeydown="if(event.key==='Enter') realizarLogin()">
+      <button type="button" onclick="realizarLogin()">Entrar no Painel</button>
       <div id="login-error" class="login-error">Usuário ou senha incorretos!</div>
     </div>
   </div>
