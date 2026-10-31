@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Império do Streaming - Teste Grátis</title>
     <!-- REDIRECIONAMENTO INSTANTÂNEO SE A ENQUETE ESTIVER ATIVA NO PAINEL -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            authDomain: "imperio-25340.firebaseapp.com",
-            projectId: "imperio-25340",
-            storageBucket: "imperio-25340.appspot.com",
-            messagingSenderId: "305282928509",
-            appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
-        };
+      const firebaseConfig = {
+          authDomain: "imperio-25340.firebaseapp.com",
+          projectId: "imperio-25340",
+          storageBucket: "imperio-25340.appspot.com",
+          messagingSenderId: "305282928509",
+          appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+      };
 
-        try {
-            let app;
-            try {
-                const r = await fetch("/__/firebase/init.json");
-                if (r.ok) app = initializeApp(await r.json());
-            } catch (_) {}
-            if (!app) app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
+      try {
+          let app;
+          try {
+              const r = await fetch("/__/firebase/init.json");
+              if (r.ok) app = initializeApp(await r.json(), "redirectApp");
+          } catch (_) {}
+          if (!app) app = initializeApp(firebaseConfig, "redirectApp");
+          const db = getFirestore(app);
 
-            const snap = await getDoc(doc(db, "configuracoes", "site"));
-            if (snap.exists() && snap.data().paginaPrincipal === "indexnew") {
-                window.location.replace("/indexnew.html");
-            }
-        } catch (e) {
-            console.warn("Verificação antecipada de rota:", e);
-        }
+          const snap = await getDoc(doc(db, "configuracoes", "site"));
+          if (snap.exists() && snap.data().paginaPrincipal === "indexnew") {
+              window.location.replace("/indexnew.html");
+          }
+      } catch (e) {
+          console.warn("Verificação antecipada de rota:", e);
+      }
     </script>
     <style>
-        :root {
+      :root {
             --primary: #e50914;
             --primary-hover: #f40612;
             --bg-dark: #141414;
@@ -247,175 +247,197 @@
             .ads-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="logo">Império do Streaming</div>
-        <div class="header-actions">
-            <a href="https://www.facebook.com/imperiodostreaming" target="_blank" rel="noopener" class="social-btn facebook" title="Facebook">Facebook</a>
-            <a href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais." target="_blank" rel="noopener" class="social-btn whatsapp" title="Fale conosco no WhatsApp">WhatsApp</a>
-            <a href="#cadastro" class="btn-cta" style="padding: 8px 18px; font-size: 0.9rem;">Testar Agora</a>
-            <a href="/vlog.html" class="social-btn videos" title="Catálogo de vídeos">Vídeos</a>
-            <a href="/galeria.html?id=super-stream" class="social-btn galeria" title="Galeria Super Stream">Galeria</a>
-        </div>
+      <div class="logo">Império do Streaming</div>
+      <div class="header-actions">
+        <a class="social-btn facebook" href="https://www.facebook.com/imperiodostreaming" rel="noopener" target="_blank" title="Facebook">Facebook</a>
+        <a class="social-btn whatsapp" href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais." rel="noopener" target="_blank" title="Fale conosco no WhatsApp">WhatsApp</a>
+        <a class="btn-cta" href="#cadastro" style="padding: 8px 18px; font-size: 0.9rem;">Testar Agora</a>
+        <a class="social-btn videos" href="/vlog.html" title="Catálogo de vídeos">Vídeos</a>
+        <a class="social-btn galeria" href="/galeria.html?id=super-stream" title="Galeria Super Stream">Galeria</a>
+      </div>
     </header>
-
+    
     <section class="hero">
-        <div class="promo-slider-container" id="slider-container"></div>
-        <h1 id="promo-title">Mais de 30.000 Conteúdos em Alta Definição</h1>
-        <p id="promo-subtext">Filmes, séries, canais ao vivo, esportes e muito mais na tela do seu dispositivo preferido.</p>
-        <a href="#cadastro" class="btn-cta">Quero meu teste grátis</a>
+      <div class="promo-slider-container" id="slider-container"></div>
+      <h1 id="promo-title">Mais de 30.000 Conteúdos em Alta Definição</h1>
+      <p id="promo-subtext">Filmes, séries, canais ao vivo, esportes e muito mais na tela do seu dispositivo preferido.</p>
+      <a class="btn-cta" href="#cadastro">Quero meu teste grátis</a>
     </section>
-
+    
     <section class="plans">
-        <div class="card" id="box-teste">
-            <h3 id="card-teste-titulo">Teste Grátis</h3>
-            <div class="price" id="card-teste-preco">R$ 0</div>
-            <p id="card-teste-desc">Acesso total por 4 Horas</p>
-        </div>
-        <div class="card featured" id="box-mensal">
-            <h3 id="card-mensal-titulo">Plano Mensal</h3>
-            <div class="price" id="card-mensal-preco">R$ 25,00</div>
-            <p id="card-mensal-desc">Acesso por 30 dias</p>
-        </div>
-        <div class="card" id="box-trimestral">
-            <h3 id="card-trimestral-titulo">Plano Trimestral</h3>
-            <div class="price" id="card-trimestral-preco">R$ 65,00</div>
-            <p id="card-trimestral-desc">Acesso por 90 dias</p>
-        </div>
-        <div class="card" id="box-anual">
-            <h3 id="card-anual-titulo">Plano Anual</h3>
-            <div class="price" id="card-anual-preco">R$ 240,00</div>
-            <p id="card-anual-desc">Acesso por 365 dias</p>
-        </div>
+      <div class="card" id="box-teste">
+        <h3 id="card-teste-titulo">Teste Grátis</h3>
+        <div class="price" id="card-teste-preco">R$ 0</div>
+        <p id="card-teste-desc">Acesso total por 4 Horas</p>
+      </div>
+      <div class="card featured" id="box-mensal">
+        <h3 id="card-mensal-titulo">Plano Mensal</h3>
+        <div class="price" id="card-mensal-preco">R$ 25,00</div>
+        <p id="card-mensal-desc">Acesso por 30 dias</p>
+      </div>
+      <div class="card" id="box-trimestral">
+        <h3 id="card-trimestral-titulo">Plano Trimestral</h3>
+        <div class="price" id="card-trimestral-preco">R$ 65,00</div>
+        <p id="card-trimestral-desc">Acesso por 90 dias</p>
+      </div>
+      <div class="card" id="box-anual">
+        <h3 id="card-anual-titulo">Plano Anual</h3>
+        <div class="price" id="card-anual-preco">R$ 240,00</div>
+        <p id="card-anual-desc">Acesso por 365 dias</p>
+      </div>
     </section>
-
+    
     <section class="devices">
-        <h2>Compatibilidade Total</h2>
-        <div class="device-list">
-            <div class="device-item">📱 Celular</div>
-            <div class="device-item">📺 Smart TV</div>
-            <div class="device-item">📦 TV Box</div>
-            <div class="device-item">💻 Computador</div>
-            <div class="device-item">📱 Tablet</div>
-        </div>
+      <h2>Compatibilidade Total</h2>
+      <div class="device-list">
+        <div class="device-item">📱 Celular</div>
+        <div class="device-item">📺 Smart TV</div>
+        <div class="device-item">📦 TV Box</div>
+        <div class="device-item">💻 Computador</div>
+        <div class="device-item">📱 Tablet</div>
+      </div>
     </section>
-
+    
     <section class="ads-section" id="ads-section-top">
-        <div class="ads-grid" id="ads-grid-top"></div>
+      <div class="ads-grid" id="ads-grid-top"></div>
     </section>
-
+    
     <section id="cadastro" class="form-section">
-        <div class="form-panel">
-            <h2>Solicite seu Teste Grátis (4H)</h2>
-            <form id="testForm">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="nome" required placeholder="Seu nome">
-                </div>
-                <div class="form-group">
-                    <label>E-mail</label>
-                    <input type="email" id="email" required placeholder="Seu e-mail">
-                </div>
-                <div class="form-group">
-                    <label for="whatsapp">WhatsApp</label>
-                    <label class="chk-telegram" for="tambemTelegram">
-                        <input type="checkbox" id="tambemTelegram">
-                        <span>Também é Telegram</span>
-                    </label>
-                    <input type="tel" id="whatsapp" required placeholder="(00) 00000-0000">
-                </div>
-                <div class="form-group">
-                    <label>Cidade</label>
-                    <input type="text" id="cidade" required placeholder="Sua cidade - UF">
-                </div>
-                <div class="form-group">
-                    <label>Dispositivo Principal</label>
-                    <select id="dispositivo" required>
-                        <option value="">Selecione...</option>
-                        <option value="Smart TV">Smart TV</option>
-                        <option value="TV Box">TV Box</option>
-                        <option value="Celular">Celular</option>
-                        <option value="Computador">Computador</option>
-                        <option value="Tablet">Tablet</option>
-                    </select>
-                </div>
-                <div class="form-group" id="grupo-marca" style="display:none;">
-                    <label>Marca da TV / Box</label>
-                    <input type="text" id="marca" placeholder="Ex: Samsung, LG, Roku...">
-                </div>
-                <div class="form-group">
-                    <label>Como conheceu a Império?</label>
-                    <select id="origem" required>
-                        <option value="">Selecione...</option>
-                        <option value="Indicação de amigo">Indicação de amigo</option>
-                        <option value="Facebook">Facebook</option>
-                        <option value="WhatsApp">WhatsApp</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="Google / Pesquisa">Google / Pesquisa</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                </div>
-                <div class="form-group" id="grupo-amigo" style="display:none;">
-                    <label>Nome do amigo</label>
-                    <input type="text" id="indicadoPor" placeholder="Nome do amigo que indicou">
-                </div>
-                <button type="submit" id="btnSubmit" class="btn-cta" style="width: 100%;">SOLICITAR TESTE GRÁTIS</button>
-                <button type="button" id="btnFecharForm" style="width:100%;margin-top:10px;background:transparent;border:1px solid #444;color:#aaa;padding:10px;border-radius:6px;cursor:pointer;">Cancelar</button>
-            </form>
-        </div>
+      <div class="form-panel">
+        <h2>Solicite seu Teste Grátis (4H)</h2>
+        <form id="testForm">
+          <div class="form-group">
+            <label>Nome Completo</label>
+            <input type="text" id="nome" required="" placeholder="Seu nome" />
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="email" required="" placeholder="Seu e-mail" />
+          </div>
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp</label>
+            <label class="chk-telegram" for="tambemTelegram">
+              <input type="checkbox" id="tambemTelegram" />
+              <span>Também é Telegram</span>
+            </label>
+            <input type="tel" id="whatsapp" required="" placeholder="(00) 00000-0000" />
+          </div>
+          <div class="form-group">
+            <label>Cidade</label>
+            <input type="text" id="cidade" required="" placeholder="Sua cidade - UF" />
+          </div>
+          <div class="form-group">
+            <label>Dispositivo Principal</label>
+            <select id="dispositivo" required="">
+              <option value="">Selecione...</option>
+              <option value="Smart TV">Smart TV</option>
+              <option value="TV Box">TV Box</option>
+              <option value="Celular">Celular</option>
+              <option value="Computador">Computador</option>
+              <option value="Tablet">Tablet</option>
+            </select>
+          </div>
+          <div class="form-group" id="grupo-marca" style="display:none;">
+            <label>Marca da TV / Box</label>
+            <input type="text" id="marca" placeholder="Ex: Samsung, LG, Roku..." />
+          </div>
+          <div class="form-group">
+            <label>Como conheceu a Império?</label>
+            <select id="origem" required="">
+              <option value="">Selecione...</option>
+              <option value="Indicação de amigo">Indicação de amigo</option>
+              <option value="Facebook">Facebook</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Google / Pesquisa">Google / Pesquisa</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-group" id="grupo-amigo" style="display:none;">
+            <label>Nome do amigo</label>
+            <input type="text" id="indicadoPor" placeholder="Nome do amigo que indicou" />
+          </div>
+          <button type="submit" id="btnSubmit" class="btn-cta" style="width: 100%;">SOLICITAR TESTE GRÁTIS</button>
+          <button type="button" id="btnFecharForm" style="width:100%;margin-top:10px;background:transparent;border:1px solid #444;color:#aaa;padding:10px;border-radius:6px;cursor:pointer;">Cancelar</button>
+        </form>
+      </div>
     </section>
-
+    
     <div id="sucesso-overlay">
-        <div class="sucesso-box">
-            <h3>✅ Teste solicitado</h3>
-            <p>Em breve nossa equipe entrará em contato com você.</p>
-            <button type="button" class="btn-cta" id="btnOkSucesso">OK</button>
-        </div>
+      <div class="sucesso-box">
+        <h3>✅ Teste solicitado</h3>
+        <p>Em breve nossa equipe entrará em contato com você.</p>
+        <button type="button" class="btn-cta" id="btnOkSucesso">OK</button>
+      </div>
     </div>
-
+    
     <section class="installation">
-        <h3>Como Instalar após o Cadastro:</h3>
-        <ol>
-            <li>Após preencher o formulário, aguarde o contato do nosso consultor via WhatsApp.</li>
-            <li>Nossa equipe enviará os dados de acesso (Usuário e Senha) e o aplicativo ideal para seu dispositivo.</li>
-            <li>Baixe o aplicativo indicado (ex: XCIPTV, IPTV Smarters Pro ou Web Player).</li>
-            <li>Insira os dados recebidos e aproveite seus 30.000+ conteúdos por 4 horas!</li>
-        </ol>
+      <h3>Como Instalar após o Cadastro:</h3>
+      <ol>
+        <li>Após preencher o formulário, aguarde o contato do nosso consultor via WhatsApp.</li>
+        <li>Nossa equipe enviará os dados de acesso (Usuário e Senha) e o aplicativo ideal para seu dispositivo.</li>
+        <li>Baixe o aplicativo indicado (ex: XCIPTV, IPTV Smarters Pro ou Web Player).</li>
+        <li>Insira os dados recebidos e aproveite seus 30.000+ conteúdos por 4 horas!</li>
+      </ol>
     </section>
-
+    
     <section class="apps-section">
-        <h3>Aplicativos compatíveis</h3>
-        <p class="apps-sub">Use um destes players com os dados que enviarmos:</p>
-        <div class="apps-grid">
-            <span>KAYROS PLAYER</span><span>RX Purple</span><span>PLAY SIM</span><span>BOX PLAY</span>
-            <span>ASSIST+</span><span>MAGIC PLAYER</span><span>LAZER PLAYER</span><span>FUN PLAY</span>
-            <span>SMARTERS</span><span>Blessed Player</span><span>Super Play</span><span>DuplexMax</span>
-            <span>Power Play</span><span>SmartCPP</span><span>VizzionPlay</span><span>XCIPTV</span>
-        </div>
+      <h3>Aplicativos compatíveis</h3>
+      <p class="apps-sub">Use um destes players com os dados que enviarmos:</p>
+      <div class="apps-grid">
+        <span>KAYROS PLAYER</span>
+        <span>RX Purple</span>
+        <span>PLAY SIM</span>
+        <span>BOX PLAY</span>
+        <span>ASSIST+</span>
+        <span>MAGIC PLAYER</span>
+        <span>LAZER PLAYER</span>
+        <span>FUN PLAY</span>
+        <span>SMARTERS</span>
+        <span>Blessed Player</span>
+        <span>Super Play</span>
+        <span>DuplexMax</span>
+        <span>Power Play</span>
+        <span>SmartCPP</span>
+        <span>VizzionPlay</span>
+        <span>XCIPTV</span>
+      </div>
     </section>
-
+    
     <section class="ads-section" id="ads-section-bottom">
-        <div class="ads-grid" id="ads-grid-bottom"></div>
+      <div class="ads-grid" id="ads-grid-bottom"></div>
     </section>
-
+    
     <footer>
-        <div class="social-links">
-            <a href="https://www.facebook.com/imperiodostreaming" target="_blank" rel="noopener" class="social-btn facebook" title="Facebook">Facebook</a>
-            <a href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais." target="_blank" rel="noopener" class="social-btn whatsapp" title="Fale conosco no WhatsApp">WhatsApp</a>
-            <a href="/vlog.html" class="social-btn videos" title="Catálogo de vídeos">Vídeos</a>
-            <a href="/galeria.html?id=super-stream" class="social-btn galeria" title="Galeria Super Stream">Galeria</a>
-        </div>
-        <p>&copy; 2026 Império do Streaming. Todos os direitos reservados.</p>
+      <div class="social-links">
+        <a class="social-btn facebook" href="https://www.facebook.com/imperiodostreaming" rel="noopener" target="_blank" title="Facebook">Facebook</a>
+        <a class="social-btn whatsapp" href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais." rel="noopener" target="_blank" title="Fale conosco no WhatsApp">WhatsApp</a>
+        <a class="social-btn videos" href="/vlog.html" title="Catálogo de vídeos">Vídeos</a>
+        <a class="social-btn galeria" href="/galeria.html?id=super-stream" title="Galeria Super Stream">Galeria</a>
+      </div>
+      
+      <!-- CONTADOR DE VISITAS -->
+      <div style="text-align: center; padding: 15px; color: #888; font-size: 13px; font-weight: bold;">
+        👁️ Visitantes: <span id="contador-visitas" style="color: #25D366;">...</span>
+      </div>
+      
+      <p>© 2026 Império do Streaming. Todos os direitos reservados.</p>
     </footer>
-
-    <a href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais." target="_blank" rel="noopener" class="float-whatsapp" title="Fale conosco no WhatsApp" aria-label="WhatsApp">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    
+    <a aria-label="WhatsApp" class="float-whatsapp" href="https://wa.me/5547988307184?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais." rel="noopener" target="_blank" title="Fale conosco no WhatsApp">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z">
+        </path>
+      </svg>
     </a>
 
+    <!-- SCRIPT ÚNICO CONSOLIDADO (CONTADOR + LÓGICA DO SITE) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, onSnapshot, collection, addDoc, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             authDomain: "imperio-25340.firebaseapp.com",
@@ -433,7 +455,40 @@
         if (!app) app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Listener contínuo em tempo real: se admin ativar a enquete enquanto o usuário está navegando
+        // ===== LÓGICA DO CONTADOR DE VISITAS =====
+        async function gerenciarVisitas() {
+          const docRef = doc(db, "estatisticas", "geral");
+          const agora = new Date().getTime();
+          const ultimaVisita = localStorage.getItem('ultima_visita_imperio');
+          const tempoDeEspera = 30 * 60 * 1000; // 30 minutos
+
+          // 1. Regista a visita se passou o tempo de espera
+          if (!ultimaVisita || (agora - parseInt(ultimaVisita)) > tempoDeEspera) {
+            try {
+              await setDoc(docRef, { visitas_totais: increment(1) }, { merge: true });
+              localStorage.setItem('ultima_visita_imperio', agora.toString());
+            } catch (erro) {
+              console.error("Erro ao registar visita:", erro);
+            }
+          }
+
+          // 2. Lê o total atualizado da base de dados e exibe no site
+          try {
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+              const total = snap.data().visitas_totais || 0;
+              const elementoContador = document.getElementById('contador-visitas');
+              if (elementoContador) {
+                elementoContador.innerText = total.toLocaleString('pt-BR');
+              }
+            }
+          } catch (e) {
+            console.warn("Erro ao ler visitas:", e);
+          }
+        }
+        gerenciarVisitas();
+        // =========================================
+
         onSnapshot(doc(db, "configuracoes", "site"), (snap) => {
           if (!snap.exists()) return;
           if (snap.data().paginaPrincipal === "indexnew") {
@@ -577,7 +632,6 @@
             renderAnuncios(data);
         });
 
-        // ===== Notificação Telegram =====
         const NOTIFY = {
             telegramBotToken: '8900229363:AAG78R4n77yrUiDTU6chlbfSmku3ZmP0V2g',
             telegramChatId: '6364588933'
@@ -637,7 +691,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Botões que abrem o formulário
         document.querySelectorAll('a.btn-cta[href="#cadastro"]').forEach(function(a) {
             a.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -711,53 +764,5 @@
             }
         });
     </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    authDomain: "imperio-25340.firebaseapp.com",
-    projectId: "imperio-25340",
-    storageBucket: "imperio-25340.appspot.com",
-    messagingSenderId: "305282928509",
-    appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  async function gerenciarVisitas() {
-    const docRef = doc(db, "estatisticas", "geral");
-    const agora = new Date().getTime();
-    const ultimaVisita = localStorage.getItem('ultima_visita_imperio');
-    const tempoDeEspera = 30 * 60 * 1000; // 30 minutos
-
-    // 1. Regista a visita se passou o tempo de espera
-    if (!ultimaVisita || (agora - parseInt(ultimaVisita)) > tempoDeEspera) {
-      try {
-        await setDoc(docRef, { visitas_totais: increment(1) }, { merge: true });
-        localStorage.setItem('ultima_visita_imperio', agora.toString());
-      } catch (erro) {
-        console.error("Erro ao registar visita:", erro);
-      }
-    }
-
-    // 2. Lê o total atualizado da base de dados e exibe no site
-    try {
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        const total = snap.data().visitas_totais || 0;
-        const elementoContador = document.getElementById('contador-visitas');
-        if (elementoContador) {
-          elementoContador.innerText = total.toLocaleString('pt-BR');
-        }
-      }
-    } catch (e) {
-      console.warn("Erro ao ler visitas:", e);
-    }
-  }
-
-  gerenciarVisitas();
-</script>
-</body>
+  </body>
 </html>
