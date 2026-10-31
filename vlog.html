@@ -125,6 +125,53 @@
       }
     }
     load();
-  </script>
+  </script><script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    authDomain: "imperio-25340.firebaseapp.com",
+    projectId: "imperio-25340",
+    storageBucket: "imperio-25340.appspot.com",
+    messagingSenderId: "305282928509",
+    appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function gerenciarVisitas() {
+    const docRef = doc(db, "estatisticas", "geral");
+    const agora = new Date().getTime();
+    const ultimaVisita = localStorage.getItem('ultima_visita_imperio');
+    const tempoDeEspera = 30 * 60 * 1000; // 30 minutos
+
+    // 1. Regista a visita se passou o tempo de espera
+    if (!ultimaVisita || (agora - parseInt(ultimaVisita)) > tempoDeEspera) {
+      try {
+        await setDoc(docRef, { visitas_totais: increment(1) }, { merge: true });
+        localStorage.setItem('ultima_visita_imperio', agora.toString());
+      } catch (erro) {
+        console.error("Erro ao registar visita:", erro);
+      }
+    }
+
+    // 2. Lê o total atualizado da base de dados e exibe no site
+    try {
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const total = snap.data().visitas_totais || 0;
+        const elementoContador = document.getElementById('contador-visitas');
+        if (elementoContador) {
+          elementoContador.innerText = total.toLocaleString('pt-BR');
+        }
+      }
+    } catch (e) {
+      console.warn("Erro ao ler visitas:", e);
+    }
+  }
+
+  gerenciarVisitas();
+</script>
 </body>
 </html>
