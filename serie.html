@@ -56,7 +56,10 @@
     .player-box header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #222; background: #0a0a0a; }
     .player-box header h3 { font-size: 1rem; }
     .player-box header button { background: #333; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 600; }
-    .player-box video { width: 100%; max-height: 70vh; background: #000; display: block; }
+    
+    /* MODIFICAÇÃO DO CSS DO VÍDEO PARA IFRAME */
+    .player-box iframe { width: 100%; height: 65vh; min-height: 350px; background: #000; display: block; border: none; }
+    
     .ads-section { margin-top: 36px; }
     .ads-section h3 { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
     .ads-grid-page { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -103,7 +106,8 @@
         <h3 id="player-title">Episódio</h3>
         <button type="button" onclick="fecharPlayer()">Fechar</button>
       </header>
-      <video id="player-video" controls playsinline></video>
+      <!-- MODIFICAÇÃO DO PLAYER HTML: iframe no lugar de video -->
+      <iframe id="player-video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -263,25 +267,28 @@
       });
     }
 
+    // MODIFICAÇÃO DO JS PARA O COMPORTAMENTO DO IFRAME (abrir e fechar)
     window.abrirPlayer = function(ep) {
       const modal = document.getElementById("player-modal");
-      const video = document.getElementById("player-video");
+      const iframe = document.getElementById("player-video");
       const title = document.getElementById("player-title");
       title.textContent = (ep.num ? ep.num + " — " : "") + (ep.title || "Episódio");
+      
       if (ep.video) {
-        video.src = ep.video;
+        iframe.src = ep.video;
         modal.classList.add("show");
-        video.play().catch(() => {});
       } else {
         alert("Este episódio ainda não tem vídeo cadastrado.");
       }
     };
+
     window.fecharPlayer = function() {
       const modal = document.getElementById("player-modal");
-      const video = document.getElementById("player-video");
-      video.pause(); video.removeAttribute("src"); video.load();
+      const iframe = document.getElementById("player-video");
+      iframe.removeAttribute("src"); // Remove src to stop video audio
       modal.classList.remove("show");
     };
+
     document.getElementById("player-modal").addEventListener("click", (e) => {
       if (e.target.id === "player-modal") fecharPlayer();
     });
