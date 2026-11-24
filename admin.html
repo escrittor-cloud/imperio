@@ -154,6 +154,7 @@
       <button class="btn-tab" id="tab-inativos" onclick="alterarAba('inativos')">4. Clientes Inativos</button>
       <button class="btn-tab" id="tab-promocoes" onclick="alterarAba('promocoes')">5. Editar Promoções e Textos</button>
       <button class="btn-tab" id="tab-vlog" onclick="alterarAba('vlog')">6. Vlog / Galeria</button>
+      <button class="btn-tab" id="tab-lote" onclick="alterarAba('lote')">7. Lote (Envio Múltiplo)</button>
     </div>
 
     <div id="section-leads">
@@ -922,6 +923,7 @@
           <label><input type="checkbox" id="adm-tab-inativos"> 4 Inativos</label>
           <label><input type="checkbox" id="adm-tab-promocoes"> 5 Promoções</label>
           <label><input type="checkbox" id="adm-tab-vlog"> 6 Vlog / Studio</label>
+          <label><input type="checkbox" id="adm-tab-lote"> 7 Lote</label>
         </div>
         <button type="button" class="btn-action-green" onclick="salvarAdminUser()">Salvar admin</button>
         <div id="admins-list" style="margin-top:12px;font-size:13px;color:#ccc;"></div>
@@ -1049,6 +1051,49 @@
       <button class="btn-action-green" onclick="salvarVlogConfig()">Salvar Vlog e Galeria</button>
       <p id="vlog-save-status" style="margin-top:10px;font-size:13px;"></p>
     </div>
+
+    <div id="section-lote" class="promo-section" style="display:none;">
+      <h3 style="color:#fff;margin-bottom:8px;">7. Upload Múltiplo em Lote (GitHub + Galeria Firestore)</h3>
+      <p style="color:#aaa;font-size:13px;margin-bottom:16px;">
+        Selecione a série e até 10 imagens. O sistema envia cada arquivo físico para a pasta <code>Imagens/</code> do GitHub usando o token salvo no Firebase, gera o link <code>raw.githubusercontent.com</code> e grava todas as categorias selecionadas na coleção <code>galeria</code>.
+      </p>
+
+      <div class="promo-group">
+        <h4>1. Configuração do Lote</h4>
+        <label>Selecionar Série:</label>
+        <select id="lote-select-serie" style="width:100%;padding:10px;background:#121212;color:#fff;border:1px solid #333;border-radius:4px;margin-bottom:12px;">
+          <option value="">Carregando séries do Firestore...</option>
+        </select>
+
+        <label>Selecionar Imagens (1 a 10 arquivos):</label>
+        <input type="file" id="lote-input-files" accept="image/*" multiple style="width:100%;padding:10px;background:#121212;color:#fff;border:1px solid #333;border-radius:4px;">
+      </div>
+
+      <div class="promo-group" id="lote-card-tabela" style="display:none;">
+        <h4>2. Detalhes dos Itens Selecionados</h4>
+        <div class="table-responsive" style="margin-top:10px;">
+          <table style="min-width:850px;">
+            <thead>
+              <tr>
+                <th style="width:65px;">Mini</th>
+                <th style="width:190px;">Título</th>
+                <th style="width:200px;">Descrição</th>
+                <th>Categorias (Múltiplas)</th>
+                <th style="width:230px;">Link GitHub (Automático)</th>
+                <th style="width:110px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="lote-tabela-corpo"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button type="button" class="btn-action-green" style="margin-bottom:0;" id="lote-btn-salvar" onclick="executarEnvioLote()">🚀 Enviar para GitHub e Salvar no Firestore (Lote)</button>
+          <span id="lote-status-geral" style="font-size:13px;font-weight:bold;"></span>
+        </div>
+      </div>
+    </div>
+
 
   </div>
 
@@ -1211,7 +1256,7 @@
     }
 
 
-    const TAB_KEYS = ['solicitacoes','testes','ativos','inativos','promocoes','vlog'];
+    const TAB_KEYS = ['solicitacoes','testes','ativos','inativos','promocoes','vlog','lote'];
     window._adminAtual = null;
 
     function aplicarTemaPainel() {
@@ -1738,6 +1783,8 @@
       document.getElementById('section-promocoes').style.display = 'none';
       const secVlog = document.getElementById('section-vlog');
       if (secVlog) secVlog.style.display = 'none';
+      const secLote = document.getElementById('section-lote');
+      if (secLote) secLote.style.display = 'none';
 
       if (aba === 'promocoes') {
         document.getElementById('section-promocoes').style.display = 'block';
@@ -1745,6 +1792,10 @@
       } else if (aba === 'vlog') {
         if (secVlog) secVlog.style.display = 'block';
         if (typeof carregarGithubToken === 'function') carregarGithubToken(); if (typeof carregarVlogConfig === 'function') carregarVlogConfig(); if (typeof listarSeries === 'function') listarSeries(); if (typeof atualizarBoxAdmins === 'function') atualizarBoxAdmins();
+      } else if (aba === 'lote') {
+        if (secLote) secLote.style.display = 'block';
+        if (typeof carregarGithubToken === 'function') carregarGithubToken();
+        if (typeof carregarSeriesLote === 'function') carregarSeriesLote();
       } else {
         document.getElementById('section-leads').style.display = 'block';
         loadLeads();
@@ -3612,7 +3663,8 @@
         ativos: document.getElementById("adm-tab-ativos").checked,
         inativos: document.getElementById("adm-tab-inativos").checked,
         promocoes: document.getElementById("adm-tab-promocoes").checked,
-        vlog: document.getElementById("adm-tab-vlog").checked
+        vlog: document.getElementById("adm-tab-vlog").checked,
+        lote: document.getElementById("adm-tab-lote").checked
       };
       const payload = { user, email, tabs };
       if (pass) payload.pass = pass;
@@ -3747,6 +3799,186 @@
         alert("Série excluída.");
       } catch (e) {
         alert("Erro ao excluir: " + (e.message || e));
+      }
+    };
+
+
+    // ===== ABA 7: UPLOAD MÚLTIPLO EM LOTE (GITHUB + FIRESTORE) =====
+    const LOTE_CATEGORIAS = [
+      { id: "todos", label: "Todos" },
+      { id: "heroi", label: "Herói" },
+      { id: "viloes", label: "Vilões" },
+      { id: "posters", label: "Posters" },
+      { id: "tirinhas", label: "Tirinhas" },
+      { id: "personagens", label: "Personagens" },
+      { id: "making-off", label: "Making of" }
+    ];
+    let loteArquivos = [];
+
+    window.carregarSeriesLote = async function() {
+      const sel = document.getElementById("lote-select-serie");
+      if (!sel) return;
+      try {
+        const snap = await getDocs(collection(db, "series"));
+        sel.innerHTML = '<option value="">Selecione uma série...</option>';
+        snap.forEach(d => {
+          const data = d.data();
+          const opt = document.createElement("option");
+          opt.value = d.id;
+          opt.textContent = data.title || d.id;
+          sel.appendChild(opt);
+        });
+        if ([...sel.options].some(o => o.value === "super-stream")) {
+          sel.value = "super-stream";
+        }
+      } catch (e) {
+        console.error("Erro ao carregar séries no lote:", e);
+        sel.innerHTML = '<option value="">Erro ao carregar séries</option>';
+      }
+    };
+
+    const loteInputFiles = document.getElementById("lote-input-files");
+    if (loteInputFiles) {
+      loteInputFiles.addEventListener("change", function(e) {
+        const files = Array.from(e.target.files).slice(0, 10);
+        loteArquivos = files;
+        const card = document.getElementById("lote-card-tabela");
+        const tbody = document.getElementById("lote-tabela-corpo");
+        const stGeral = document.getElementById("lote-status-geral");
+        if (stGeral) stGeral.textContent = "";
+        tbody.innerHTML = "";
+
+        if (!files.length) {
+          card.style.display = "none";
+          return;
+        }
+        card.style.display = "block";
+
+        files.forEach((file, index) => {
+          const cleanFileName = file.name.replace(/[^a-zA-Z0-9._\-\s]/g, "_");
+          const pathEncoded = cleanFileName.split("/").map(encodeURIComponent).join("/");
+          const rawUrlPadrao = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/Imagens/${pathEncoded}`;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><img src="" id="lote-thumb-${index}" alt="mini" style="width:48px;height:48px;object-fit:cover;border-radius:6px;background:#000;border:1px solid #333;display:block;"></td>
+            <td><input type="text" class="lote-inp-title" value="${escapeHtml(file.name)}" style="width:100%;padding:8px;background:#121212;color:#fff;border:1px solid #333;border-radius:4px;"></td>
+            <td><input type="text" class="lote-inp-desc" placeholder="Descrição curta..." style="width:100%;padding:8px;background:#121212;color:#fff;border:1px solid #333;border-radius:4px;"></td>
+            <td>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                ${LOTE_CATEGORIAS.map(cat => `
+                  <label style="display:inline-flex;align-items:center;gap:4px;color:#ddd;font-size:12px;cursor:pointer;margin:0;">
+                    <input type="checkbox" value="${cat.id}" class="lote-chk-cat" ${cat.id === 'todos' ? 'checked' : ''} style="accent-color:#e50914;width:14px;height:14px;"> ${cat.label}
+                  </label>
+                `).join('')}
+              </div>
+            </td>
+            <td><input type="text" class="lote-inp-link" value="${rawUrlPadrao}" style="width:100%;padding:8px;background:#121212;color:#88afcc;border:1px solid #333;border-radius:4px;font-size:11px;"></td>
+            <td id="lote-row-status-${index}" style="font-size:12px;color:#aaa;">Aguardando</td>
+          `;
+          tbody.appendChild(tr);
+
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            const imgEl = document.getElementById(`lote-thumb-${index}`);
+            if (imgEl) imgEl.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
+    window.executarEnvioLote = async function() {
+      const stGeral = document.getElementById("lote-status-geral");
+      const btnSalvar = document.getElementById("lote-btn-salvar");
+      const serieId = document.getElementById("lote-select-serie").value;
+
+      if (!serieId) {
+        stGeral.style.color = "#e50914";
+        stGeral.textContent = "❌ Selecione uma série antes de enviar.";
+        return;
+      }
+      if (!loteArquivos.length) {
+        stGeral.style.color = "#e50914";
+        stGeral.textContent = "❌ Selecione de 1 a 10 imagens.";
+        return;
+      }
+
+      let token = getGhToken();
+      if (!token && typeof carregarGithubToken === "function") {
+        token = await carregarGithubToken();
+      }
+      if (!token) {
+        stGeral.style.color = "#e50914";
+        stGeral.textContent = "❌ Token GitHub não encontrado no Firebase.";
+        return;
+      }
+
+      btnSalvar.disabled = true;
+      stGeral.style.color = "#fff";
+      stGeral.textContent = "⏳ Enviando imagens para o GitHub e gravando no Firestore...";
+
+      const rows = document.querySelectorAll("#lote-tabela-corpo tr");
+      let sucessos = 0;
+      let falhas = 0;
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const file = loteArquivos[i];
+        const rowStatus = document.getElementById(`lote-row-status-${i}`);
+        const title = row.querySelector(".lote-inp-title").value.trim() || file.name;
+        const desc = row.querySelector(".lote-inp-desc").value.trim();
+        const linkInput = row.querySelector(".lote-inp-link");
+        const checks = row.querySelectorAll(".lote-chk-cat:checked");
+        const categorias = Array.from(checks).map(c => c.value);
+
+        try {
+          if (rowStatus) {
+            rowStatus.style.color = "#ffc107";
+            rowStatus.textContent = "⏳ Enviando GitHub...";
+          }
+
+          // 1. Faz o upload físico para Imagens/ no GitHub via Contents API (mesma lógica da Aba 6)
+          const uploadedUrl = await uploadToGitHub(file, "Imagens");
+          linkInput.value = uploadedUrl;
+
+          if (rowStatus) {
+            rowStatus.textContent = "⏳ Salvando Firestore...";
+          }
+
+          // 2. Grava na coleção 'galeria' do Firestore
+          const docId = "img_" + Date.now() + "_" + i;
+          await setDoc(doc(db, "galeria", docId), {
+            serieId: serieId,
+            title: title,
+            descricao: desc,
+            url: uploadedUrl,
+            categorias: categorias,
+            criadoEm: new Date()
+          });
+
+          if (rowStatus) {
+            rowStatus.style.color = "#25D366";
+            rowStatus.textContent = "✅ Concluído";
+          }
+          sucessos++;
+        } catch (err) {
+          console.error(`Erro no item ${i}:`, err);
+          if (rowStatus) {
+            rowStatus.style.color = "#e50914";
+            rowStatus.textContent = "❌ " + (err.message || "Erro");
+          }
+          falhas++;
+        }
+      }
+
+      btnSalvar.disabled = false;
+      if (falhas === 0) {
+        stGeral.style.color = "#25D366";
+        stGeral.textContent = `✅ Lote finalizado! ${sucessos} imagem(ns) enviada(s) ao GitHub e salva(s) na galeria.`;
+      } else {
+        stGeral.style.color = "#ffc107";
+        stGeral.textContent = `⚠️ Concluído com avisos: ${sucessos} enviada(s), ${falhas} erro(s).`;
       }
     };
 
