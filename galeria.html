@@ -84,7 +84,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = { projectId: "imperio-25340", authDomain: "imperio-25340.firebaseapp.com" };
     const app = initializeApp(firebaseConfig);
@@ -101,15 +101,31 @@
             serieId = 'super-stream';
         }
 
-        const serieSnap = await getDoc(doc(db, "series", serieId));
-        if (serieSnap.exists() && serieSnap.data().gallery && serieSnap.data().gallery.length > 0) {
-          todasImagens = serieSnap.data().gallery;
-        } else {
-          const snap = await getDoc(doc(db, "config", "galeria"));
-          if (snap.exists() && snap.data().items) {
-            todasImagens = snap.data().items;
+        todasImagens = [];
+
+        // Lê da nova coleção 'galeria' do Firestore
+        const snapLote = await getDocs(collection(db, "galeria"));
+        if (!snapLote.empty) {
+          snapLote.forEach(doc => {
+            const data = doc.data();
+            if (!data.serieId || data.serieId === serieId) {
+              todasImagens.push({
+                url: data.url,
+                title: data.title || 'Imagem',
+                categoria: (data.categorias && data.categorias.length > 0) ? data.categorias[0] : 'geral'
+              });
+            }
+          });
+        }
+
+        // Fallback para a estrutura antiga se a coleção estiver vazia
+        if (todasImagens.length === 0) {
+          const serieSnap = await getDoc(doc(db, "series", serieId));
+          if (serieSnap.exists() && serieSnap.data().gallery) {
+            todasImagens = serieSnap.data().gallery;
           }
         }
+
         renderizarImagens(todasImagens);
       } catch (err) {
         console.error("Erro ao carregar imagens:", err);

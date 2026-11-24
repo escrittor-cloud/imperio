@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload em Lote (Aba 7) – Império do Streaming</title>
+  <style>
+    :root {
+      --primary: #e50914;
+      --primary-hover: #f40612;
+      --bg-dark: #121212;
+      --card-bg: #1a1a1a;
+      --border-color: #333;
+      --text-light: #ffffff;
+      --text-gray: #aaaaaa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-light); padding: 24px 16px 60px; line-height: 1.5; }
+    .wrap { max-width: 1000px; margin: 0 auto; }
+    h1 { color: #fff; font-size: 1.6rem; margin-bottom: 6px; }
+    .sub { color: var(--text-gray); font-size: 0.9rem; margin-bottom: 24px; }
+    
+    .card {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .card h2 { font-size: 1.1rem; color: #fff; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+    
+    label { display: block; font-size: 0.85rem; color: var(--text-gray); margin: 12px 0 6px; }
+    select, input[type="text"], input[type="file"] {
+      width: 100%; padding: 10px 12px; background: #0d0d0d; border: 1px solid var(--border-color);
+      border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none;
+    }
+    select:focus, input[type="text"]:focus { border-color: var(--primary); }
+
+    .btn {
+      display: inline-block; border: none; border-radius: 8px; padding: 12px 22px;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s;
+    }
+    .btn-red { background: var(--primary); color: #fff; }
+    .btn-red:hover { background: var(--primary-hover); }
+    .btn-green { background: #25d366; color: #000; }
+    .btn-green:hover { filter: brightness(1.1); }
+
+    .table-container { overflow-x: auto; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
+    th { background: #111; color: var(--text-gray); padding: 10px; border-bottom: 2px solid var(--border-color); }
+    td { padding: 10px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    
+    .thumb-preview { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; background: #000; border: 1px solid var(--border-color); display: block; }
+    
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+    .checkbox-group label { display: inline-flex; align-items: center; gap: 5px; color: #ddd; font-size: 0.8rem; margin: 0; cursor: pointer; }
+    .checkbox-group input { accent-color: var(--primary); width: 15px; height: 15px; }
+
+    .status { margin-top: 14px; font-size: 0.9rem; font-weight: 600; min-height: 1.4em; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📦 Upload Múltiplo em Lote (Aba 7 - Múltiplas Categorias)</h1>
+    <p class="sub">Painel com suporte a marcação de várias categorias por imagem.</p>
+
+    <div class="card">
+      <h2>1. Configuração Inicial</h2>
+      <label>Selecionar Série</label>
+      <select id="select-serie">
+        <option value="">A carregar séries do Firestore...</option>
+      </select>
+
+      <label>Selecionar Imagens (1 a 10 arquivos)</label>
+      <input type="file" id="input-files" accept="image/*" multiple>
+    </div>
+
+    <div class="card" id="card-tabela" style="display:none;">
+      <h2>2. Detalhes dos Itens Selecionados</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px;">Mini</th>
+              <th style="width: 200px;">Título</th>
+              <th style="width: 220px;">Descrição</th>
+              <th>Categorias (Múltiplas)</th>
+              <th style="width: 250px;">Link GitHub (Gerado)</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-corpo">
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
+        <button type="button" class="btn btn-green" id="btn-salvar">💾 Salvar no Firestore (Lote)</button>
+        <p class="status" id="status-acao"></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      authDomain: "imperio-25340.firebaseapp.com",
+      projectId: "imperio-25340",
+      storageBucket: "imperio-25340.appspot.com",
+      messagingSenderId: "305282928509",
+      appId: "1:305282928509:web:5d2edc0b6238b1f50a4ad6"
+    };
+
+    let app;
+    try {
+      const r = await fetch("/__/firebase/init.json");
+      if (r.ok) app = initializeApp(await r.json());
+    } catch (_) {}
+    if (!app) app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const GH_OWNER = "escrittor-cloud";
+    const GH_REPO = "imperio";
+    const categoriasOpcoes = [
+      { id: "todos", label: "Todos" },
+      { id: "heroi", label: "Herói" },
+      { id: "viloes", label: "Vilões" },
+      { id: "posters", label: "Posters" },
+      { id: "tirinhas", label: "Tirinhas" },
+      { id: "personagens", label: "Personagens" },
+      { id: "making-off", label: "Making off" }
+    ];
+
+    let arquivosSelecionados = [];
+
+    async function carregarSeries() {
+      const select = document.getElementById("select-serie");
+      try {
+        const snap = await getDocs(collection(db, "series"));
+        select.innerHTML = '<option value="">Selecione uma série...</option>';
+        snap.forEach(d => {
+          const data = d.data();
+          const opt = document.createElement("option");
+          opt.value = d.id;
+          opt.textContent = data.title || d.id;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.error(e);
+        select.innerHTML = '<option value="">Erro ao carregar séries</option>';
+      }
+    }
+    carregarSeries();
+
+    document.getElementById("input-files").addEventListener("change", function(e) {
+      const files = Array.from(e.target.files).slice(0, 10);
+      arquivosSelecionados = files;
+      const cardTabela = document.getElementById("card-tabela");
+      const tbody = document.getElementById("tabela-corpo");
+      tbody.innerHTML = "";
+
+      if (files.length === 0) {
+        cardTabela.style.display = "none";
+        return;
+      }
+
+      cardTabela.style.display = "block";
+
+      files.forEach((file, index) => {
+        const reader = new FileReader();
+        const tr = document.createElement("tr");
+        
+        const rawUrlPadrao = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/Imagens/${file.name}`;
+
+        tr.innerHTML = `
+          <td><img src="" class="thumb-preview" id="thumb-${index}" alt="preview"></td>
+          <td><input type="text" class="inp-title" value="${file.name}" data-index="${index}"></td>
+          <td><input type="text" class="inp-desc" placeholder="Descrição curta..." data-index="${index}"></td>
+          <td>
+            <div class="checkbox-group">
+              ${categoriasOpcoes.map(cat => `
+                <label><input type="checkbox" value="${cat.id}" data-index="${index}" class="chk-cat"> ${cat.label}</label>
+              `).join('')}
+            </div>
+          </td>
+          <td><input type="text" class="inp-link" value="${rawUrlPadrao}" data-index="${index}" style="font-size:0.75rem; color:#88afcc;"></td>
+        `;
+
+        tbody.appendChild(tr);
+
+        reader.onload = function(evt) {
+          const imgEl = document.getElementById(`thumb-${index}`);
+          if (imgEl) imgEl.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    document.getElementById("btn-salvar").onclick = async () => {
+      const st = document.getElementById("status-acao");
+      const serieId = document.getElementById("select-serie").value;
+
+      if (!serieId) {
+        st.style.color = "var(--primary)";
+        st.textContent = "❌ Selecione uma série antes de salvar.";
+        return;
+      }
+
+      if (arquivosSelecionados.length === 0) {
+        st.style.color = "var(--primary)";
+        st.textContent = "❌ Nenhum arquivo selecionado.";
+        return;
+      }
+
+      st.style.color = "#fff";
+      st.textContent = "Salvando documentos no lote...";
+
+      try {
+        const rows = document.querySelectorAll("#tabela-corpo tr");
+        
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const title = row.querySelector(".inp-title").value.trim();
+          const desc = row.querySelector(".inp-desc").value.trim();
+          const link = row.querySelector(".inp-link").value.trim();
+          
+          const checks = row.querySelectorAll(".chk-cat:checked");
+          const categorias = Array.from(checks).map(c => c.value);
+
+          const docId = "img_" + Date.now() + "_" + i;
+          
+          await setDoc(doc(db, "galeria", docId), {
+            serieId: serieId,
+            title: title || arquivosSelecionados[i].name,
+            descricao: desc,
+            url: link,
+            categorias: categorias, // Salva o array completo com todas as categorias marcadas
+            criadoEm: new Date()
+          });
+        }
+
+        st.style.color = "#25d366";
+        st.textContent = `✅ ${rows.length} imagens salvas com sucesso no lote!`;
+      } catch (err) {
+        console.error(err);
+        st.style.color = "var(--primary)";
+        st.textContent = "Erro ao salvar: " + err.message;
+      }
+    };
+  </script>
+</body>
+</html>
