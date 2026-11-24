@@ -33,6 +33,7 @@
     .gallery-card:hover .card-img-wrap img { transform: scale(1.05); }
     .card-info { padding: 14px 16px; }
     .card-title { font-size: 1rem; font-weight: 700; margin: 0 0 4px 0; color: #fff; }
+    .card-desc { font-size: 0.85rem; color: #aaa; margin: 4px 0 0 0; }
     .card-tag { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #e50914; letter-spacing: 0.5px; }
     footer { text-align: center; padding: 30px 20px; color: #777; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 60px; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); z-index: 1000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
@@ -66,7 +67,7 @@
       <button class="filter-btn" onclick="filtrarGaleria('making-off', this)">Making of</button>
     </div>
     <div class="gallery-grid" id="galleryGrid">
-      <p style="text-align:center; grid-column: 1/-1; color:#888;">A carregar galeria...</p>
+      <p style="text-align:center; grid-column: 1/-1; color:#888;">Carregando galeria...</p>
     </div>
   </div>
 
@@ -98,31 +99,37 @@
         const urlParams = new URLSearchParams(window.location.search);
         let serieId = urlParams.get('id');
         if (!serieId) {
-            serieId = 'super-stream';
+          serieId = 'super-stream';
         }
 
         todasImagens = [];
 
-        // Lê da nova coleção 'galeria' do Firestore
         const snapLote = await getDocs(collection(db, "galeria"));
         if (!snapLote.empty) {
-          snapLote.forEach(doc => {
-            const data = doc.data();
+          snapLote.forEach(d => {
+            const data = d.data();
             if (!data.serieId || data.serieId === serieId) {
               todasImagens.push({
                 url: data.url,
                 title: data.title || 'Imagem',
-                categoria: (data.categorias && data.categorias.length > 0) ? data.categorias[0] : 'geral'
+                descricao: data.descricao || '',
+                categorias: Array.isArray(data.categorias) ? data.categorias : (data.categoria ? [data.categoria] : [])
               });
             }
           });
         }
 
-        // Fallback para a estrutura antiga se a coleção estiver vazia
         if (todasImagens.length === 0) {
           const serieSnap = await getDoc(doc(db, "series", serieId));
           if (serieSnap.exists() && serieSnap.data().gallery) {
-            todasImagens = serieSnap.data().gallery;
+            serieSnap.data().gallery.forEach(img => {
+              todasImagens.push({
+                url: img.url,
+                title: img.title || 'Imagem',
+                descricao: img.desc || img.descricao || '',
+                categorias: Array.isArray(img.categorias) ? img.categorias : [img.categoria || 'geral']
+              });
+            });
           }
         }
 
@@ -144,13 +151,18 @@
         const card = document.createElement("div");
         card.className = "gallery-card";
         card.onclick = () => abrirModal(img.url);
+
+        const catsExibir = (img.categorias || []).filter(c => c.toLowerCase() !== 'todos');
+        const catTexto = catsExibir.length > 0 ? catsExibir.join(' • ') : 'Geral';
+
         card.innerHTML = `
           <div class="card-img-wrap">
             <img src="${img.url}" alt="${img.title || 'Imagem'}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x400?text=Sem+Imagem'">
           </div>
           <div class="card-info">
-            <div class="card-tag">${img.categoria || 'Geral'}</div>
+            <div class="card-tag">${catTexto}</div>
             <h3 class="card-title">${img.title || ''}</h3>
+            ${img.descricao ? `<p class="card-desc">${img.descricao}</p>` : ''}
           </div>
         `;
         grid.appendChild(card);
@@ -163,7 +175,10 @@
       if (cat === "todos") {
         renderizarImagens(todasImagens);
       } else {
-        const filtradas = todasImagens.filter(item => (item.categoria || "").toLowerCase() === cat.toLowerCase());
+        const filtradas = todasImagens.filter(item => {
+          if (!item.categorias) return false;
+          return item.categorias.some(c => c.toLowerCase() === cat.toLowerCase());
+        });
         renderizarImagens(filtradas);
       }
     };
